@@ -697,7 +697,7 @@ function rcp_registration_total( $echo = true ) {
 	}
 
 	if ( 0 < $total ) {
-		$total = rcp_format_amount( $total );
+		$total = rcp_currency_filter( $total );
 	} else {
 		$total = __( 'free', 'rcp' );
 	}
@@ -753,7 +753,7 @@ function rcp_registration_recurring_total( $echo = true ) {
 	}
 
 	if ( 0 < $total ) {
-		$total = rcp_format_amount( $total );
+		$total = rcp_currency_filter( $total );
 		$subscription = rcp_get_subscription_details( rcp_get_registration()->get_subscription() );
 
 		if ( $subscription->duration == 1 ) {
@@ -932,7 +932,7 @@ function rcp_add_prorate_message() {
 
 	$prorate_message = sprintf( '<p>%s</p>', __( 'If you upgrade or downgrade your account, the new subscription will be prorated up to %s for the first payment. Prorated prices are shown below.', 'rcp' ) );
 
-	printf( apply_filters( 'rcp_registration_prorate_message', $prorate_message ), esc_html( rcp_format_amount( $amount ) ) );
+	printf( apply_filters( 'rcp_registration_prorate_message', $prorate_message ), esc_html( rcp_currency_filter( $amount ) ) );
 }
 add_action( 'rcp_before_subscription_form_fields', 'rcp_add_prorate_message' );
 

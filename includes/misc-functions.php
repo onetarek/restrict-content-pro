@@ -93,13 +93,15 @@ function rcp_get_paid_posts() {
 function rcp_currency_filter( $price ) {
 	global $rcp_options;
 
-	$currency = rcp_get_currency();
-	$position = isset( $rcp_options['currency_position'] ) ? $rcp_options['currency_position'] : 'before';
+	$formatted_price = ! empty( $price ) ? rcp_format_amount( $price ) : $price; // Add decimals and format thousands separator.
+	$currency        = rcp_get_currency();
+	$position        = isset( $rcp_options['currency_position'] ) ? $rcp_options['currency_position'] : 'before';
+
 	if ( $position == 'before' ) :
-		$formatted = rcp_get_currency_symbol( $currency ) . $price;
+		$formatted = rcp_get_currency_symbol( $currency ) . $formatted_price;
 		return apply_filters( 'rcp_' . strtolower( $currency ) . '_currency_filter_before', $formatted, $currency, $price );
 	else :
-		$formatted = $price . rcp_get_currency_symbol( $currency );
+		$formatted = $formatted_price . rcp_get_currency_symbol( $currency );
 		return apply_filters( 'rcp_' . strtolower( $currency ) . '_currency_filter_after', $formatted, $currency, $price );
 	endif;
 }
@@ -955,7 +957,7 @@ function rcp_currency_decimal_filter( $decimals = 2 ) {
 }
 
 /**
- * Formats the payment amount for display to enforce decimal places and add currency symbol.
+ * Formats the payment amount for display to enforce decimal places and thousands separator.
  *
  * @param float|int $amount
  *
@@ -963,11 +965,8 @@ function rcp_currency_decimal_filter( $decimals = 2 ) {
  * @return float
  */
 function rcp_format_amount( $amount ) {
-	// Enforce decimals, configure thousands separator.
-	$new_amount = number_format_i18n( $amount, rcp_currency_decimal_filter() );
 
-	// Prefix with currency symbol.
-	$new_amount = rcp_currency_filter( $new_amount );
+	$new_amount = number_format_i18n( $amount, rcp_currency_decimal_filter() );
 
 	return $new_amount;
 }
