@@ -972,19 +972,19 @@ function rcp_format_amount( $amount ) {
 	$decimal_sep   = ! empty( $wp_locale->number_format['decimal_point'] ) ? $wp_locale->number_format['decimal_point'] : '.';
 
 	// Format the amount
-	if ( $decimal_sep == ',' && false !== ( $sep_found = strpos( $amount, $decimal_sep ) ) ) {
+	if ( $decimal_sep === ',' && false !== ( $sep_found = strpos( $amount, $decimal_sep ) ) ) {
 		$whole = substr( $amount, 0, $sep_found );
 		$part = substr( $amount, $sep_found + 1, ( strlen( $amount ) - 1 ) );
 		$amount = $whole . '.' . $part;
 	}
 
 	// Strip , from the amount (if set as the thousands separator)
-	if ( $thousands_sep == ',' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
+	if ( $thousands_sep === ',' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
 		$amount = str_replace( ',', '', $amount );
 	}
 
 	// Strip ' ' from the amount (if set as the thousands separator)
-	if ( $thousands_sep == ' ' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
+	if ( $thousands_sep === ' ' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
 		$amount = str_replace( ' ', '', $amount );
 	}
 
