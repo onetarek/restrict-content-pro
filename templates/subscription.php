@@ -15,6 +15,8 @@
 
 global $user_ID, $rcp_options;
 
+$member = new RCP_Member( $user_ID );
+
 do_action( 'rcp_subscription_details_top' );
 
 if( isset( $_GET['profile'] ) && 'cancelled' == $_GET['profile'] ) : ?>
@@ -36,7 +38,13 @@ if( isset( $_GET['profile'] ) && 'cancelled' == $_GET['profile'] ) : ?>
 	<tbody>
 		<tr>
 			<td data-th="<?php esc_attr_e( 'Status', 'rcp' ); ?>"><?php rcp_print_status(); ?></td>
-			<td data-th="<?php esc_attr_e( 'Subscription', 'rcp' ); ?>"><?php echo rcp_get_subscription(); ?></td>
+			<td data-th="<?php esc_attr_e( 'Subscription', 'rcp' ); ?>">
+				<?php if ( 'pending' === $member->get_status() ) {
+					echo $member->get_pending_subscription_name();
+				} else {
+					echo $member->get_subscription_name();
+				} ?>
+			</td>
 			<td data-th="<?php ( rcp_is_recurring() && ! rcp_is_expired() ) ? esc_attr_e( 'Renewal Date', 'rcp' ) : esc_attr_e( 'Expiration', 'rcp' ); ?>"><?php echo rcp_get_expiration_date(); ?></td>
 			<td data-th="<?php esc_attr_e( 'Actions', 'rcp' ); ?>">
 				<?php
