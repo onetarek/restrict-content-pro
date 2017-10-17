@@ -157,7 +157,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $customer ) ) {
-			$this->handle_processing_error( new Exception( __( 'Unable to locate or create customer record. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+			$this->handle_processing_error( new Exception( __( 'Unable to locate or create customer record. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 		}
 
 		/**
@@ -179,7 +179,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 
 			} else {
 
-				$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+				$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 
 			}
 
@@ -190,7 +190,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $payment_token ) ) {
-			$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+			$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 
 		}
 
