@@ -467,20 +467,43 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 	 * @return void
 	 */
 	protected function handle_processing_error( $e ) {
-		$body = $e->getJsonBody();
-		$err  = $body['error'];
 
-		$this->error_message = $err['message'];
+		if ( method_exists( $e, 'getJsonBody' ) ) {
+
+			$body                = $e->getJsonBody();
+			$err                 = $body['error'];
+			$error_code          = ! empty( $err['code'] ) ? $err['code'] : false;
+			$this->error_message = $err['message'];
+
+		} else {
+
+			$error_code          = $e->getCode();
+			$this->error_message = $e->getMessage();
+
+			// $err is here for backwards compat for the rcp_stripe_signup_payment_failed hook below.
+			$err = array(
+				'message' => $e->getMessage(),
+				'type'    => 'other',
+				'param'   => false,
+				'code'    => 'other'
+			);
+
+		}
 
 		do_action( 'rcp_registration_failed', $this );
 		do_action( 'rcp_stripe_signup_payment_failed', $err, $this );
 
 		$error = '<h4>' . __( 'An error occurred', 'rcp' ) . '</h4>';
-		if( isset( $err['code'] ) ) {
-			$error .= '<p>' . sprintf( __( 'Error code: %s', 'rcp' ), $err['code'] ) . '</p>';
+
+		if( ! empty( $error_code ) ) {
+			$error .= '<p>' . sprintf( __( 'Error code: %s', 'rcp' ), $error_code ) . '</p>';
 		}
-		$error .= "<p>Status: " . $e->getHttpStatus() ."</p>";
-		$error .= "<p>Message: " . $err['message'] . "</p>";
+
+		if ( method_exists( $e, 'getHttpStatus' ) ) {
+			$error .= "<p>Status: " . $e->getHttpStatus() ."</p>";
+		}
+
+		$error .= "<p>Message: " . $this->error_message . "</p>";
 
 		wp_die( $error, __( 'Error', 'rcp' ), array( 'response' => 401 ) );
 	}
