@@ -340,7 +340,7 @@ function rcp_no_account_sharing() {
  * Stores cookie value in a transient when a user logs in.
  *
  * Transient IDs are based on the user ID so that we can track the number of
- * users logged into the same account.
+ * users logged into the same account. Admins are excluded from this.
  *
  * @param string $logged_in_cookie The logged-in cookie.
  * @param int    $expire           The time the login grace period expires as a UNIX timestamp.
@@ -360,7 +360,7 @@ function rcp_set_user_logged_in_status( $logged_in_cookie, $expire, $expiration,
 		return;
 	}
 
-	if ( ! empty( $user_id ) ) :
+	if ( ! empty( $user_id ) && ! user_can( $user_id, 'manage_options' ) ) :
 
 		$data = get_transient( 'rcp_user_logged_in_' . $user_id );
 
@@ -390,6 +390,11 @@ function rcp_clear_auth_cookie() {
 	}
 
 	$user_id = get_current_user_id();
+
+	// Admins are excluded from this so we don't need to check them.
+	if ( user_can( $user_id, 'manage_options' ) ) {
+		return;
+	}
 
 	$already_logged_in = get_transient( 'rcp_user_logged_in_' . $user_id );
 
@@ -425,7 +430,8 @@ add_action( 'clear_auth_cookie', 'rcp_clear_auth_cookie' );
  *
  * The first cookie in the transient is the oldest, so it is the one that gets logged out.
  *
- * We only log a user out if there are more than 2 users logged into the same account.
+ * We only log a user out if there are more than 2 users logged into the same account and
+ * if it is not an administrator account.
  *
  * @access private
  * @since  1.5
@@ -439,6 +445,11 @@ function rcp_can_user_be_logged_in() {
 		}
 
 		$user_id = get_current_user_id();
+
+		// Admins are excluded from this.
+		if ( user_can( $user_id, 'manage_options' ) ) {
+			return;
+		}
 
 		$already_logged_in = get_transient( 'rcp_user_logged_in_' . $user_id );
 
