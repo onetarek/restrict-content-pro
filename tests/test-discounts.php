@@ -158,7 +158,7 @@ class RCP_Discount_Tests extends WP_UnitTestCase {
 
 	function test_format_discount() {
 
-		$this->assertEquals( '&#36;10', $this->db->format_discount( 10, 'flat' ) );
+		$this->assertEquals( '&#36;10.00', $this->db->format_discount( 10, 'flat' ) );
 		$this->assertEquals( '10%', $this->db->format_discount( 10, '%' ) );
 	}
 

@@ -697,7 +697,6 @@ function rcp_registration_total( $echo = true ) {
 	}
 
 	if ( 0 < $total ) {
-		$total = number_format( $total, rcp_currency_decimal_filter() );
 		$total = rcp_currency_filter( $total );
 	} else {
 		$total = __( 'free', 'rcp' );
@@ -754,7 +753,6 @@ function rcp_registration_recurring_total( $echo = true ) {
 	}
 
 	if ( 0 < $total ) {
-		$total = number_format( $total, rcp_currency_decimal_filter() );
 		$total = rcp_currency_filter( $total );
 		$subscription = rcp_get_subscription_details( rcp_get_registration()->get_subscription() );
 

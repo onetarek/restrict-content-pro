@@ -93,13 +93,15 @@ function rcp_get_paid_posts() {
 function rcp_currency_filter( $price ) {
 	global $rcp_options;
 
-	$currency = rcp_get_currency();
-	$position = isset( $rcp_options['currency_position'] ) ? $rcp_options['currency_position'] : 'before';
+	$formatted_price = ! empty( $price ) ? rcp_format_amount( $price ) : $price; // Add decimals and format thousands separator.
+	$currency        = rcp_get_currency();
+	$position        = isset( $rcp_options['currency_position'] ) ? $rcp_options['currency_position'] : 'before';
+
 	if ( $position == 'before' ) :
-		$formatted = rcp_get_currency_symbol( $currency ) . $price;
+		$formatted = rcp_get_currency_symbol( $currency ) . $formatted_price;
 		return apply_filters( 'rcp_' . strtolower( $currency ) . '_currency_filter_before', $formatted, $currency, $price );
 	else :
-		$formatted = $price . rcp_get_currency_symbol( $currency );
+		$formatted = $formatted_price . rcp_get_currency_symbol( $currency );
 		return apply_filters( 'rcp_' . strtolower( $currency ) . '_currency_filter_after', $formatted, $currency, $price );
 	endif;
 }
@@ -154,7 +156,7 @@ function rcp_get_currency_symbol( $currency = false ) {
 	}
 
 	return apply_filters( 'rcp_' . strtolower( $currency ) . '_symbol', $symbol, $currency );
-	
+
 }
 
 
@@ -963,6 +965,47 @@ function rcp_currency_decimal_filter( $decimals = 2 ) {
 	}
 
 	return apply_filters( 'rcp_currency_decimal_filter', $decimals, $currency );
+}
+
+/**
+ * Formats the payment amount for display to enforce decimal places and thousands separator.
+ *
+ * @param float|int $amount
+ *
+ * @since 2.9.5
+ * @return float
+ */
+function rcp_format_amount( $amount ) {
+
+	global $wp_locale;
+
+	$thousands_sep = ! empty( $wp_locale->number_format['thousands_sep'] ) ? $wp_locale->number_format['thousands_sep'] : ',';
+	$decimal_sep   = ! empty( $wp_locale->number_format['decimal_point'] ) ? $wp_locale->number_format['decimal_point'] : '.';
+
+	// Format the amount
+	if ( $decimal_sep === ',' && false !== ( $sep_found = strpos( $amount, $decimal_sep ) ) ) {
+		$whole = substr( $amount, 0, $sep_found );
+		$part = substr( $amount, $sep_found + 1, ( strlen( $amount ) - 1 ) );
+		$amount = $whole . '.' . $part;
+	}
+
+	// Strip , from the amount (if set as the thousands separator)
+	if ( $thousands_sep === ',' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
+		$amount = str_replace( ',', '', $amount );
+	}
+
+	// Strip ' ' from the amount (if set as the thousands separator)
+	if ( $thousands_sep === ' ' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
+		$amount = str_replace( ' ', '', $amount );
+	}
+
+	if ( empty( $amount ) ) {
+		$amount = 0;
+	}
+
+	$new_amount = number_format_i18n( $amount, rcp_currency_decimal_filter() );
+
+	return $new_amount;
 }
 
 /**
