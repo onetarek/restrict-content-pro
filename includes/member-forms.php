@@ -25,7 +25,8 @@ function rcp_login_form_fields( $args = array() ) {
 
 	// parse the arguments passed
 	$defaults = array(
- 		'redirect' => rcp_get_current_url(),
+		'redirect' => rcp_get_current_url(),
+		'class'    => 'rcp_form'
 	);
 
 	$rcp_login_form_args = wp_parse_args( $args, $defaults );
