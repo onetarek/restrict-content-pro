@@ -32,7 +32,7 @@ function rcp_process_registration() {
 	global $rcp_options, $rcp_levels_db;
 
 	$subscription_id     = rcp_get_registration()->get_subscription();
-	$discount            = isset( $_POST['rcp_discount'] ) ? sanitize_text_field( $_POST['rcp_discount'] ) : '';
+	$discount            = isset( $_POST['rcp_discount'] ) ? sanitize_text_field( strtolower( $_POST['rcp_discount'] ) ) : '';
 	$price               = number_format( (float) $rcp_levels_db->get_level_field( $subscription_id, 'price' ), 2 );
 	$price               = str_replace( ',', '', $price );
 	$subscription        = $rcp_levels_db->get_level( $subscription_id );
