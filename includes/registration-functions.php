@@ -1209,7 +1209,7 @@ function rcp_add_user_to_subscription( $user_id, $args = array() ) {
 	$member->remove_role( $old_role );
 
 	// Set the user's new role
-	$role = ! empty( $subscription_level->role ) ? $subscription_level->role : 'subscriber';
+	$role = ! empty( $subscription_level->role ) ? $subscription_level->role : get_option( 'default_role', 'subscriber' );
 	$member->add_role( apply_filters( 'rcp_default_user_level', $role, $subscription_level->id ) );
 
 	/*
