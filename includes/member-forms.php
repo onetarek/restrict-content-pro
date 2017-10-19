@@ -109,13 +109,21 @@ function rcp_registration_form_fields( $id = null, $atts = array() ) {
 
 	if( ! is_null( $id ) ) {
 
-		if( rcp_locate_template( array( 'register-single-' . $id . '.php' ), false ) ) {
+		if ( rcp_show_subscription_level( $id ) ) {
 
-			rcp_get_template_part( 'register', 'single-' . $id );
+			if ( rcp_locate_template( array( 'register-single-' . $id . '.php' ), false ) ) {
+
+				rcp_get_template_part( 'register', 'single-' . $id );
+
+			} else {
+
+				rcp_get_template_part( 'register', 'single' );
+
+			}
 
 		} else {
 
-			rcp_get_template_part( 'register', 'single' );
+			echo $rcp_register_form_atts['registered_message'];
 
 		}
 
