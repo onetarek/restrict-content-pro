@@ -539,7 +539,7 @@ function rcp_get_auto_renew_behavior() {
  */
 function rcp_remove_new_subscription_flag( $status, $user_id ) {
 
-	if( 'active' !== $status ) {
+	if ( ! in_array( $status, array( 'active', 'free' ) ) ) {
 		return;
 	}
 
