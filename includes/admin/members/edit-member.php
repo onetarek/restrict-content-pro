@@ -8,6 +8,8 @@
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  */
 
+$view = isset( $_GET['view'] ) ? sanitize_text_field( $_GET['view'] ) : 'overview';
+
 if( isset( $_GET['edit_member'] ) ) {
 	$member_id = absint( $_GET['edit_member'] );
 } elseif( isset( $_GET['view_member'] ) ) {
@@ -15,6 +17,7 @@ if( isset( $_GET['edit_member'] ) ) {
 }
 $member = new RCP_Member( $member_id );
 
+$member_tabs           = rcp_member_tabs();
 $current_status        = $member->get_status();
 $subscription_level_id = $member->get_subscription_id();
 $expiration_date       = $member->get_expiration_date( false );
@@ -44,185 +47,52 @@ if ( 'pending' == $current_status ) {
 	<?php return; ?>
 <?php endif; ?>
 
-<?php if( $switch_to_url = rcp_get_switch_to_url( $member->ID ) ) { ?>
-	<a href="<?php echo esc_url( $switch_to_url ); ?>" class="rcp_switch"><?php _e('Switch to User', 'rcp'); ?></a>
-<?php } ?>
-<form id="rcp-edit-member" action="" method="post">
-	<table class="form-table">
-		<tbody>
-			<?php do_action( 'rcp_edit_member_before', $member->ID ); ?>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-userlogin"><?php _e( 'User Login', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<input id="rcp-userlogin" type="text" value="<?php echo esc_attr( $member->user_login ); ?>" disabled="disabled"/>
-					<p class="description"><?php _e( 'The member\'s login name. This cannot be changed.', 'rcp' ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-email"><?php _e( 'User Email', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<input id="rcp-email" name="email" type="text" value="<?php echo esc_attr( $member->user_email ); ?>"/>
-					<p class="description"><?php _e( 'The member\'s email address.', 'rcp' ); ?> <a href="<?php echo esc_url( add_query_arg( 'user_id', $member->ID, admin_url( 'user-edit.php' ) ) ); ?>" title="<?php _e( 'View User\'s Profile', 'rcp' ); ?>"><?php _e( 'Edit User Account', 'rcp' ); ?></a></p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-status"><?php _e( 'Status', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<select name="status" id="rcp-status">
-						<?php
-							$statuses = array( 'active', 'expired', 'cancelled', 'pending', 'free' );
-							foreach( $statuses as $status ) :
-								echo '<option value="' . esc_attr( $status ) .  '"' . selected( $status, rcp_get_status( $member->ID ), false ) . '>' . ucwords( $status ) . '</option>';
-							endforeach;
-						?>
-					</select>
-					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'An Active status is required to access paid content. Members with a status of Cancelled may continue to access paid content until the expiration date on their account is reached.', 'rcp' ); ?>"></span>
-					<?php if ( $member->is_pending_verification() ) : ?>
-						<p class="description"><?php printf( __( '(Pending email verification. <a href="%s">Click to manually verify email.</a>)', 'rcp' ), esc_url( wp_nonce_url( add_query_arg( array( 'rcp-action' => 'verify_email', 'member_id' => $member->ID ), add_query_arg( 'edit_member', $member->ID, admin_url( 'admin.php?page=rcp-members' ) ) ), 'rcp-manually-verify-email-nonce' ) ) ); ?></p>
+<div id="rcp-item-wrapper" class="rcp-item-has-tabs">
+	<div id="rcp-item-tab-wrapper" class="rcp-member-tab-wrapper-list">
+		<ul id="rcp-item-tab-wrapper-list" class="member-tab-wrapper-list">
+			<?php foreach ( $member_tabs as $key => $tab ) :
+				$active = ( $key === $view ) ? true : false;
+				$class  = $active ? 'active' : 'inactive';
+				?>
+
+				<li class="<?php echo sanitize_html_class( $class ); ?>">
+
+					<?php if ( ! $active ) : ?>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=rcp-members&edit_member=' . urlencode( $member_id ) . '&view=' . urlencode( $key ) ) ); ?>" aria-label="<?php echo esc_attr( $tab['title'] ); ?>">
 					<?php endif; ?>
-					<p class="description"><?php _e( 'The status of this user\'s subscription', 'rcp' ); ?></p>
-					<p id="rcp-revoke-access-wrap">
-						<input type="checkbox" id="rcp-revoke-access" name="rcp-revoke-access" value="1">
-						<label for="rcp-revoke-access"><?php _e( 'Revoke access now', 'rcp' ); ?></label>
-						<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php esc_attr_e( 'If not enabled, the member will retain access until the end of their current term. If checked, access will be revoked immediately.', 'rcp' ); ?>"></span>
-					</p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-level"><?php _e( 'Subscription Level', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<select name="level" id="rcp-level">
-						<?php
-							foreach( rcp_get_subscription_levels( 'all' ) as $key => $level ) :
-								echo '<option value="' . esc_attr( absint( $level->id ) ) . '"' . selected( $level->id, $subscription_level_id, false ) . '>' . esc_html( $level->name ) . '</option>';
-							endforeach;
-						?>
-					</select>
-					<p class="description"><?php _e( 'Choose the subscription level for this user', 'rcp' ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-key"><?php _e( 'Subscription Key', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<input id="rcp-key" type="text" value="<?php echo esc_attr( $member->get_subscription_key() ); ?>" disabled="disabled"/>
-					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'This key is used for reference purposes and may be shown on payment and subscription records in your merchant accounts.', 'rcp' ); ?>"></span>
-					<p class="description"><?php _e( 'The member\'s subscription key. This cannot be changed.', 'rcp' ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-expiration"><?php _e( 'Expiration date', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<?php
-					if( ! empty( $expiration_date ) && 'none' != $expiration_date ) {
-						$expiration_date = date( 'Y-m-d', strtotime( $expiration_date, current_time( 'timestamp' ) ) );
-					}
-					?>
-					<input name="expiration" id="rcp-expiration" type="text" class="rcp-datepicker" value="<?php echo esc_attr( $expiration_date ); ?>"/>
-					<label for="rcp-unlimited">
-						<input name="unlimited" id="rcp-unlimited" type="checkbox"<?php checked( $expiration_date, 'none' ); ?>/>
-						<span class="description"><?php _e( 'Never expires?', 'rcp' ); ?></span>
-					</label>
-					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'This is the date the member will lose access to content if their membership is not renewed.', 'rcp' ); ?>"></span>
-					<p class="description"><?php _e( 'Enter the expiration date for this user in the format of yyyy-mm-dd', 'rcp' ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-payment-profile-id"><?php _e( 'Payment Profile ID', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<input name="payment-profile-id" id="rcp-payment-profile-id" type="text" value="<?php echo esc_attr( $member->get_payment_profile_id() ); ?>"/>
-					<p class="description"><?php _e( 'This is the customer\'s payment profile ID in the payment processor', 'rcp' ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<?php _e( 'Recurring', 'rcp' ); ?>
-				</th>
-				<td>
-					<label for="rcp-recurring">
-						<input name="recurring" id="rcp-recurring" type="checkbox" value="1" <?php checked( 1, rcp_is_recurring( $member->ID ) ); ?>/>
-						<?php _e( 'Is this user\'s subscription recurring?', 'rcp' ); ?>
-					</label>
-					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'If checked, this member has a recurring subscription. Only customers with recurring memberships will be given the option to cancel their membership on their subscription details page.', 'rcp' ); ?>"></span>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<?php _e( 'Trialing', 'rcp' ); ?>
-				</th>
-				<td>
-					<label for="rcp-trialing">
-						<input name="trialing" id="rcp-trialing" type="checkbox" value="1" <?php checked( 1, rcp_is_trialing( $member->ID ) ); ?>/>
-						<?php _e( 'Does this user have a trial membership?', 'rcp' ); ?>
-					</label>
-					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'Members are limited to a single trial membership. Once a trial has been used, the member may not sign up for another trial membership.', 'rcp' ); ?>"></span>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<?php _e( 'Sign Up Method', 'rcp' ); ?>
-				</th>
-				<td>
-					<?php $method = get_user_meta( $member->ID, 'rcp_signup_method', true ) ? get_user_meta( $member->ID, 'rcp_signup_method', true ) : 'live';?>
-					<select name="signup_method" id="rcp-signup-method">
-						<option value="live" <?php selected( $method, 'live' ); ?>><?php _e( 'User Signup', 'rcp' ); ?>
-						<option value="manual" <?php selected( $method, 'manual' ); ?>><?php _e( 'Added by admin manually', 'rcp' ); ?>
-					</select>
-					<p class="description"><?php _e( 'Was this a real signup or a membership given to the user', 'rcp' ); ?></p>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row" valign="top">
-					<label for="rcp-notes"><?php _e( 'User Notes', 'rcp' ); ?></label>
-				</th>
-				<td>
-					<textarea name="notes" id="rcp-notes" class="large-text" rows="10" cols="50"><?php echo esc_textarea( get_user_meta( $member->ID, 'rcp_notes', true ) ); ?></textarea>
-					<p class="description"><?php _e( 'Use this area to record notes about this user if needed', 'rcp' ); ?></p>
-				</td>
-			</tr>
-			<tr class="form-field">
-				<th scope="row" valign="top">
-					<?php _e( 'Discount codes used', 'rcp' ); ?>
-				</th>
-				<td>
-					<?php
-					$discounts = get_user_meta( $member->ID, 'rcp_user_discounts', true );
-					if( $discounts ) {
-						foreach( $discounts as $discount ) {
-							if( is_string( $discount ) ) {
-								echo $discount . '<br/>';
-							}
-						}
-					} else {
-						_e( 'None', 'rcp' );
-					}
-					?>
-				</td>
-			</tr>
-			<?php do_action( 'rcp_edit_member_after', $member->ID ); ?>
-		</tbody>
-	</table>
 
-	<h4><?php _e( 'Payments', 'rcp' ); ?></h4>
-	<?php echo rcp_print_user_payments_formatted( $member->ID ); ?>
+					<span class="rcp-item-tab-label-wrap"<?php echo $active ? ' aria-label="' . esc_attr( $tab['title'] ) . '"' : ''; ?>>
+						<span class="dashicons <?php echo sanitize_html_class( $tab['dashicon'] ); ?>" aria-hidden="true"></span>
+						<span class="rcp-item-tab-label"><?php echo esc_html( $tab['title'] ); ?></span>
+					</span>
 
-	<p class="submit">
-		<input type="hidden" name="rcp-action" value="edit-member"/>
-		<input type="hidden" name="user" value="<?php echo absint( urldecode( $_GET['edit_member'] ) ); ?>"/>
-		<input type="submit" value="<?php _e( 'Update User Subscription', 'rcp' ); ?>" class="button-primary"/>
-	</p>
-	<?php wp_nonce_field( 'rcp_edit_member_nonce', 'rcp_edit_member_nonce' ); ?>
-</form>
+					<?php if ( ! $active ) : ?>
+						</a>
+					<?php endif; ?>
+
+				</li>
+
+			<?php endforeach; ?>
+		</ul>
+	</div>
+
+	<div id="rcp-item-card-wrapper" class="rcp-member-card-wrapper">
+		<?php
+		switch ( $view ) {
+
+			case 'notes' :
+				/**
+				 * Render member notes.
+				 */
+				// @todo
+				break;
+
+			default :
+				/**
+				 * Render member overview.
+				 */
+
+		}
+		?>
+	</div>
+</div>

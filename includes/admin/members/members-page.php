@@ -342,3 +342,26 @@ function rcp_members_page() {
 
 	<?php
 }
+
+/**
+ * Gets an array of tabs used on the "Edit Member" interface.
+ *
+ * @since 3.0
+ * @return array
+ */
+function rcp_member_tabs() {
+
+	$tabs = array(
+		'overview' => array(
+			'dashicon' => 'dashicons-admin-users',
+			'title'    => _x( 'Profile', 'Member Details tab title', 'rcp' )
+		),
+		'notes'   => array(
+			'dashicon' => 'dashicons-admin-comments',
+			'title'    => _x( 'Notes', 'Member Notes tab title', 'rcp' )
+		)
+	);
+
+	return $tabs;
+
+}

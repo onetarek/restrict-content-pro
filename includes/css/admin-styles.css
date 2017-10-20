@@ -431,6 +431,80 @@ table.rcp_payment_details td {
 	padding-top: 10px;
 }
 
+/* "Card" Styles
+-------------------------------------------------------------- */
+
+#rcp-item-wrapper {
+	background: #f5f5f5;
+	border: 1px solid #e5e5e5;
+	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	max-width: 830px;
+}
+
+#rcp-item-wrapper:after {
+	clear: both;
+	content: "";
+	display: block;
+	font-size: 0;
+	height: 0;
+	visibility: hidden;
+}
+
+#rcp-item-tab-wrapper {
+	float: left;
+	width: 18%;
+	z-index: 1;
+}
+
+#rcp-item-tab-wrapper-list {
+	background: #fff;
+	margin: 0;
+}
+
+#rcp-item-tab-wrapper-list li {
+	background-color: #eaeaea;
+	border-bottom: 1px solid #e5e5e5;
+	color: #444;
+	display: block;
+	font-size: 12px;
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+	margin-bottom: 0;
+	word-wrap: break-word;
+}
+
+#rcp-item-tab-wrapper-list li a {
+	display: block;
+	padding: 8px 10px 8px 6px;
+}
+
+#rcp-item-tab-wrapper-list .active {
+	background-color: #fff;
+	display: block;
+	padding: 8px 10px 8px 6px;
+}
+
+#rcp-item-tab-wrapper-list .inactive a,
+#rcp-item-tab-wrapper-list .inactive a:visited {
+	background-color: #f5f5f5;
+	color: #444;
+	text-decoration: none;
+}
+
+#rcp-item-tab-wrapper-list .inactive a:hover {
+	background-color: #fff;
+}
+
+#rcp-item-tab-wrapper-list .dashicons {
+	color: #444;
+	font-size: 16px;
+	height: auto;
+	min-width: 24px;
+}
+
 /* Optimized for 1280px wide (macbooks) and under
 -------------------------------------------------------------- */
 
