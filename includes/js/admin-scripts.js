@@ -97,17 +97,17 @@ jQuery(document).ready(function($) {
 		var url = jQuery.param.fragment();
 
 		//hide all
-		jQuery( '.rcp_options_form #tab_container .tab_content' ).hide();
-		jQuery( '.rcp_options_form #tab_container' ).children(".tab_content").hide();
-		jQuery( '.rcp_options_form .nav-tab-wrapper a' ).removeClass("nav-tab-active");
+		jQuery( '.restrict_page_rcp-settings #tab_container .tab_content' ).hide();
+		jQuery( '.restrict_page_rcp-settings #tab_container' ).children(".tab_content").hide();
+		jQuery( '.restrict_page_rcp-settings .nav-tab-wrapper a' ).removeClass("nav-tab-active");
 
 		//find a href that matches url
 		if (url) {
-			jQuery( '.rcp_options_form  .nav-tab-wrapper a[href="#' + url + '"]' ).addClass( 'nav-tab-active' );
-			jQuery(".rcp_options_form  #tab_container #" + url).addClass("selected").fadeIn();
+			jQuery( '.restrict_page_rcp-settings .nav-tab-wrapper a[href="#' + url + '"]' ).addClass( 'nav-tab-active' );
+			jQuery(".restrict_page_rcp-settings #tab_container #" + url).addClass("selected").fadeIn();
 		} else {
-			jQuery( '.rcp_options_form  h2.nav-tab-wrapper a[href="#general"]' ).addClass( 'nav-tab-active' );
-			jQuery(".rcp_options_form  #tab_container #general").addClass("selected").fadeIn();
+			jQuery( '.restrict_page_rcp-settings  h2.nav-tab-wrapper a[href="#general"]' ).addClass( 'nav-tab-active' );
+			jQuery(".restrict_page_rcp-settings  #tab_container #general").addClass("selected nav-tab-active").fadeIn();
 		}
 	});
 
