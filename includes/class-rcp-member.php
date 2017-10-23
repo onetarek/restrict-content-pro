@@ -1512,7 +1512,7 @@ class RCP_Member extends WP_User {
 			return 0;
 		}
 
-		$exp_date = $this->get_expiration_date();
+		$exp_date = $this->get_expiration_date( false );
 
 		// if this is member does not have an expiration date, calculate it
 		if ( 'none' == $exp_date ) {
