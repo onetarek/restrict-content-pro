@@ -253,6 +253,10 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 						</tbody>
 					</table>
 
+					<?php if ( 20 == count( $payments ) ) : ?>
+						<a href="<?php echo esc_url( admin_url( 'admin.php?page=rcp-payments&user_id=' . urlencode( $member_id ) ) ); ?>"><?php printf( __( 'View all payments for %s', 'rcp' ), $member->first_name . ' ' . $member->last_name ); ?></a>
+					<?php endif; ?>
+
 				</div>
 				<?php
 
