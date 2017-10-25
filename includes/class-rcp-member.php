@@ -1595,4 +1595,32 @@ class RCP_Member extends WP_User {
 		return apply_filters( 'rcp_member_just_upgraded', $upgraded, $this->ID, $this );
 	}
 
+	/**
+	 * Returns the lifetime value of a member
+	 *
+	 * @access public
+	 * @since 3.0
+	 * @return int
+	 */
+	public function get_lifetime_value() {
+
+		$value = 0;
+
+		$payments = new RCP_Payments;
+		$payments = $payments->get_payments( array(
+			'user_id' => $this->ID,
+			'status'  => 'complete',
+			'fields'  => 'amount'
+		) );
+
+		if ( $payments ) {
+			foreach ( $payments as $payment ) {
+				$value += $payment->amount;
+			}
+		}
+
+		return $value;
+
+	}
+
 }

@@ -617,6 +617,18 @@ table.rcp_payment_details td {
 	display: none;
 }
 
+#rcp-item-stats-wrapper {
+	font-size: 14px;
+	line-height: 22px;
+	margin: 0 auto;
+	min-height: 30px;
+	text-align: center;
+}
+
+#rcp-item-stats-wrapper .dashicons {
+	color: #888;
+}
+
 /* Optimized for 1280px wide (macbooks) and under
 -------------------------------------------------------------- */
 

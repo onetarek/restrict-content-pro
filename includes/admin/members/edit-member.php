@@ -161,6 +161,11 @@ if ( 'pending' == $current_status ) {
 					</form>
 
 				</div>
+
+				<div id="rcp-item-stats-wrapper" class="rcp-member-stats-wrapper rcp-member-section">
+					<span class="dashicons dashicons-chart-area"></span>
+					<?php echo rcp_currency_filter( $member->get_lifetime_value() ); ?> <?php _e( 'Lifetime Value', 'rcp' ); ?>
+				</div>
 				<?php
 
 		}
