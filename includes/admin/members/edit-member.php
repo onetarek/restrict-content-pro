@@ -113,7 +113,7 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 
 								<span class="rcp-member-first-name rcp-edit-item">
 									<label for="rcp-member-first-name" class="screen-reader-text"><?php _e( 'First name', 'rcp' ); ?></label>
-									<input type="text" id="rcp-member-first-name" name="first_name" value="<?php echo esc_attr( $member->first_name ); ?>">
+									<input type="text" id="rcp-member-first-name" name="first_name" value="<?php echo esc_attr( $member->first_name ); ?>" placeholder="<?php esc_attr_e( 'First name', 'rcp' ); ?>">
 								</span>
 								<span class="rcp-member-first-name rcp-info-item rcp-editable">
 									<?php echo $member->first_name; ?>
@@ -121,7 +121,7 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 
 								<span class="rcp-member-last-name rcp-edit-item">
 									<label for="rcp-member-last-name" class="screen-reader-text"><?php _e( 'Last name', 'rcp' ); ?></label>
-									<input type="text" id="rcp-member-last-name" name="last_name" value="<?php echo esc_attr( $member->last_name ); ?>">
+									<input type="text" id="rcp-member-last-name" name="last_name" value="<?php echo esc_attr( $member->last_name ); ?>" placeholder="<?php esc_attr_e( 'Last name', 'rcp' ); ?>">
 								</span>
 								<span class="rcp-member-last-name rcp-info-item rcp-editable">
 									<?php echo $member->last_name; ?>
@@ -133,7 +133,7 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 
 								<span class="rcp-member-email rcp-edit-item">
 									<label for="rcp-member-email" class="screen-reader-text"><?php _e( 'Email address', 'rcp' ); ?></label>
-									<input type="text" id="rcp-member-email" name="email" value="<?php echo esc_attr( $member->user_email ); ?>">
+									<input type="text" id="rcp-member-email" name="email" value="<?php echo esc_attr( $member->user_email ); ?>" placeholder="<?php esc_attr_e( 'Email address', 'rcp' ); ?>">
 								</span>
 								<span class="rcp-member-email rcp-info-item rcp-editable">
 									<?php echo $member->user_email; ?>
