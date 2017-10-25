@@ -91,6 +91,65 @@ if ( 'pending' == $current_status ) {
 				/**
 				 * Render member overview.
 				 */
+				?>
+				<div class="rcp-info-wrapper rcp-member-section">
+
+					<form id="rcp-edit-member-info" method="POST">
+
+						<div class="rcp-item-info rcp-member-info">
+
+							<div id="rcp-member-avatar" class="rcp-avatar-wrap left">
+								<?php echo get_avatar( $member->user_email ); ?>
+								<span class="rcp-info-item rcp-member-edit-link"><a href="#" id="rcp-edit-member"><?php _e( 'Edit Member', 'rcp' ); ?></a></span>
+							</div>
+
+							<div class="rcp-member-id right">
+								#<?php echo $member->ID; ?>
+							</div>
+
+							<div class="rcp-member-main-wrapper left">
+
+								<span class="rcp-member-first-name rcp-edit-item">
+									<label for="rcp-member-first-name" class="screen-reader-text"><?php _e( 'First name', 'rcp' ); ?></label>
+									<input type="text" id="rcp-member-first-name" name="rcp_member_info[first_name]" value="<?php echo esc_attr( $member->first_name ); ?>">
+								</span>
+								<span class="rcp-member-first-name rcp-editable">
+									<?php echo $member->first_name; ?>
+								</span>
+
+								<span class="rcp-member-last-name">
+									<label for="rcp-member-last-name" class="screen-reader-text"><?php _e( 'Last name', 'rcp' ); ?></label>
+									<input type="text" id="rcp-member-last-name" name="rcp_member_info[last_name]" value="<?php echo esc_attr( $member->last_name ); ?>">
+								</span>
+								<span class="rcp-member-last-name rcp-editable">
+									<?php echo $member->last_name; ?>
+								</span>
+
+								<span class="rcp-member-email">
+									<label for="rcp-member-email" class="screen-reader-text"><?php _e( 'Email address', 'rcp' ); ?></label>
+									<input type="text" id="rcp-member-email" name="rcp_member_info[email]" value="<?php echo esc_attr( $member->user_email ); ?>">
+								</span>
+								<span class="rcp-member-email rcp-editable">
+									<?php echo $member->user_email; ?>
+								</span>
+
+								<span class="rcp-member-since">
+									<?php _e( 'Member since', 'rcp' ); ?>
+									<?php echo date_i18n( get_option( 'date_format' ), strtotime( $member->get_joined_date() ) ) ?>
+								</span>
+
+								<span class="rcp-member-user-id">
+									<?php _e( 'User ID:', 'rcp' ); ?> <a href="<?php echo esc_url( admin_url( 'user-edit.php?user_id=' . urlencode( $member->ID ) ) ); ?>" title="<?php esc_attr_e( 'Edit user account', 'rcp' ); ?>"><?php echo $member->ID; ?></a>
+								</span>
+
+							</div>
+
+						</div>
+
+					</form>
+
+				</div>
+				<?php
 
 		}
 		?>

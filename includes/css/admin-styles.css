@@ -505,6 +505,87 @@ table.rcp_payment_details td {
 	min-width: 24px;
 }
 
+#rcp-item-card-wrapper .left {
+	float: left;
+}
+
+#rcp-item-card-wrapper .right {
+	float: right;
+}
+
+#rcp-item-card-wrapper input {
+	font-weight: normal;
+}
+
+#rcp-item-card-wrapper {
+	background-color: #fff;
+	border: 1px solid #e5e5e5;
+	display: inline-block;
+	margin-left: -1px;
+	min-height: 200px;
+	width: 700px;
+	z-index: 2;
+}
+
+.rcp-item-has-tabs #rcp-item-card-wrapper {
+	border-width: 0 0 0 1px;
+	width: 82%;
+}
+
+#rcp-item-card-wrapper .rcp-member-section {
+	border-bottom: 1px solid #eee;
+	margin-bottom: 10px;
+	overflow: auto;
+}
+
+#rcp-item-card-wrapper .rcp-member-section table {
+	margin-bottom: 20px;
+}
+
+#rcp-item-card-wrapper > div {
+	padding: 0 20px;
+}
+
+#rcp-item-card-wrapper > div:first-child {
+	padding-top: 20px;
+}
+
+#rcp-item-card-wrapper > div:last-child {
+	border: none;
+	padding-bottom: 20px;
+}
+
+#rcp-item-card-wrapper .rcp-avatar-wrap {
+	padding-right: 10px;
+	text-align: center;
+}
+
+#rcp-item-card-wrapper .rcp-member-id {
+	font-size: 24px;
+	font-weight: 600;
+}
+
+#rcp-item-card-wrapper .rcp-member-main-wrapper input {
+	width: 200px;
+}
+
+#rcp-item-card-wrapper .rcp-member-info {
+	margin-top: 5px;
+	margin-bottom: 10px;
+	min-height: 185px;
+}
+
+#rcp-item-card-wrapper .rcp-info-wrapper {
+	min-height: 125px;
+	overflow: visible;
+}
+
+.rcp-member-info .rcp-member-first-name,
+.rcp-member-info .rcp-member-last-name {
+	font-size: 24px;
+	font-weight: 600;
+}
+
 /* Optimized for 1280px wide (macbooks) and under
 -------------------------------------------------------------- */
 
