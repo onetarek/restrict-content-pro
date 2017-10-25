@@ -173,10 +173,10 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 
 					<h3><?php _e( 'Subscription', 'rcp' ); ?></h3>
 
-					<table id="rcp-member-subscriptions" class="widefat striped">
+					<table id="rcp-member-subscriptions" class="wp-list-table widefat striped">
 						<thead>
 							<tr>
-								<th scope="col"><?php _e( 'Level', 'rcp' ); ?></th>
+								<th scope="col" class="column-primary"><?php _e( 'Level', 'rcp' ); ?></th>
 								<th scope="col"><?php _e( 'Amount', 'rcp' ); ?></th>
 								<th scope="col"><?php _e( 'Status', 'rcp' ); ?></th>
 								<th scope="col"><?php _e( 'Actions', 'rcp' ); ?></th>
@@ -185,19 +185,69 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 						<tbody>
 							<?php if ( ! empty( $subscription_level_id ) ) : ?>
 								<tr>
-									<td>
+									<td class="column-primary" data-colname="<?php esc_attr_e( 'Level', 'rcp' ); ?>">
 										<a href="<?php echo esc_url( admin_url( 'admin.php?page=rcp-member-levels&edit_subscription=' . urlencode( $subscription->id ) ) ); ?>" title="<?php esc_attr_e( 'Edit subscription level', 'rcp' ); ?>"><?php echo esc_html( $subscription->name ); ?></a>
+										<button type="button" class="toggle-row"><span class="screen-reader-text"><?php _e( 'Show more details', 'rcp' ); ?></span></button>
 									</td>
-									<td>
+									<td data-colname="<?php esc_attr_e( 'Amount', 'rcp' ); ?>">
 										<!-- @todo Add period ($x every year) -->
 										<?php echo rcp_currency_filter( $subscription->price ); ?>
 									</td>
-									<td><?php rcp_print_status( $member_id ); ?></td>
-									<td><a href=""><?php _e( 'View Details', 'rcp' ); ?></a></td> <!-- @todo Make this link work. -->
+									<td data-colname="<?php esc_attr_e( 'Status', 'rcp' ); ?>">
+										<?php rcp_print_status( $member_id ); ?>
+									</td>
+									<td data-colname="<?php esc_attr_e( 'Actions', 'rcp' ); ?>">
+										<!-- @todo Make this link work. -->
+										<a href=""><?php _e( 'View Details', 'rcp' ); ?></a>
+									</td>
 								</tr>
 							<?php else : ?>
 								<tr>
 									<td colspan="4"><?php _e( 'No membership found.', 'rcp' ); ?></td>
+								</tr>
+							<?php endif; ?>
+						</tbody>
+					</table>
+
+					<h3><?php _e( 'Recent Payments', 'rcp' ); ?></h3>
+
+					<?php $payments = $member->get_payments(); ?>
+
+					<table id="rcp-member-subscriptions" class="wp-list-table widefat striped">
+						<thead>
+							<tr>
+								<th scope="col" class="column-primary"><?php _e( 'ID', 'rcp' ); ?></th>
+								<th scope="col"><?php _e( 'Amount', 'rcp' ); ?></th>
+								<th scope="col"><?php _e( 'Date', 'rcp' ); ?></th>
+								<th scope="col"><?php _e( 'Status', 'rcp' ); ?></th>
+								<th scope="col"><?php _e( 'Actions', 'rcp' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php if ( ! empty( $payments ) ) : ?>
+								<?php foreach ( $payments as $payment ) : ?>
+									<tr>
+										<td class="column-primary" data-colname="<?php esc_attr_e( 'ID', 'rcp' ); ?>">
+											<?php echo $payment->id; ?>
+											<button type="button" class="toggle-row"><span class="screen-reader-text"><?php _e( 'Show more details', 'rcp' ); ?></span></button>
+										</td>
+										<td data-colname="<?php esc_attr_e( 'Amount', 'rcp' ); ?>">
+											<?php echo esc_html( rcp_currency_filter( $payment->amount ) ); ?>
+										</td>
+										<td data-colname="<?php esc_attr_e( 'Date', 'rcp' ); ?>" title="<?php echo esc_attr( $payment->date ); ?>">
+											<?php echo date_i18n( get_option( 'date_format' ), strtotime( $payment->date ) ); ?>
+										</td>
+										<td data-colname="<?php esc_attr_e( 'Status', 'rcp' ); ?>">
+											<?php echo rcp_get_payment_status_label( $payment ); ?>
+										</td>
+										<td data-colname="<?php esc_attr_e( 'Actions', 'rcp' ); ?>">
+											<a href="<?php echo esc_url( admin_url( 'admin.php?page=rcp-payments&payment_id=' . urlencode( $payment->id ) . '6&view=edit-payment' ) ); ?>"><?php _e( 'View Details', 'rcp' ); ?></a>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							<?php else : ?>
+								<tr>
+									<td colspan="5"><?php _e( 'No payments found.', 'rcp' ); ?></td>
 								</tr>
 							<?php endif; ?>
 						</tbody>

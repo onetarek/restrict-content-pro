@@ -635,6 +635,7 @@ table.rcp_payment_details td {
 }
 
 #rcp-item-tables-wrapper th {
+	font-size: inherit;
 	text-align: center;
 }
 
