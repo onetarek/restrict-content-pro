@@ -580,10 +580,41 @@ table.rcp_payment_details td {
 	overflow: visible;
 }
 
+#rcp-item-card-wrapper a.delete {
+	color: #ff0000;
+	margin-right: 5px;
+	text-decoration: none;
+}
+
 .rcp-member-info .rcp-member-first-name,
 .rcp-member-info .rcp-member-last-name {
 	font-size: 24px;
 	font-weight: 600;
+}
+
+#rcp-member-edit-actions {
+	line-height: 28px;
+	margin-bottom: 20px;
+	text-align: center;
+}
+
+#rcp-member-edit-actions .button-secondary {
+	margin-right: 10px;
+}
+
+#rcp-item-card-wrapper .rcp-info-item {
+	display: block;
+	line-height: 16px;
+	padding-bottom: 5px;
+}
+
+#rcp-item-card-wrapper .rcp-member-first-name,
+#rcp-item-card-wrapper .rcp-member-last-name {
+	display: inline-block;
+}
+
+#rcp-item-card-wrapper .rcp-edit-item {
+	display: none;
 }
 
 /* Optimized for 1280px wide (macbooks) and under

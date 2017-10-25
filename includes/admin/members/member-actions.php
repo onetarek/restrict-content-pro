@@ -31,6 +31,8 @@ function rcp_process_edit_member() {
 	$levels        = new RCP_Levels();
 	$user_id       = absint( $_POST['user'] );
 	$member        = new RCP_Member( $user_id );
+	$first_name    = sanitize_text_field( $_POST['first_name'] );
+	$last_name     = sanitize_text_field( $_POST['last_name'] );
 	$email         = sanitize_text_field( $_POST['email'] );
 	$status        = sanitize_text_field( $_POST['status'] );
 	$level_id      = absint( $_POST['level'] );
@@ -112,9 +114,23 @@ function rcp_process_edit_member() {
 		$member->set_payment_profile_id( $_POST['payment-profile-id'] );
 	}
 
+	// @todo Save changes to first and last name.
+	$updated_user_data = array();
+
+	if ( $first_name != $member->first_name ) {
+		$updated_user_data['first_name'] = $first_name;
+	}
+	if ( $last_name != $member->last_name ) {
+		$updated_user_data['last_name'] = $last_name;
+	}
 	if ( $email != $member->user_email ) {
 		rcp_log( sprintf( 'Changing email for member #%d.', $user_id ) );
-		wp_update_user( array( 'ID' => $user_id, 'user_email' => $email ) );
+		$updated_user_data['user_email'] = $email;
+	}
+	if ( ! empty( $updated_user_data ) ) {
+		$updated_user_data['ID'] = $user_id;
+
+		wp_update_user( $updated_user_data );
 	}
 
 	do_action( 'rcp_edit_member', $user_id );

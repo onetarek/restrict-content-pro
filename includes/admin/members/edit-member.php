@@ -37,7 +37,7 @@ if ( 'pending' == $current_status ) {
 }
 ?>
 <h1>
-	<?php _e( 'Edit Member:', 'rcp' ); echo ' ' . $member->display_name; ?>
+	<?php _e( 'Member Details', 'rcp' ); ?>
 </h1>
 
 <?php if( ! $member->exists() ) : ?>
@@ -111,31 +111,35 @@ if ( 'pending' == $current_status ) {
 
 								<span class="rcp-member-first-name rcp-edit-item">
 									<label for="rcp-member-first-name" class="screen-reader-text"><?php _e( 'First name', 'rcp' ); ?></label>
-									<input type="text" id="rcp-member-first-name" name="rcp_member_info[first_name]" value="<?php echo esc_attr( $member->first_name ); ?>">
+									<input type="text" id="rcp-member-first-name" name="first_name" value="<?php echo esc_attr( $member->first_name ); ?>">
 								</span>
-								<span class="rcp-member-first-name rcp-editable">
+								<span class="rcp-member-first-name rcp-info-item rcp-editable">
 									<?php echo $member->first_name; ?>
 								</span>
 
-								<span class="rcp-member-last-name">
+								<span class="rcp-member-last-name rcp-edit-item">
 									<label for="rcp-member-last-name" class="screen-reader-text"><?php _e( 'Last name', 'rcp' ); ?></label>
-									<input type="text" id="rcp-member-last-name" name="rcp_member_info[last_name]" value="<?php echo esc_attr( $member->last_name ); ?>">
+									<input type="text" id="rcp-member-last-name" name="last_name" value="<?php echo esc_attr( $member->last_name ); ?>">
 								</span>
-								<span class="rcp-member-last-name rcp-editable">
+								<span class="rcp-member-last-name rcp-info-item rcp-editable">
 									<?php echo $member->last_name; ?>
 								</span>
 
-								<span class="rcp-member-email">
-									<label for="rcp-member-email" class="screen-reader-text"><?php _e( 'Email address', 'rcp' ); ?></label>
-									<input type="text" id="rcp-member-email" name="rcp_member_info[email]" value="<?php echo esc_attr( $member->user_email ); ?>">
+								<span class="rcp-member-login rcp-info-item">
+									<?php echo $member->user_login; ?>
 								</span>
-								<span class="rcp-member-email rcp-editable">
+
+								<span class="rcp-member-email rcp-edit-item">
+									<label for="rcp-member-email" class="screen-reader-text"><?php _e( 'Email address', 'rcp' ); ?></label>
+									<input type="text" id="rcp-member-email" name="email" value="<?php echo esc_attr( $member->user_email ); ?>">
+								</span>
+								<span class="rcp-member-email rcp-info-item rcp-editable">
 									<?php echo $member->user_email; ?>
 								</span>
 
-								<span class="rcp-member-since">
-									<?php _e( 'Member since', 'rcp' ); ?>
-									<?php echo date_i18n( get_option( 'date_format' ), strtotime( $member->get_joined_date() ) ) ?>
+								<span class="rcp-member-since rcp-info-item">
+									<?php _e( 'Member since:', 'rcp' ); ?>
+									<?php echo date_i18n( get_option( 'date_format' ), strtotime( $member->get_joined_date() ) ); ?>
 								</span>
 
 								<span class="rcp-member-user-id">
@@ -145,6 +149,14 @@ if ( 'pending' == $current_status ) {
 							</div>
 
 						</div>
+
+						<span id="rcp-member-edit-actions" class="rcp-edit-item">
+							<input type="hidden" name="rcp-action" value="edit-member"/>
+							<input type="hidden" name="user" value="<?php echo esc_attr( $member->ID ); ?>"/>
+							<?php wp_nonce_field( 'rcp_edit_member_nonce', 'rcp_edit_member_nonce' ); ?>
+							<input type="submit" id="rcp-edit-member-save" class="button-secondary" value="<?php esc_attr_e( 'Update Member', 'rcp' ); ?>" />
+							<a href="#" id="rcp-edit-member-cancel" class="delete"><?php _e( 'Cancel', 'rcp' ); ?></a>
+						</span>
 
 					</form>
 

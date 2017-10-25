@@ -352,4 +352,41 @@ jQuery(document).ready(function($) {
 		}
 	});
 
+	/**
+	 * Member management screen JS
+	 */
+	var RCP_Member = {
+
+		vars: {
+			member_card_wrap_editable: $('.rcp-member-card-wrapper .rcp-editable'),
+			member_card_wrap_edit_item: $('.rcp-member-card-wrapper .rcp-edit-item'),
+			user_id: $('input[name="user"]')
+		},
+
+		init: function () {
+			this.edit_member();
+			this.cancel_edit();
+		},
+
+		edit_member: function () {
+			$( document.body ).on( 'click', '#rcp-edit-member', function( e ) {
+				e.preventDefault();
+
+				RCP_Member.vars.member_card_wrap_editable.hide();
+				RCP_Member.vars.member_card_wrap_edit_item.fadeIn().css( 'display', 'block' );
+			})
+		},
+
+		cancel_edit: function () {
+			$( document.body ).on( 'click', '#rcp-edit-member-cancel', function( e ) {
+				e.preventDefault();
+
+				RCP_Member.vars.member_card_wrap_edit_item.hide();
+				RCP_Member.vars.member_card_wrap_editable.show();
+			});
+		}
+
+	};
+	RCP_Member.init();
+
 });
