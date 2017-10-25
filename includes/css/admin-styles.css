@@ -629,6 +629,15 @@ table.rcp_payment_details td {
 	color: #888;
 }
 
+#rcp-item-tables-wrapper table {
+	text-align: center;
+	width: 100%;
+}
+
+#rcp-item-tables-wrapper th {
+	text-align: center;
+}
+
 /* Optimized for 1280px wide (macbooks) and under
 -------------------------------------------------------------- */
 

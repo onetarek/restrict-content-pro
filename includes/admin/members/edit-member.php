@@ -35,6 +35,8 @@ if ( 'pending' == $current_status ) {
 		$expiration_date = $member->calculate_expiration( true );
 	}
 }
+
+$subscription = rcp_get_subscription_details( $subscription_level_id );
 ?>
 <h1>
 	<?php _e( 'Member Details', 'rcp' ); ?>
@@ -165,6 +167,42 @@ if ( 'pending' == $current_status ) {
 				<div id="rcp-item-stats-wrapper" class="rcp-member-stats-wrapper rcp-member-section">
 					<span class="dashicons dashicons-chart-area"></span>
 					<?php echo rcp_currency_filter( $member->get_lifetime_value() ); ?> <?php _e( 'Lifetime Value', 'rcp' ); ?>
+				</div>
+
+				<div id="rcp-item-tables-wrapper" class="rcp-member-tables-wrapper rcp-member-section">
+
+					<h3><?php _e( 'Subscription', 'rcp' ); ?></h3>
+
+					<table id="rcp-member-subscriptions" class="widefat striped">
+						<thead>
+							<tr>
+								<th scope="col"><?php _e( 'Level', 'rcp' ); ?></th>
+								<th scope="col"><?php _e( 'Amount', 'rcp' ); ?></th>
+								<th scope="col"><?php _e( 'Status', 'rcp' ); ?></th>
+								<th scope="col"><?php _e( 'Actions', 'rcp' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php if ( ! empty( $subscription_level_id ) ) : ?>
+								<tr>
+									<td>
+										<a href="<?php echo esc_url( admin_url( 'admin.php?page=rcp-member-levels&edit_subscription=' . urlencode( $subscription->id ) ) ); ?>" title="<?php esc_attr_e( 'Edit subscription level', 'rcp' ); ?>"><?php echo esc_html( $subscription->name ); ?></a>
+									</td>
+									<td>
+										<!-- @todo Add period ($x every year) -->
+										<?php echo rcp_currency_filter( $subscription->price ); ?>
+									</td>
+									<td><?php rcp_print_status( $member_id ); ?></td>
+									<td><a href=""><?php _e( 'View Details', 'rcp' ); ?></a></td> <!-- @todo Make this link work. -->
+								</tr>
+							<?php else : ?>
+								<tr>
+									<td colspan="4"><?php _e( 'No membership found.', 'rcp' ); ?></td>
+								</tr>
+							<?php endif; ?>
+						</tbody>
+					</table>
+
 				</div>
 				<?php
 
