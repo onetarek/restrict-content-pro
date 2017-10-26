@@ -93,75 +93,70 @@ function rcp_get_paid_posts() {
 function rcp_currency_filter( $price ) {
 	global $rcp_options;
 
-	$currency = rcp_get_currency();
-	$position = isset( $rcp_options['currency_position'] ) ? $rcp_options['currency_position'] : 'before';
+	$formatted_price = ! empty( $price ) ? rcp_format_amount( $price ) : $price; // Add decimals and format thousands separator.
+	$currency        = rcp_get_currency();
+	$position        = isset( $rcp_options['currency_position'] ) ? $rcp_options['currency_position'] : 'before';
+
 	if ( $position == 'before' ) :
-		switch ( $currency ) :
-			case "USD" : $formatted = '&#36;' . $price; break;
-			case "EUR" : $formatted = '&#8364;' . $price; break;
-			case "GBP" : $formatted = '&#163;' . $price; break;
-			case "AUD" : $formatted = '&#36;' . $price; break;
-			case "BRL" : $formatted = '&#82;&#36;' . $price; break;
-			case "CAD" : $formatted = '&#36;' . $price; break;
-			case "CHF" : $formatted = '&#67;&#72;&#70;' . $price; break;
-			case "CZK" : $formatted = '&#75;&#269;' . $price; break;
-			case "DKK" : $formatted = '&#107;&#114;' . $price; break;
-			case "HKD" : $formatted = '&#36;' . $price; break;
-			case "HUF" : $formatted = '&#70;&#116;' . $price; break;
-			case "ILS" : $formatted = '&#8362;' . $price; break;
-			case "IRR" : $formatted = '&#65020;' . $price; break;
-			case "JPY" : $formatted = '&#165;' . $price; break;
-			case "MXN" : $formatted = '&#36;' . $price; break;
-			case "MYR" : $formatted = '&#82;&#77;' . $price; break;
-			case "NOK" : $formatted = '&#107;&#114;' . $price; break;
-			case "NZD" : $formatted = '&#36;' . $price; break;
-			case "PHP" : $formatted = '&#8369;' . $price; break;
-			case "PLN" : $formatted = '&#122;&#322;' . $price; break;
-			case "RUB" : $formatted = '&#1088;&#1091;&#1073;' . $price; break;
-			case "SEK" : $formatted = '&#107;&#114;' . $price; break;
-			case "SGD" : $formatted = '&#36;' . $price; break;
-			case "THB" : $formatted = '&#3647;' . $price; break;
-			case "TRY" : $formatted = '&#8356;' . $price; break;
-			case "TWD" : $formatted = '&#78;&#84;&#36;' . $price; break;
-			default :
-				$formatted = $currency . ' ' . $price;
-				break;
-		endswitch;
+		$formatted = rcp_get_currency_symbol( $currency ) . $formatted_price;
 		return apply_filters( 'rcp_' . strtolower( $currency ) . '_currency_filter_before', $formatted, $currency, $price );
 	else :
-		switch ( $currency ) :
-			case "USD" : $formatted = $price . '&#36;'; break;
-			case "EUR" : $formatted = $price . '&#8364;'; break;
-			case "GBP" : $formatted = $price . '&#163;'; break;
-			case "AUD" : $formatted = $price . '&#36;'; break;
-			case "BRL" : $formatted = $price . '&#82;&#36;'; break;
-			case "CAD" : $formatted = $price . '&#36;'; break;
-			case "CHF" : $formatted = $price . '&#67;&#72;&#70;'; break;
-			case "CZK" : $formatted = $price . '&#75;&#269;'; break;
-			case "DKK" : $formatted = $price . '&#107;&#114;'; break;
-			case "HKD" : $formatted = $price . '&#36;'; break;
-			case "HUF" : $formatted = $price . '&#70;&#116;'; break;
-			case "ILS" : $formatted = $price . '&#8362;'; break;
-			case "IRR" : $formatted = $price . '&#65020;'; break;
-			case "JPY" : $formatted = $price . '&#165;'; break;
-			case "MXN" : $formatted = $price . '&#36;'; break;
-			case "MYR" : $formatted = $price . '&#82;&#77;'; break;
-			case "NOK" : $formatted = $price . '&#107;&#114;'; break;
-			case "NZD" : $formatted = $price . '&#36;'; break;
-			case "PHP" : $formatted = $price . '&#8369;'; break;
-			case "PLN" : $formatted = $price . '&#122;&#322;'; break;
-			case "RUB" : $formatted = $price . '&#1088;&#1091;&#1073;'; break;
-			case "SEK" : $formatted = $price . '&#107;&#114;'; break;
-			case "SGD" : $formatted = $price . '&#36;'; break;
-			case "THB" : $formatted = $price . '&#3647;'; break;
-			case "TRY" : $formatted = $price . '&#8356;'; break;
-			case "TWD" : $formatted = $price . '&#78;&#84;&#36;'; break;
-			default :
-				$formatted = $price . ' ' . $currency;
-				break;
-		endswitch;
+		$formatted = $formatted_price . rcp_get_currency_symbol( $currency );
 		return apply_filters( 'rcp_' . strtolower( $currency ) . '_currency_filter_after', $formatted, $currency, $price );
 	endif;
+}
+
+/**
+ * Return the symbol for a specific currency
+ *
+ * @param bool $currency
+ *
+ * @since 2.9.5
+ * @return string
+ */
+function rcp_get_currency_symbol( $currency = false ) {
+
+	if ( empty( $currency ) ) {
+		$currency = rcp_get_currency();
+	}
+
+	$supported_currencies = rcp_get_currencies();
+	if ( ! array_key_exists( $currency, $supported_currencies ) ) {
+		$currency = rcp_get_currency();
+	}
+
+	switch( $currency ) {
+		case "USD" : $symbol = '&#36;'; break;
+		case "EUR" : $symbol = '&#8364;'; break;
+		case "GBP" : $symbol = '&#163;'; break;
+		case "AUD" : $symbol = '&#36;'; break;
+		case "BRL" : $symbol = '&#82;&#36;'; break;
+		case "CAD" : $symbol = '&#36;'; break;
+		case "CHF" : $symbol = '&#67;&#72;&#70;'; break;
+		case "CZK" : $symbol = '&#75;&#269;'; break;
+		case "DKK" : $symbol = '&#107;&#114;'; break;
+		case "HKD" : $symbol = '&#36;'; break;
+		case "HUF" : $symbol = '&#70;&#116;'; break;
+		case "ILS" : $symbol = '&#8362;'; break;
+		case "IRR" : $symbol = '&#65020;'; break;
+		case "JPY" : $symbol = '&#165;'; break;
+		case "MXN" : $symbol = '&#36;'; break;
+		case "MYR" : $symbol = '&#82;&#77;'; break;
+		case "NOK" : $symbol = '&#107;&#114;'; break;
+		case "NZD" : $symbol = '&#36;'; break;
+		case "PHP" : $symbol = '&#8369;'; break;
+		case "PLN" : $symbol = '&#122;&#322;'; break;
+		case "RUB" : $symbol = '&#1088;&#1091;&#1073;'; break;
+		case "SEK" : $symbol = '&#107;&#114;'; break;
+		case "SGD" : $symbol = '&#36;'; break;
+		case "THB" : $symbol = '&#3647;'; break;
+		case "TRY" : $symbol = '&#8356;'; break;
+		case "TWD" : $symbol = '&#78;&#84;&#36;'; break;
+		default: $symbol = '';
+	}
+
+	return apply_filters( 'rcp_' . strtolower( $currency ) . '_symbol', $symbol, $currency );
+
 }
 
 
@@ -347,7 +342,7 @@ function rcp_no_account_sharing() {
  * Stores cookie value in a transient when a user logs in.
  *
  * Transient IDs are based on the user ID so that we can track the number of
- * users logged into the same account.
+ * users logged into the same account. Admins are excluded from this.
  *
  * @param string $logged_in_cookie The logged-in cookie.
  * @param int    $expire           The time the login grace period expires as a UNIX timestamp.
@@ -367,7 +362,7 @@ function rcp_set_user_logged_in_status( $logged_in_cookie, $expire, $expiration,
 		return;
 	}
 
-	if ( ! empty( $user_id ) ) :
+	if ( ! empty( $user_id ) && ! user_can( $user_id, 'manage_options' ) ) :
 
 		$data = get_transient( 'rcp_user_logged_in_' . $user_id );
 
@@ -397,6 +392,11 @@ function rcp_clear_auth_cookie() {
 	}
 
 	$user_id = get_current_user_id();
+
+	// Admins are excluded from this so we don't need to check them.
+	if ( user_can( $user_id, 'manage_options' ) ) {
+		return;
+	}
 
 	$already_logged_in = get_transient( 'rcp_user_logged_in_' . $user_id );
 
@@ -432,7 +432,8 @@ add_action( 'clear_auth_cookie', 'rcp_clear_auth_cookie' );
  *
  * The first cookie in the transient is the oldest, so it is the one that gets logged out.
  *
- * We only log a user out if there are more than 2 users logged into the same account.
+ * We only log a user out if there are more than 2 users logged into the same account and
+ * if it is not an administrator account.
  *
  * @access private
  * @since  1.5
@@ -446,6 +447,11 @@ function rcp_can_user_be_logged_in() {
 		}
 
 		$user_id = get_current_user_id();
+
+		// Admins are excluded from this.
+		if ( user_can( $user_id, 'manage_options' ) ) {
+			return;
+		}
 
 		$already_logged_in = get_transient( 'rcp_user_logged_in_' . $user_id );
 
@@ -959,6 +965,47 @@ function rcp_currency_decimal_filter( $decimals = 2 ) {
 	}
 
 	return apply_filters( 'rcp_currency_decimal_filter', $decimals, $currency );
+}
+
+/**
+ * Formats the payment amount for display to enforce decimal places and thousands separator.
+ *
+ * @param float|int $amount
+ *
+ * @since 2.9.5
+ * @return float
+ */
+function rcp_format_amount( $amount ) {
+
+	global $wp_locale;
+
+	$thousands_sep = ! empty( $wp_locale->number_format['thousands_sep'] ) ? $wp_locale->number_format['thousands_sep'] : ',';
+	$decimal_sep   = ! empty( $wp_locale->number_format['decimal_point'] ) ? $wp_locale->number_format['decimal_point'] : '.';
+
+	// Format the amount
+	if ( $decimal_sep === ',' && false !== ( $sep_found = strpos( $amount, $decimal_sep ) ) ) {
+		$whole = substr( $amount, 0, $sep_found );
+		$part = substr( $amount, $sep_found + 1, ( strlen( $amount ) - 1 ) );
+		$amount = $whole . '.' . $part;
+	}
+
+	// Strip , from the amount (if set as the thousands separator)
+	if ( $thousands_sep === ',' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
+		$amount = str_replace( ',', '', $amount );
+	}
+
+	// Strip ' ' from the amount (if set as the thousands separator)
+	if ( $thousands_sep === ' ' && false !== ( $found = strpos( $amount, $thousands_sep ) ) ) {
+		$amount = str_replace( ' ', '', $amount );
+	}
+
+	if ( empty( $amount ) ) {
+		$amount = 0;
+	}
+
+	$new_amount = number_format_i18n( $amount, rcp_currency_decimal_filter() );
+
+	return $new_amount;
 }
 
 /**

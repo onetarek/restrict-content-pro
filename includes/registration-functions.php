@@ -18,8 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Register a new user
  *
- * @uses rcp_add_user_to_subscription()
- *
  * @access public
  * @since  1.0
  * @return void
@@ -34,7 +32,7 @@ function rcp_process_registration() {
 	global $rcp_options, $rcp_levels_db;
 
 	$subscription_id     = rcp_get_registration()->get_subscription();
-	$discount            = isset( $_POST['rcp_discount'] ) ? sanitize_text_field( $_POST['rcp_discount'] ) : '';
+	$discount            = isset( $_POST['rcp_discount'] ) ? sanitize_text_field( strtolower( $_POST['rcp_discount'] ) ) : '';
 	$price               = number_format( (float) $rcp_levels_db->get_level_field( $subscription_id, 'price' ), 2 );
 	$price               = str_replace( ',', '', $price );
 	$subscription        = $rcp_levels_db->get_level( $subscription_id );
@@ -541,7 +539,7 @@ function rcp_get_auto_renew_behavior() {
  */
 function rcp_remove_new_subscription_flag( $status, $user_id ) {
 
-	if( 'active' !== $status ) {
+	if ( ! in_array( $status, array( 'active', 'free' ) ) ) {
 		return;
 	}
 
@@ -699,7 +697,6 @@ function rcp_registration_total( $echo = true ) {
 	}
 
 	if ( 0 < $total ) {
-		$total = number_format( $total, rcp_currency_decimal_filter() );
 		$total = rcp_currency_filter( $total );
 	} else {
 		$total = __( 'free', 'rcp' );
@@ -756,7 +753,6 @@ function rcp_registration_recurring_total( $echo = true ) {
 	}
 
 	if ( 0 < $total ) {
-		$total = number_format( $total, rcp_currency_decimal_filter() );
 		$total = rcp_currency_filter( $total );
 		$subscription = rcp_get_subscription_details( rcp_get_registration()->get_subscription() );
 
@@ -914,7 +910,23 @@ add_action( 'rcp_registration_init', 'rcp_add_prorate_fee' );
  * @return void
  */
 function rcp_add_prorate_message() {
-	if ( ! $amount = rcp_get_member_prorate_credit() ) {
+	$upgrade_paths = rcp_get_upgrade_paths( get_current_user_id() );
+	$has_upgrade   = false;
+
+	/*
+	 * The proration message should only be shown if the user has at least one upgrade
+	 * option available where the price is greater than $0.
+	 */
+	if ( ! empty( $upgrade_paths ) ) {
+		foreach ( $upgrade_paths  as $subscription_level ) {
+			if ( $subscription_level->id != rcp_get_subscription_id() && ( $subscription_level->price > 0 || $subscription_level->fee > 0 ) ) {
+				$has_upgrade = true;
+				break;
+			}
+		}
+	}
+
+	if ( ( ! $amount = rcp_get_member_prorate_credit() ) || ( ! $has_upgrade ) ) {
 		return;
 	}
 
@@ -1197,7 +1209,7 @@ function rcp_add_user_to_subscription( $user_id, $args = array() ) {
 	$member->remove_role( $old_role );
 
 	// Set the user's new role
-	$role = ! empty( $subscription_level->role ) ? $subscription_level->role : 'subscriber';
+	$role = ! empty( $subscription_level->role ) ? $subscription_level->role : get_option( 'default_role', 'subscriber' );
 	$member->add_role( apply_filters( 'rcp_default_user_level', $role, $subscription_level->id ) );
 
 	/*

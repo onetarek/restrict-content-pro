@@ -843,7 +843,7 @@ class RCP_Payments {
 		}
 
 		// Exclude refunded payments
-		$where .= " AND ( `status` = 'complete' OR `status` IS NULL )";
+		$where .= " AND ( `status` = 'complete' OR `status` IS NULL OR `status` = '' )";
 
 		$earnings = get_transient( $cache_key );
 

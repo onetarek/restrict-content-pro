@@ -157,7 +157,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $customer ) ) {
-			$this->handle_processing_error( new Exception( __( 'Unable to locate or create customer record. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+			$this->handle_processing_error( new Exception( __( 'Unable to locate or create customer record. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 		}
 
 		/**
@@ -179,7 +179,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 
 			} else {
 
-				$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+				$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 
 			}
 
@@ -190,7 +190,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $payment_token ) ) {
-			$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+			$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 
 		}
 
@@ -451,19 +451,28 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 			die( 200 );
 		}
 
+		$user_id = false;
+
 		/**
-		 * If this is a free trial cancellation, there will not
-		 * be a transaction to reference in this webhook, which
-		 * is where Braintree stores the customer ID associated
-		 * with the webhook. We need to get the customer ID
-		 * another way.
+		 * First try to get the user ID from the customer ID.
+		 * This should work if at least one payment has been
+		 * processed in Braintree.
 		 */
 		if ( ! empty( $data->subscription->transactions ) ) {
 
 			$transaction = $data->subscription->transactions[0];
 			$user_id     = rcp_get_member_id_from_profile_id( $transaction->customer['id'] );
 
-		} elseif ( ! empty( $data->subscription->id ) ) {
+		}
+
+		/**
+		 * As a backup, get the user ID from the subscription ID.
+		 * This will be used for free trial cancellations and
+		 * backwards compatibility with the old Braintree add-on
+		 * where the subscription ID was stored instead of the
+		 * customer ID.
+		 */
+		if ( empty( $user_id ) && ! empty( $data->subscription->id ) ) {
 
 			$user_id = rcp_get_member_id_from_subscription_id( $data->subscription->id );
 

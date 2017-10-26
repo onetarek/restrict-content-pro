@@ -22,16 +22,20 @@ if ( ! rcp_is_registration() ) {
 
 <table class="rcp_registration_total_details rcp-table">
 
+	<thead>
+
+		<tr>
+			<th scope="col"><?php _e( 'Subscription', 'rcp' ); ?></th>
+			<th scope="col"><?php _e( 'Amount', 'rcp' ); ?></th>
+		</tr>
+
+	</thead>
+
 	<tbody style="vertical-align: top;">
 
 		<tr>
-			<th><?php _e( 'Subscription', 'rcp' ); ?></th>
-			<th><?php _e( 'Amount', 'rcp' ); ?></th>
-		</tr>
-
-		<tr>
 			<td data-th="<?php esc_attr_e( 'Subscription', 'rcp' ); ?>"><?php echo rcp_get_subscription_name( rcp_get_registration()->get_subscription() ); ?></td>
-			<td data-th="<?php esc_attr_e( 'Amount', 'rcp' ); ?>"><?php echo ( rcp_get_subscription_price( rcp_get_registration()->get_subscription() ) > 0 ) ? rcp_currency_filter( number_format( rcp_get_subscription_price( rcp_get_registration()->get_subscription() ), rcp_currency_decimal_filter() ) ) : __( 'free', 'rcp' ); ?></td>
+			<td data-th="<?php esc_attr_e( 'Amount', 'rcp' ); ?>"><?php echo ( rcp_get_subscription_price( rcp_get_registration()->get_subscription() ) > 0 ) ? rcp_currency_filter( rcp_get_subscription_price( rcp_get_registration()->get_subscription() ) ) : __( 'free', 'rcp' ); ?></td>
 		</tr>
 
 		<?php if ( rcp_get_subscription_price( rcp_get_registration()->get_subscription() ) ) : ?>
@@ -53,7 +57,6 @@ if ( ! rcp_is_registration() ) {
 
 					$sign          = ( $fee['amount'] < 0 ) ? '-' : '';
 					$fee['amount'] = abs( $fee['amount'] );
-					$fee['amount'] = number_format( $fee['amount'], rcp_currency_decimal_filter() );
 				?>
 					<tr class="rcp-fee">
 						<td data-th="<?php esc_attr_e( 'Fee', 'rcp' ); ?>"><?php echo esc_html( $fee['description'] ); ?></td>
@@ -64,8 +67,12 @@ if ( ! rcp_is_registration() ) {
 			<?php endif; ?>
 		<?php endif; ?>
 
+	</tbody>
+
+	<tfoot>
+
 		<tr class="rcp-total">
-			<th><?php _e( 'Total Today', 'rcp' ); ?></th>
+			<th scope="row"><?php _e( 'Total Today', 'rcp' ); ?></th>
 			<td data-th="<?php esc_attr_e( 'Total Today', 'rcp' ); ?>"><?php rcp_registration_total(); ?></td>
 		</tr>
 
@@ -80,10 +87,10 @@ if ( ! rcp_is_registration() ) {
 			}
 			?>
 			<tr class="rcp-recurring-total">
-				<th><?php echo $label; ?></th>
+				<th scope="row"><?php echo $label; ?></th>
 				<td data-th="<?php echo esc_attr( $label ); ?>"><?php rcp_registration_recurring_total(); ?></td>
 			</tr>
 		<?php endif; ?>
 
-	</tbody>
+	</tfoot>
 </table>

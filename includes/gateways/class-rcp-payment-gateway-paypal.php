@@ -287,7 +287,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 
 			$payment_status     = ! empty( $posted['payment_status'] ) ? $posted['payment_status'] : false;
 			$currency_code      = $posted['mc_currency'];
-			
+
 			$pending_amount = get_user_meta( $member->ID, 'rcp_pending_subscription_amount', true );
 			$pending_amount = number_format( (float) $pending_amount, 2, '.', '' );
 
@@ -396,8 +396,6 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 					rcp_log( 'Processing PayPal Standard subscr_payment IPN.' );
 
 					update_user_meta( $user_id, 'rcp_paypal_subscriber', $posted['payer_id'] );
-
-					$member->set_payment_profile_id( $posted['subscr_id'] );
 
 					if ( ! empty( $pending_payment_id ) ) {
 
