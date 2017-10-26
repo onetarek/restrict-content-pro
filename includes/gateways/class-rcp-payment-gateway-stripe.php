@@ -732,7 +732,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 					// Refunded payment.
 					if ( $event->type == 'charge.refunded' ) {
 
-						rcp_log( 'Processing charge.refunded webhook.' );
+						rcp_log( sprintf( 'Processing charge.refunded webhook - event ID %s.', $event_id ) );
 
 						$payment = $rcp_payments->get_payment_by( 'transaction_id', sanitize_text_field( $payment_event->id ) );
 
