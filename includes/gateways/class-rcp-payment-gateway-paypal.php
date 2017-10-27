@@ -285,7 +285,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 			$has_trial          = ! empty( $posted['period1'] );
 			$amount             = ! $has_trial ? number_format( (float) $posted['mc_gross'], 2, '.', '' ) : number_format( (float) $posted['mc_amount1'], 2, '.', '' );
 
-			$payment_status     = ! empty( $posted['payment_status'] ) ? $posted['payment_status'] : false;
+			$payment_status     = ! empty( $posted['payment_status'] ) ? strtolower( $posted['payment_status'] ) : false;
 			$currency_code      = $posted['mc_currency'];
 
 			$pending_amount = get_user_meta( $member->ID, 'rcp_pending_subscription_amount', true );
@@ -487,7 +487,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 
 					rcp_log( sprintf( 'Processing PayPal Standard web_accept IPN. Payment status: %s', $payment_status ) );
 
-					switch ( strtolower( $payment_status ) ) :
+					switch ( $payment_status ) :
 
 						case 'completed' :
 
@@ -545,6 +545,28 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 				break;
 
 			endswitch;
+
+			// Refund payment.
+			if ( in_array( $payment_status, array( 'refunded', 'reversed' ) ) && ! empty( $posted['txn_id'] ) ) {
+
+				rcp_log( sprintf( 'Processing PayPal Standard %s IPN for transaction ID %s.', $payment_status, $posted['txn_id'] ) );
+
+				$payment = $rcp_payments->get_payment_by( 'transaction_id', sanitize_text_field( $posted['txn_id'] ) );
+
+				if ( empty( $payment ) ) {
+					rcp_log( sprintf( 'No payment found with transaction ID #%s.', $posted['txn_id'] ) );
+				} else {
+					rcp_log( sprintf( 'Updating status of payment #%d (transaction ID %s) to "refunded".', $payment->id, $posted['txn_id'] ) );
+
+					// Update status to refunded.
+					$rcp_payments->update( $payment->id, array(
+						'status' => 'refunded'
+					) );
+
+					// @todo Update member status to expired.
+				}
+
+			}
 
 		} else {
 
