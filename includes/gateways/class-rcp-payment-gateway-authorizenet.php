@@ -458,6 +458,8 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 			die( 'invalid silent post' );
 		}
 
+		$payments = new RCP_Payments();
+
 		$anet_subscription_id = intval( $_POST['x_subscription_id'] );
 
 		if ( $anet_subscription_id ) {
@@ -473,8 +475,7 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 				die( 'no member found' );
 			}
 
-			$member   = new RCP_Member( $member_id );
-			$payments = new RCP_Payments();
+			$member = new RCP_Member( $member_id );
 
 			rcp_log( sprintf( 'Processing webhook for member #%d.', $member->ID ) );
 
@@ -572,6 +573,30 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 				rcp_log( sprintf( 'Cancelling membership for user #%d, as initial charge from Authorize.net failed. Response code: %d', $member->ID, $response_code ) );
 				$member->set_status( 'expired' );
 			}
+		} elseif ( ! empty( $_POST['x_type'] ) && in_array( strtolower( $_POST['x_type'] ), array( 'void', 'credit' ) ) ) {
+
+			/*
+			 * Update payment status when refunded in the gateway.
+			 */
+			$transaction_id = sanitize_text_field( $_POST['x_trans_id'] );
+
+			rcp_log( sprintf( 'Processing Authorize.net %s silent post for transaction ID %s.', $_POST['x_type'], $transaction_id ) );
+
+			$payment = $payments->get_payment_by( 'transaction_id', $transaction_id );
+
+			if ( empty( $payment ) ) {
+				rcp_log( sprintf( 'No payment found with transaction ID #%s.', $transaction_id ) );
+			} else {
+				rcp_log( sprintf( 'Updating status of payment #%d (transaction ID %s) to "refunded".', $payment->id, $transaction_id ) );
+
+				// Update status to refunded.
+				$payments->update( $payment->id, array(
+					'status' => 'refunded'
+				) );
+
+				// @todo Update member status to expired.
+			}
+
 		}
 
 		die( 'success');
