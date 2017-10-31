@@ -656,16 +656,16 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 		endswitch;
 
 		// Refund payment.
-		if ( in_array( $payment_status, array( 'refunded', 'reversed' ) ) && ! empty( $posted['txn_id'] ) ) {
+		if ( in_array( $payment_status, array( 'refunded', 'reversed' ) ) && ! empty( $posted['parent_txn_id'] ) ) {
 
-			rcp_log( sprintf( 'Processing PayPal Express %s IPN for transaction ID %s.', $payment_status, $posted['txn_id'] ) );
+			rcp_log( sprintf( 'Processing PayPal Express %s IPN for transaction ID %s.', $payment_status, $posted['parent_txn_id'] ) );
 
-			$payment = $rcp_payments->get_payment_by( 'transaction_id', sanitize_text_field( $posted['txn_id'] ) );
+			$payment = $rcp_payments->get_payment_by( 'transaction_id', sanitize_text_field( $posted['parent_txn_id'] ) );
 
 			if ( empty( $payment ) ) {
-				rcp_log( sprintf( 'No payment found with transaction ID #%s.', $posted['txn_id'] ) );
+				rcp_log( sprintf( 'No payment found with transaction ID #%s.', $posted['parent_txn_id'] ) );
 			} else {
-				rcp_log( sprintf( 'Updating status of payment #%d (transaction ID %s) to "refunded".', $payment->id, $posted['txn_id'] ) );
+				rcp_log( sprintf( 'Updating status of payment #%d (transaction ID %s) to "refunded".', $payment->id, $posted['parent_txn_id'] ) );
 
 				// Update status to refunded.
 				$rcp_payments->update( $payment->id, array(
