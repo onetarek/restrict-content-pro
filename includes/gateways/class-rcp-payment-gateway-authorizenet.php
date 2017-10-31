@@ -578,7 +578,7 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 			/*
 			 * Update payment status when refunded in the gateway.
 			 */
-			$transaction_id = sanitize_text_field( $_POST['x_trans_id'] );
+			$transaction_id = sanitize_text_field( 'anet_' . $_POST['x_trans_id'] );
 
 			rcp_log( sprintf( 'Processing Authorize.net %s silent post for transaction ID %s.', $_POST['x_type'], $transaction_id ) );
 
