@@ -142,6 +142,16 @@ function rcp_admin_notices() {
 
 				$text = __( 'The user\'s email has been verified successfully', 'rcp' );
 				break;
+
+			case 'membership_removed' :
+
+				$text = __( 'The user\'s membership has been removed successfully.', 'rcp' );
+				break;
+
+			case 'member_deleted' :
+
+				$text = __( 'Member successfully deleted..', 'rcp' );
+				break;
 		}
 	}
 

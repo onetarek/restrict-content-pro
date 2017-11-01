@@ -222,6 +222,14 @@ function rcp_members_page() {
 												<span> | <a href="<?php echo wp_nonce_url( add_query_arg( array( 'rcp-action' => 'verify_email', 'member_id' => $member->ID ), $current_page ), 'rcp-manually-verify-email-nonce' ); ?>" class="rcp_verify_email"><?php _e( 'Verify Email', 'rcp' ); ?></a></span>
 											<?php endif; ?>
 											<span class="rcp-separator"> | </span>
+											<span>
+												<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'rcp-action' => 'remove_membership', 'member_id' => $member->ID ), $current_page ), 'rcp-remove-membership-nonce' ) ); ?>" class="rcp_remove_membership"><?php _e( 'Remove Membership', 'rcp' ); ?></a>
+											</span>
+											<span class="rcp-separator"> | </span>
+											<span class="trash">
+												<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'rcp-action' => 'delete_member', 'member_id' => $member->ID ), $current_page ), 'rcp-delete-member-nonce' ) ); ?>" class="rcp_delete_member"><?php _e( 'Delete', 'rcp' ); ?></a>
+											</span>
+											<span class="rcp-separator"> | </span>
 											<span class="id rcp-member-id rcp-id-col"><?php echo __( 'ID:', 'rcp' ) . ' ' . $member->ID; ?></span>
 											<?php do_action( 'rcp_member_row_actions', $member->ID ); ?>
 										</div>

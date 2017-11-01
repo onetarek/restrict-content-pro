@@ -120,6 +120,20 @@ jQuery(document).ready(function($) {
 		var dateFormat = 'yy-mm-dd';
 		$('.rcp-datepicker').datepicker({dateFormat: dateFormat});
 	}
+	$('.rcp_remove_membership').click(function() {
+		if(confirm(rcp_vars.remove_membership)) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+	$('.rcp_delete_member').click(function() {
+		if(confirm(rcp_vars.delete_member)) {
+			return true;
+		} else {
+			return false;
+		}
+	});
 	$('.rcp_cancel').click(function() {
 		if(confirm(rcp_vars.cancel_user)) {
 			return true;
