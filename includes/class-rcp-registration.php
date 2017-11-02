@@ -49,10 +49,12 @@ class RCP_Registration {
 			return;
 		}
 
+		global $rcp_options;
+
 		$this->set_subscription( $level_id );
 
 		if ( $discount ) {
-			$this->add_discount( strtolower( $discount ) );
+			$this->add_discount( strtolower( $discount ), empty( $rcp_options['one_time_discounts'] ) );
 		}
 
 		do_action( 'rcp_registration_init', $this );

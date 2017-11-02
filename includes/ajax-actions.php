@@ -17,6 +17,8 @@
 function rcp_validate_discount_with_ajax() {
 	if( isset( $_POST['code'] ) ) {
 
+		global $rcp_options;
+
 		$return          = array();
 		$return['valid'] = false;
 		$return['full']  = false;
@@ -28,7 +30,9 @@ function rcp_validate_discount_with_ajax() {
 
 			$code_details = rcp_get_discount_details_by_code( sanitize_text_field( $_POST['code'] ) );
 
-			if( ( ! rcp_registration_is_recurring() && rcp_get_registration()->get_recurring_total() == 0.00 ) && rcp_get_registration()->get_total() == 0.00 ) {
+			if( ( ! rcp_registration_is_recurring() && rcp_get_registration()->get_total() == 0.00 )
+				|| ( rcp_registration_is_recurring() && rcp_get_registration()->get_recurring_total() == 0.00 && ! isset( $rcp_options['one_time_discounts'] ) )
+			) {
 
 				// this is a 100% discount
 				$return['full']   = true;

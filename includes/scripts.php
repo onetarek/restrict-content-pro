@@ -182,7 +182,8 @@ function rcp_print_scripts() {
 			'user_has_trialed'   => is_user_logged_in() && rcp_has_used_trial(),
 			'trial_levels'       => rcp_get_trial_level_ids(),
 			'auto_renew_default' => isset( $rcp_options['auto_renew_checked_on'] ),
-			'recaptcha_enabled'  => rcp_is_recaptcha_enabled()
+			'recaptcha_enabled'  => rcp_is_recaptcha_enabled(),
+			'one_time_discounts' => isset( $rcp_options['one_time_discounts'] ) ? true : false
 		)
 	);
 

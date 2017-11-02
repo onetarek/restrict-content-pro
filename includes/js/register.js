@@ -46,7 +46,29 @@ jQuery(document).ready(function($) {
 
 	});
 
-	$(document.getElementById('rcp_auto_renew')).on('change', rcp_calc_total);
+	$(document.getElementById('rcp_auto_renew')).on('change', function() {
+
+		rcp_calc_total();
+
+		if( $(this).is(':checked') ) {
+
+			$('.rcp_gateway_fields, #rcp_gateway_extra_fields').show();
+
+		} else {
+
+			if( $('.rcp_gateway_fields').hasClass( 'rcp_discounted_100' ) ) {
+
+				$('.rcp_gateway_fields, #rcp_gateway_extra_fields').hide();
+
+			} else {
+
+				$('.rcp_gateway_fields, #rcp_gateway_extra_fields').show();
+
+			}
+
+		}
+
+	});
 	$('body').on( 'rcp_discount_change rcp_level_change rcp_gateway_change', rcp_calc_total);
 
 	/**
@@ -131,14 +153,16 @@ jQuery(document).ready(function($) {
 
 		// Check if gateway supports form submission
 		if ( xhr.responseJSON.data.gateway.supports && xhr.responseJSON.data.gateway.supports.indexOf('gateway-submits-form') !== -1 ) {
+
 			gateway_submits_form = true;
 		} else {
 			gateway_submits_form = false;
+
 		}
 
 		$('body').trigger('rcp_register_form_submission', [xhr.responseJSON.data, event.target.forms.rcp_registration_form.id] );
 
-		if ( xhr.responseJSON.data.total == 0 || ! gateway_submits_form ) {
+		if ( ( xhr.responseJSON.data.total === 0 && xhr.responseJSON.data.recurring_total === 0 ) || ! gateway_submits_form ) {
 			document.getElementById('rcp_registration_form').submit();
 		}
 
@@ -168,7 +192,6 @@ function rcp_validate_subscription_level() {
 
 	var $         = jQuery;
 	var is_free   = false;
-	var options   = [];
 	var level     = $( '#rcp_subscription_levels input:checked' );
 	var full      = $('.rcp_gateway_fields').hasClass( 'rcp_discounted_100' );
 	var lifetime  = level.data( 'duration' ) == 'forever';
@@ -191,7 +214,7 @@ function rcp_validate_subscription_level() {
 
 	} else {
 
-		if( full ) {
+		if( full && ! rcp_script_options.one_time_discounts && ! $('#rcp_auto_renew_wrap input').prop('checked') ) {
 			$('#rcp_gateway_extra_fields').remove();
 		} else if( lifetime ) {
 			$('#rcp_auto_renew_wrap input').prop('checked', false);
@@ -272,7 +295,7 @@ function rcp_validate_gateways() {
 
 	} else {
 
-		if( full ) {
+		if( full && ! rcp_script_options.one_time_discounts && ! $('#rcp_auto_renew_wrap input').prop('checked') ) {
 
 			$('#rcp_gateway_extra_fields').remove();
 
@@ -320,7 +343,7 @@ function rcp_validate_gateways() {
 
 			// Uncheck and hide if free level, lifetime level, or 100% discount applied
 			// @todo one-time discounts
-			if ( full || lifetime || is_free ) {
+			if ( ( full && ! rcp_script_options.one_time_discounts ) || lifetime || is_free ) {
 				$('#rcp_auto_renew_wrap input').prop('checked', false);
 				$('#rcp_auto_renew_wrap').hide();
 			}
@@ -416,9 +439,30 @@ function rcp_validate_discount() {
 
 			if( response.full ) {
 
-				$('#rcp_auto_renew_wrap').hide();
 				gateway_fields.hide().addClass('rcp_discounted_100');
-				$('#rcp_gateway_extra_fields').remove();
+
+				if( ! rcp_script_options.one_time_discounts ) {
+
+					$('#rcp_auto_renew_wrap').hide();
+					$('#rcp_gateway_extra_fields').remove();
+
+				} else {
+
+					$('#rcp_auto_renew_wrap').show();
+
+					if( $('#rcp_auto_renew_wrap input').prop('checked') ) {
+
+						gateway_fields.show();
+						$('#rcp_gateway_extra_fields').show();
+						rcp_validate_gateways();
+
+					} else {
+
+						$('#rcp_gateway_extra_fields').hide();
+						gateway_fields.hide();
+
+					}
+				}
 
 			} else {
 

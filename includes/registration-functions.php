@@ -117,15 +117,18 @@ function rcp_process_registration() {
 		) );
 
 	} elseif( $is_ajax ) {
+
 		wp_send_json_success( array(
-			'success'          => true,
-			'total'            => rcp_get_registration()->get_total(),
-			'gateway'          => array(
+			'success'            => true,
+			'total'              => rcp_get_registration()->get_total(),
+			'recurring_total'    => rcp_get_registration()->get_recurring_total(),
+			'one_time_discounts' => isset( $rcp_options['one_time_discounts'] ) ? true : false,
+			'gateway'            => array(
 				'slug'     => $gateway,
 				'supports' => ! empty( $gateway_obj->supports ) ? $gateway_obj->supports : false
 			),
-			'level'            => array(
-				'trial'        => ! empty( $trial_duration )
+			'level' => array(
+				'trial' => ! empty( $trial_duration )
 			)
 		) );
 
@@ -659,7 +662,7 @@ function rcp_registration_is_recurring() {
 		}
 	}
 
-	if( ! rcp_get_registration_recurring_total() > 0 ) {
+	if( ! ( rcp_get_registration_recurring_total() > 0 ) ) {
 		$auto_renew = false;
 	}
 

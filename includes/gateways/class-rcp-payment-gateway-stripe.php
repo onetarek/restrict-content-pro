@@ -772,6 +772,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 			Stripe.setPublishableKey('<?php echo $this->publishable_key; ?>');
 
 			function stripeResponseHandler(status, response) {
+
 				if (response.error) {
 					// re-enable the submit button
 					jQuery('#rcp_registration_form #rcp_submit').attr("disabled", false);
@@ -803,6 +804,10 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 				$('body').off('rcp_register_form_submission').on('rcp_register_form_submission', function(event, response, form_id) {
 
+					if( response.gateway.slug !== 'stripe' ) {
+						return;
+					}
+
 					// get the subscription price
 					if( $('.rcp_level:checked').length ) {
 						var price = $('.rcp_level:checked').closest('.rcp_subscription_level').find('span.rcp_price').attr('rel') * <?php echo rcp_stripe_get_currency_multiplier(); ?>;
@@ -810,7 +815,10 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 						var price = $('.rcp_level').attr('rel') * <?php echo rcp_stripe_get_currency_multiplier(); ?>;
 					}
 
-					if( response.gateway.slug === 'stripe' && price > 0 && ! $('.rcp_gateway_fields').hasClass('rcp_discounted_100')) {
+					if(
+						( price > 0 && ! $('.rcp_gateway_fields').hasClass('rcp_discounted_100') )
+						|| ( response.recurring_total > 0 && response.one_time_discounts )
+					) {
 
 						event.preventDefault();
 
