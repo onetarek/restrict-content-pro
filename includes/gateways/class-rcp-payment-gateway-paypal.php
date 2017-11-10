@@ -352,10 +352,6 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 
 			}
 
-			if( isset( $rcp_options['email_ipn_reports'] ) ) {
-				wp_mail( get_bloginfo('admin_email'), __( 'IPN report', 'rcp' ), $listener->getTextReport() );
-			}
-
 			/* now process the kind of subscription/payment */
 
 			// Subscriptions
@@ -549,11 +545,6 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 		} else {
 
 			rcp_log( 'Invalid PayPal IPN attempt.' );
-
-			if( isset( $rcp_options['email_ipn_reports'] ) ) {
-				// an invalid IPN attempt was made. Send an email to the admin account to investigate
-				wp_mail( get_bloginfo( 'admin_email' ), __( 'Invalid IPN', 'rcp' ), $listener->getTextReport() );
-			}
 
 			status_header( 400 );
 			die( 'invalid IPN' );

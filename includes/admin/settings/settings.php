@@ -1508,15 +1508,6 @@ function rcp_settings_page() {
 						</tr>
 						<tr valign="top">
 							<th>
-								<label for="rcp_settings[email_ipn_reports]"><?php _e( 'Email IPN reports', 'rcp' ); ?></label>
-							</th>
-							<td>
-								<input type="checkbox" value="1" name="rcp_settings[email_ipn_reports]" id="rcp_settings[email_ipn_reports]" <?php if( isset( $rcp_options['email_ipn_reports'] ) ) checked('1', $rcp_options['email_ipn_reports']); ?>/>
-								<span class="description"><?php _e( 'Check this to send an email each time an IPN request is made with PayPal. The email will contain a list of all data sent. This is useful for debugging in the case that something is not working with the PayPal integration.', 'rcp' ); ?></span>
-							</td>
-						</tr>
-						<tr valign="top">
-							<th>
 								<label for="rcp_settings[disable_css]"><?php _e( 'Disable Form CSS', 'rcp' ); ?></label><br/>
 							</th>
 							<td>

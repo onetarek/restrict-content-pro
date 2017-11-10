@@ -475,10 +475,6 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 
 		do_action( 'rcp_valid_ipn', $payment_data, $user_id, $posted );
 
-		if( isset( $rcp_options['email_ipn_reports'] ) ) {
-			wp_mail( get_bloginfo('admin_email'), __( 'IPN report', 'rcp' ), $listener->getTextReport() );
-		}
-
 		/* now process the kind of subscription/payment */
 
 		$rcp_payments       = new RCP_Payments();
