@@ -41,7 +41,7 @@ function rcp_settings_page() {
 	$rcp_options = wp_parse_args( $rcp_options, $defaults );
 
 	?>
-	<div class="wrap">
+	<div id="rcp-settings-wrap" class="wrap">
 		<?php
 		if ( ! isset( $_REQUEST['updated'] ) )
 			$_REQUEST['updated'] = false;
