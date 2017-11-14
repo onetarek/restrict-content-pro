@@ -97,17 +97,17 @@ jQuery(document).ready(function($) {
 		var url = jQuery.param.fragment();
 
 		//hide all
-		jQuery( '.restrict_page_rcp-settings #tab_container .tab_content' ).hide();
-		jQuery( '.restrict_page_rcp-settings #tab_container' ).children(".tab_content").hide();
-		jQuery( '.restrict_page_rcp-settings .nav-tab-wrapper a' ).removeClass("nav-tab-active");
+		jQuery( '#rcp-settings-wrap #tab_container .tab_content' ).hide();
+		jQuery( '#rcp-settings-wrap #tab_container' ).children(".tab_content").hide();
+		jQuery( '#rcp-settings-wrap .nav-tab-wrapper a' ).removeClass("nav-tab-active");
 
 		//find a href that matches url
 		if (url) {
-			jQuery( '.restrict_page_rcp-settings .nav-tab-wrapper a[href="#' + url + '"]' ).addClass( 'nav-tab-active' );
-			jQuery(".restrict_page_rcp-settings #tab_container #" + url).addClass("selected").fadeIn();
+			jQuery( '#rcp-settings-wrap .nav-tab-wrapper a[href="#' + url + '"]' ).addClass( 'nav-tab-active' );
+			jQuery("#rcp-settings-wrap #tab_container #" + url).addClass("selected").fadeIn();
 		} else {
-			jQuery( '.restrict_page_rcp-settings  h2.nav-tab-wrapper a[href="#general"]' ).addClass( 'nav-tab-active' );
-			jQuery(".restrict_page_rcp-settings  #tab_container #general").addClass("selected nav-tab-active").fadeIn();
+			jQuery( '#rcp-settings-wrap  h2.nav-tab-wrapper a[href="#general"]' ).addClass( 'nav-tab-active' );
+			jQuery("#rcp-settings-wrap  #tab_container #general").addClass("selected nav-tab-active").fadeIn();
 		}
 	});
 
