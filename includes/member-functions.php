@@ -1129,6 +1129,10 @@ function rcp_can_member_renew( $user_id = 0 ) {
 
 	}
 
+	if ( 'none' == $member->get_expiration_date( false ) ) {
+		$ret = false;
+	}
+
 	if( 'free' == $member->get_status() ) {
 
 		$ret = false;
