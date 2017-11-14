@@ -74,6 +74,11 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 			$paypal_redirect = 'https://www.paypal.com/cgi-bin/webscr/?';
 		}
 
+		$cancel_url = wp_get_referer();
+		if ( empty( $cancel_url ) ) {
+			$cancel_url = get_permalink( $rcp_options['registration_page'] );
+		}
+
 		// Setup PayPal arguments
 		$paypal_args = array(
 			'business'      => trim( $rcp_options['paypal_email'] ),
@@ -88,7 +93,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 			'custom'        => $this->user_id,
 			'rm'            => '2',
 			'return'        => $this->return_url,
-			'cancel_return' => home_url(),
+			'cancel_return' => $cancel_url,
 			'notify_url'    => add_query_arg( 'listener', 'IPN', home_url( 'index.php' ) ),
 			'cbt'			=> get_bloginfo( 'name' ),
 			'tax'           => 0,
