@@ -172,7 +172,7 @@ function rcp_process_registration() {
 		update_user_meta( $user_data['id'], '_rcp_old_subscription_id', $old_subscription_id );
 	}
 
-	if( ! $member->is_active() ) {
+	if( ! $member->get_subscription_id() || $member->is_expired() || in_array( $member->get_status(), array( 'expired', 'pending' ) ) ) {
 
 		// Ensure no pending level details are set
 		delete_user_meta( $user_data['id'], 'rcp_pending_subscription_level' );
