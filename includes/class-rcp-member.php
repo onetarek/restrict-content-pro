@@ -53,7 +53,7 @@ class RCP_Member extends WP_User {
 
 		$ret        = false;
 		$old_status = get_user_meta( $this->ID, 'rcp_status', true );
-		
+
 		/**
 		 * Filters the value of the status set on the member.
 		 *
@@ -1306,15 +1306,8 @@ class RCP_Member extends WP_User {
 
 			} else {
 
-				if ( in_array( $sub_id, $subscription_levels ) ) {
+				$ret = in_array( $sub_id, $subscription_levels );
 
-					$ret = true;
-
-				} else {
-
-					$ret = false;
-
-				}
 			}
 		}
 
