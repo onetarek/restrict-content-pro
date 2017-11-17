@@ -18,7 +18,10 @@ function rcp_members_page() {
 	$current_page = admin_url( '/admin.php?page=rcp-members' ); ?>
 	<div class="wrap" id="rcp-members-page">
 
-		<?php if( isset( $_GET['edit_member'] ) || isset( $_GET['view_member'] ) ) :
+		<?php
+		if ( isset( $_GET['edit_subscription'] ) && isset( $_GET['edit_member'] ) ) :
+			include( 'edit-subscription.php' );
+		elseif( isset( $_GET['edit_member'] ) || isset( $_GET['view_member'] ) ) :
 			include( 'edit-member.php' );
 		else : ?>
 			<h1><?php _e( 'Members', 'rcp' ); ?></h1>

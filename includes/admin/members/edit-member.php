@@ -98,6 +98,8 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 
 					<form id="rcp-edit-member-info" method="POST">
 
+						<?php do_action( 'rcp_edit_member_before', $member->ID ); ?>
+
 						<div class="rcp-item-info rcp-member-info">
 
 							<div id="rcp-member-avatar" class="rcp-avatar-wrap left">
@@ -152,6 +154,16 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 
 						</div>
 
+						<?php
+						// @todo Is this the best place for this?
+						if ( has_action( 'rcp_edit_member_after' ) ) {
+							echo '<table id="rcp-member-additional-info" class="wp-list-table widefat striped">';
+							do_action( 'rcp_edit_member_after', $member->ID );
+							echo '</table>';
+							submit_button( __( 'Update Member', 'rcp' ), 'secondary' ); // I put this here since it may not be clear how to save otherwise?
+						}
+						?>
+
 						<span id="rcp-member-edit-actions" class="rcp-edit-item">
 							<input type="hidden" name="rcp-action" value="edit-member"/>
 							<input type="hidden" name="user" value="<?php echo esc_attr( $member->ID ); ?>"/>
@@ -190,15 +202,18 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 										<button type="button" class="toggle-row"><span class="screen-reader-text"><?php _e( 'Show more details', 'rcp' ); ?></span></button>
 									</td>
 									<td data-colname="<?php esc_attr_e( 'Amount', 'rcp' ); ?>">
-										<!-- @todo Add period ($x every year) -->
-										<?php echo rcp_currency_filter( $subscription->price ); ?>
+										<?php
+										// @todo Duration unit needs translation
+										// @todo Need to consider discount code usage.
+										printf( _x( '%s every %s', 'billing amount and cycle', 'rcp' ), rcp_currency_filter( $subscription->price ), $subscription->duration_unit );
+										?>
 									</td>
 									<td data-colname="<?php esc_attr_e( 'Status', 'rcp' ); ?>">
 										<?php rcp_print_status( $member_id ); ?>
 									</td>
 									<td data-colname="<?php esc_attr_e( 'Actions', 'rcp' ); ?>">
-										<!-- @todo Make this link work. -->
-										<a href=""><?php _e( 'View Details', 'rcp' ); ?></a>
+										<!-- @todo Include subscription ID? -->
+										<a href="<?php echo esc_url( admin_url( 'admin.php?page=rcp-members&edit_member=' . absint( $member->ID ) . '&edit_subscription=' ) ); ?>"><?php _e( 'View Details', 'rcp' ); ?></a>
 									</td>
 								</tr>
 							<?php else : ?>
