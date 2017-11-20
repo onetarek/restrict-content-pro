@@ -702,8 +702,10 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 						$this->webhook_event_id = $event->id;
 
 						// Make sure this invoice is tied to a subscription and is the user's current subscription.
-						if ( ! empty( $event->object->subscription ) && $event->object->subscription == $member->get_merchant_subscription_id() ) {
+						if ( ! empty( $event->data->object->subscription ) && $event->data->object->subscription == $member->get_merchant_subscription_id() ) {
 							do_action( 'rcp_recurring_payment_failed', $member, $this );
+						} else {
+							rcp_log( sprintf( 'Stripe subscription ID %s doesn\'t match user\'s merchant subscription ID %s. Skipping rcp_recurring_payment_failed hook.', $event->data->object->subscription, $member->get_merchant_subscription_id() ) );
 						}
 
 						do_action( 'rcp_stripe_charge_failed', $payment_event, $event, $member );
