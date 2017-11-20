@@ -153,6 +153,15 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 									<?php } ?>
 								</span>
 
+								<?php if ( $member->is_pending_verification() ) : ?>
+									<span class="rcp-member-email-verification rcp-info-item">
+										<?php printf( __( 'Pending Email Verification &ndash; <a href="%s">Click to manually verify email.</a>', 'rcp' ), esc_url( wp_nonce_url( add_query_arg( array(
+											'rcp-action' => 'verify_email',
+											'member_id'  => $member->ID
+										), add_query_arg( 'edit_member', $member->ID, admin_url( 'admin.php?page=rcp-members' ) ) ), 'rcp-manually-verify-email-nonce' ) ) ); ?>
+									</span>
+								<?php endif; ?>
+
 							</div>
 
 						</div>

@@ -54,7 +54,11 @@ function rcp_admin_scripts( $hook ) {
 				'use_as_logo'         => __( 'Use as Logo', 'rcp' ),
 				'choose_logo'         => __( 'Choose a Logo', 'rcp' ),
 				'can_cancel_member'   => ( $hook == $rcp_members_page && isset( $_GET['edit_member'] ) && rcp_can_member_cancel( absint( $_GET['edit_member'] ) ) ),
-				'cancel_subscription' => __( 'Cancel subscription at gateway', 'rcp' )
+				'cancel_subscription' => __( 'Cancel subscription at gateway', 'rcp' ),
+				'action_cancel'       => __( 'Cancel', 'rcp' ),
+				'action_edit'         => __( 'Edit', 'rcp' ),
+				'yes'                 => __( 'Yes', 'rcp' ),
+				'no'                  => __( 'No', 'rcp' )
 			)
 		);
 	}

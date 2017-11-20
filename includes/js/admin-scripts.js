@@ -366,6 +366,7 @@ jQuery(document).ready(function($) {
 		init: function () {
 			this.edit_member();
 			this.cancel_edit();
+			this.recurring_select();
 		},
 
 		edit_member: function () {
@@ -384,6 +385,42 @@ jQuery(document).ready(function($) {
 				RCP_Member.vars.member_card_wrap_edit_item.hide();
 				RCP_Member.vars.member_card_wrap_editable.show();
 			});
+		},
+
+		/**
+		 * Edit Subscription Text Input
+		 *
+		 * @param link object The edit/cancelled element the user clicked.
+		 * @param input object The editable field.
+		 *
+		 * @since 3.0
+		 */
+		edit_subscription_input: function ( link, input ) {
+
+			// User clicks edit
+			if ( link.text() === rcp_vars.action_edit ) {
+				// Preserve current value
+				link.data( 'current-value', input.val() );
+				// Update text to 'cancel'
+				link.text( rcp_vars.action_cancel );
+			} else {
+				// User clicked cancel, return previous value
+				input.val( link.data('current-value') );
+				// Update link text back to 'edit'
+				link.text( rcp_vars.action_edit );
+			}
+
+		},
+
+		/**
+		 * Editing the "recurring" flag for a subscription
+		 *
+		 * @since 3.0
+		 */
+		recurring_select: function () {
+			$( document.body ).on( 'change', '#rcp-recurring', function ( e ) {
+				$( '#rcp-sub-recurring-update-notice' ).slideToggle();
+			} );
 		}
 
 	};
