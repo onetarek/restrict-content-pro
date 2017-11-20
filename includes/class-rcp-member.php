@@ -53,7 +53,7 @@ class RCP_Member extends WP_User {
 
 		$ret        = false;
 		$old_status = get_user_meta( $this->ID, 'rcp_status', true );
-		
+
 		/**
 		 * Filters the value of the status set on the member.
 		 *
