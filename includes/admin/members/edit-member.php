@@ -148,6 +148,9 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 
 								<span class="rcp-member-user-id">
 									<?php _e( 'User ID:', 'rcp' ); ?> <a href="<?php echo esc_url( admin_url( 'user-edit.php?user_id=' . urlencode( $member->ID ) ) ); ?>" title="<?php esc_attr_e( 'Edit user account', 'rcp' ); ?>"><?php echo $member->ID; ?></a>
+									<?php if( $switch_to_url = rcp_get_switch_to_url( $member->ID ) ) { ?>
+										 &ndash; <a href="<?php echo esc_url( $switch_to_url ); ?>" class="rcp_switch"><?php _e('Switch to User', 'rcp'); ?></a>
+									<?php } ?>
 								</span>
 
 							</div>
