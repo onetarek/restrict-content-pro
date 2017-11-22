@@ -498,12 +498,10 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 
 							if( $member->just_upgraded() && $member->can_cancel() ) {
 								$cancelled = $member->cancel_payment_profile( false );
-								if( $cancelled ) {
-
-									$member->set_payment_profile_id( '' );
-
-								}
 							}
+
+							// Remove the payment profile ID.
+							$member->set_payment_profile_id( '' );
 
 							if ( ! empty( $pending_payment_id ) ) {
 

@@ -379,6 +379,9 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 							'status'         => 'complete'
 						) );
 
+						// Remove the payment profile ID.
+						$member->set_payment_profile_id( '' );
+
 						do_action( 'rcp_gateway_payment_processed', $member, $this->payment->id, $this );
 
 					} else {

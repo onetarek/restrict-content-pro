@@ -328,16 +328,11 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 						$member = new RCP_Member( $details['CUSTOM'] );
 
 						if( $member->just_upgraded() && $member->can_cancel() ) {
-
 							$cancelled = $member->cancel_payment_profile( false );
-
-							if( $cancelled ) {
-
-								$member->set_payment_profile_id( '' );
-
-							}
-
 						}
+
+						// Remove the payment profile ID.
+						$member->set_payment_profile_id( '' );
 
 						$payment_data = array(
 							'date'             => date( 'Y-m-d H:i:s', current_time( 'timestamp' ) ),
@@ -625,11 +620,6 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 
 						if( $member->just_upgraded() && $member->can_cancel() ) {
 							$cancelled = $member->cancel_payment_profile( false );
-							if( $cancelled ) {
-
-								$member->set_payment_profile_id( '' );
-
-							}
 						}
 
 						if ( empty( $payment_data['transaction_id'] ) || $rcp_payments->payment_exists( $payment_data['transaction_id'] ) ) {
