@@ -255,6 +255,9 @@ function rcp_process_registration() {
 			// Complete payment. This also activates the membership.
 			$rcp_payments->update( $payment_id, array( 'status' => 'complete' ) );
 
+			// Remove the payment profile ID.
+			$member->set_payment_profile_id( '' );
+
 			rcp_log( sprintf( 'Completed registration to level #%d with full discount for user #%d.', $subscription_id, $user_data['id'] ) );
 			rcp_login_user_in( $user_data['id'], $user_data['login'] );
 			wp_redirect( rcp_get_return_url( $user_data['id'] ) ); exit;
@@ -313,6 +316,9 @@ function rcp_process_registration() {
 
 		// Complete payment. This also activates the membership.
 		$rcp_payments->update( $payment_id, array( 'status' => 'complete' ) );
+
+		// Remove the payment profile ID.
+		$member->set_payment_profile_id( '' );
 
 		if( $user_data['need_new'] ) {
 

@@ -791,11 +791,24 @@ class RCP_Member extends WP_User {
 	*/
 	public function set_payment_profile_id( $profile_id = '' ) {
 
-		$profile_id = trim( $profile_id );
+		$profile_id  = trim( $profile_id );
+		$old_profile = $this->get_payment_profile_id();
 
 		do_action( 'rcp_member_pre_set_profile_payment_id', $this->ID, $profile_id, $this );
 
-		update_user_meta( $this->ID, 'rcp_payment_profile_id', $profile_id );
+		if ( ! empty( $profile_id ) ) {
+			update_user_meta( $this->ID, 'rcp_payment_profile_id', $profile_id );
+		} else {
+			delete_user_meta( $this->ID, 'rcp_payment_profile_id' );
+		}
+
+		if ( empty( $profile_id ) ) {
+			$this->add_note( sprintf( __( 'Payment Profile ID %s removed.', 'rcp' ), $old_profile ) );
+		} elseif ( ! empty( $old_profile ) ) {
+			$this->add_note( sprintf( __( 'Payment Profile ID changed from %s to %s.', 'rcp' ), $old_profile, $profile_id ) );
+		} else {
+			$this->add_note( sprintf( __( 'Payment Profile ID set to %s.', 'rcp' ), $profile_id ) );
+		}
 
 		do_action( 'rcp_member_post_set_profile_payment_id', $this->ID, $profile_id, $this );
 

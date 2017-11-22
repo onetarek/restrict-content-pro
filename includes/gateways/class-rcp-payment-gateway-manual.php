@@ -52,6 +52,9 @@ class RCP_Payment_Gateway_Manual extends RCP_Payment_Gateway {
 			'transaction_id' => $this->generate_transaction_id()
 		) );
 
+		// Remove the payment profile ID.
+		$member->set_payment_profile_id( '' );
+
 		do_action( 'rcp_process_manual_signup', $member, $this->payment->id, $this );
 
 		wp_redirect( $this->return_url ); exit;
