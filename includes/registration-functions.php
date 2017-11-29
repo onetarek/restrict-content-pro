@@ -641,7 +641,7 @@ function rcp_registration_is_recurring() {
 	$auto_renew = false;
 
 	if ( '3' == rcp_get_auto_renew_behavior() ) {
-		$auto_renew = isset( $_POST['rcp_auto_renew'] );
+		$auto_renew = ( ! empty( $_POST['rcp_auto_renew'] ) && in_array( $_POST['rcp_auto_renew'], array( 'true', 'on' ) ) );
 	}
 
 	if ( '1' == rcp_get_auto_renew_behavior() ) {

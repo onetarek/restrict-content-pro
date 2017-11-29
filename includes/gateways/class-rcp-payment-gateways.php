@@ -178,4 +178,24 @@ class RCP_Payment_Gateways {
 		}
 	}
 
+	// @todo
+	public function get_gateway_fields( $gateway ) {
+
+		if( empty( $gateway ) ) {
+			return false;
+		}
+
+		$gateway = $this->get_gateway( sanitize_text_field( $gateway ) );
+
+		if( isset( $gateway['class'] ) ) {
+			$gateway_obj = new $gateway['class'];
+		}
+
+		if( ! is_object( $gateway_obj ) ) {
+			return false;
+		}
+
+		return $gateway_obj->fields();
+	}
+
 }

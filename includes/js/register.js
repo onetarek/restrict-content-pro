@@ -8,68 +8,69 @@ var gateway_submits_form    = false;
 jQuery(document).ready(function($) {
 
 	// Initial validation of subscription level and gateway options
-	rcp_validate_form( true );
-	rcp_calc_total();
+	// rcp_validate_form( true );
+	// rcp_calc_total();
 
 	// Trigger gateway change event when gateway option changes
-	$('#rcp_payment_gateways select, #rcp_payment_gateways input').change( function() {
+	// $('#rcp_payment_gateways select, #rcp_payment_gateways input').change( function() {
 
-		$('body').trigger( 'rcp_gateway_change' );
+		// $('body').trigger( 'rcp_gateway_change' );
 
-	});
+	// });
 
 	// Trigger subscription level change event when level selection changes
-	$('.rcp_level').change(function() {
+	// $('.rcp_level').change(function() {
 
-		$('body').trigger( 'rcp_level_change' );
+		// $('body').trigger( 'rcp_level_change' );
 
-	});
+	// });
 
-	$('body').on( 'rcp_gateway_change', function() {
+	// $('body').on( 'rcp_gateway_change', function() {
 
-		rcp_validate_form( true );
+		// rcp_validate_form( true );
 
-	}).on( 'rcp_level_change', function() {
+	// }).on( 'rcp_level_change', function() {
 
-		rcp_validate_form( true );
+		// rcp_validate_form( true );
 
-	});
+	// });
 
 	// Validate discount code
-	$('#rcp_apply_discount').on( 'click', function(e) {
+	// $('#rcp_apply_discount').on( 'click', function(e) {
 
-		e.preventDefault();
+		// e.preventDefault();
 
-		$('body').trigger( 'rcp_discount_change' );
+		// $('body').trigger( 'rcp_discount_change' );
 
-		rcp_validate_discount();
+		// rcp_validate_discount();
 
-	});
+	// });
 
-	$(document.getElementById('rcp_auto_renew')).on('change', function() {
+	// $(document.getElementById('rcp_auto_renew')).on('change', function() {
 
-		rcp_calc_total();
+		// rcp_validate_gateways();
+		// rcp_calc_total();
 
-		if( $(this).is(':checked') ) {
+		// if( $(this).is(':checked') ) {
+		//
+		// 	$('.rcp_gateway_fields, #rcp_gateway_extra_fields').show();
+		//
+		// } else {
+		//
+		// 	if( $('.rcp_gateway_fields').hasClass( 'rcp_discounted_100' ) ) {
+		//
+		// 		$('.rcp_gateway_fields, #rcp_gateway_extra_fields').hide();
+		//
+		// 	} else {
+		//
+		// 		$('.rcp_gateway_fields, #rcp_gateway_extra_fields').show();
+		//
+		// 	}
+		//
+		// }
 
-			$('.rcp_gateway_fields, #rcp_gateway_extra_fields').show();
-
-		} else {
-
-			if( $('.rcp_gateway_fields').hasClass( 'rcp_discounted_100' ) ) {
-
-				$('.rcp_gateway_fields, #rcp_gateway_extra_fields').hide();
-
-			} else {
-
-				$('.rcp_gateway_fields, #rcp_gateway_extra_fields').show();
-
-			}
-
-		}
-
-	});
-	$('body').on( 'rcp_discount_change rcp_level_change rcp_gateway_change', rcp_calc_total);
+	// });
+	// $('body').on( 'rcp_discount_change rcp_level_change rcp_gateway_change', rcp_calc_total);
 
 	/**
 	 * If reCAPTCHA is enabled, disable the submit button
@@ -237,8 +238,8 @@ function rcp_validate_subscription_level() {
 }
 
 function rcp_get_gateway() {
-	var gateway;
-	var $ = jQuery;
+	let gateway;
+	let $ = jQuery;
 
 	if( $('#rcp_payment_gateways').length > 0 ) {
 
@@ -279,7 +280,9 @@ function rcp_validate_gateways() {
 	var lifetime = level.data( 'duration' ) == 'forever';
 	var level_has_trial = rcp_script_options.trial_levels.indexOf(level.val()) !== -1;
 	var gateway  = rcp_get_gateway();
-
+	var auto_renew = $('#rcp_auto_renew_wrap input').prop('checked');
+console.log('auto_renew');
+console.log(auto_renew);
 	rcp_validating_gateway = true;
 
 	if( level.attr('rel') == 0 ) {
@@ -295,7 +298,7 @@ function rcp_validate_gateways() {
 
 	} else {
 
-		if( full && ! rcp_script_options.one_time_discounts && ! $('#rcp_auto_renew_wrap input').prop('checked') ) {
+		if( full && ! rcp_script_options.one_time_discounts && ! auto_renew ) {
 
 			$('#rcp_gateway_extra_fields').remove();
 
@@ -315,20 +318,22 @@ function rcp_validate_gateways() {
 			});
 
 			$('.rcp_gateway_fields').show();
-			var data = { action: 'rcp_load_gateway_fields', rcp_gateway: gateway.val() };
+			var data = { action: 'rcp_load_gateway_fields', rcp_gateway: gateway.val(), rcp_level: level.val(), recurring: auto_renew };
 
 			$.post( rcp_script_options.ajaxurl, data, function(response) {
+	console.log('response in rcp_validate_gateways');
+	console.log(response);
 				$('#rcp_gateway_extra_fields').remove();
 				if( response.success && response.data.fields ) {
 					if( $('.rcp_gateway_fields' ).length ) {
 
 						$( '<div class="rcp_gateway_' + gateway.val() + '_fields" id="rcp_gateway_extra_fields">' + response.data.fields + '</div>' ).insertAfter('.rcp_gateway_fields');
-
+						rcp_prepare_registration_fields(response.data);
 					} else {
 
 						// Pre 2.1 template files
 						$( '<div class="rcp_gateway_' + gateway.val() + '_fields" id="rcp_gateway_extra_fields">' + response.data.fields + '</div>' ).insertAfter('.rcp_gateways_fieldset');
-
+						rcp_prepare_registration_fields(response.data);
 					}
 				}
 				form.unblock();
@@ -338,7 +343,14 @@ function rcp_validate_gateways() {
 		// Auto Renew checkbox
 		if ( 'yes' == gateway.data('supports-recurring') ) {
 			// Set up defaults
-			$('#rcp_auto_renew_wrap input').prop('checked', rcp_script_options.auto_renew_default);
+			if( auto_renew || rcp_script_options.auto_renew_default ) {
+				var auto_renew_checked = true;
+			} else {
+				var auto_renew_checked = false;
+			}
+			console.log('auto_renew_checked');
+			console.log(auto_renew_checked);
+			$('#rcp_auto_renew_wrap input').prop('checked', auto_renew_checked);
 			$('#rcp_auto_renew_wrap').show();
 
 			// Uncheck and hide if free level, lifetime level, or 100% discount applied
@@ -454,7 +466,7 @@ function rcp_validate_discount() {
 
 						gateway_fields.show();
 						$('#rcp_gateway_extra_fields').show();
-						rcp_validate_gateways();
+						// rcp_validate_gateways();
 
 					} else {
 
@@ -513,6 +525,8 @@ function rcp_calc_total() {
 			$total.html(response.total);
 		}
 
+	}).done( function(response) {
+		rcp_prepare_registration_fields(response);
 	});
 
 }
@@ -526,4 +540,149 @@ function rcp_calc_total() {
  */
 function rcp_validate_recaptcha(response) {
 	jQuery('#rcp_registration_form #rcp_submit').prop('disabled', false);
+}
+
+
+function rcp_prepare_registration_fields(args) {
+	console.log('rcp_prepare_registration_fields');
+	console.log(args);
+
+	let $ = jQuery;
+
+	// TODO: one-time discounts
+
+	if( args.amount <= 0 && (args.recurring_amount <= 0 || ! args.recurring) ) {
+		console.log('hiding fields');
+		$('.rcp_gateway_fields').hide();
+		$('#rcp_gateway_extra_fields').remove();
+		$('#rcp_auto_renew_wrap input').prop('checked', args.recurring);
+		$('.rcp_registration_total').html(args.total_html);
+	} else {
+		console.log('showing fields');
+		$('.rcp_gateway_fields').show();
+		$('#rcp_auto_renew_wrap').show();
+		$('#rcp_auto_renew_wrap input').prop('checked', args.recurring);
+		$('#rcp_gateway_extra_fields').show();
+		$('.rcp_registration_total').html(args.total_html);
+	}
+
+	if( args.is_free ) {
+
+		$('.rcp_gateway_fields,#rcp_auto_renew_wrap,#rcp_discount_code_wrap').hide();
+		$('.rcp_gateway_fields').removeClass( 'rcp_discounted_100' );
+		$('#rcp_discount_code_wrap input').val('');
+		$('.rcp_discount_amount,#rcp_gateway_extra_fields').remove();
+		$('.rcp_discount_valid, .rcp_discount_invalid').hide();
+		$('#rcp_auto_renew_wrap input').prop('checked', false);
+	} else {
+		$('.rcp_gateway_fields,#rcp_auto_renew_wrap,#rcp_discount_code_wrap').show();
+	}
+
+	if(args.discount_amount) {
+		$('.rcp_discount_valid').show();
+		$('#rcp_discount_code_wrap label').append('<span class="rcp_discount_amount"> - ' + args.discount_amount + '</span>');
+	}
+}
+
+function rcp_registration_form_state() {
+	let $ = jQuery;
+	let $level = $( '#rcp_subscription_levels input:checked' );
+	return {
+		subscription_level: $level.val(),
+		is_free: $level.attr('rel') == 0,
+		lifetime: $level.data('duration') === 'forever',
+		level_has_trial: rcp_script_options.trial_levels.indexOf($level.val()) !== -1,
+		discount_code: $('#rcp_discount_code').val(),
+		gateway: rcp_get_gateway().val(),
+		auto_renew: $('#rcp_auto_renew').prop('checked')
+	}
+}
+
+
+jQuery(document).ready(function($) {
+
+	rcp_validate_registration_state();
+
+	$('#rcp_payment_gateways select, #rcp_payment_gateways input').change( function() {
+		$('body').trigger('rcp_gateway_change', { gateway: rcp_get_gateway().val() });
+	});
+
+	$('.rcp_level').change(function() {
+		$('body').trigger('rcp_level_change', { subscription_level: $('#rcp_subscription_levels input:checked').val() });
+	});
+
+	$('#rcp_apply_discount').on( 'click', function(e) {
+		e.preventDefault();
+		$('body').trigger('rcp_discount_change', { discount_code: $('#rcp_discount_code').val() });
+	});
+
+	$('#rcp_auto_renew').on('change', function() {
+		$('body').trigger('rcp_auto_renew_change', { auto_renew: $(this).prop('checked') }); // @todo test this
+	});
+
+	$('body').on('rcp_discount_change rcp_level_change rcp_gateway_change rcp_auto_renew_change', function(event, data) {
+		console.log('event new');
+		console.log(event);
+		console.log(data);
+
+		// @todo block form
+
+		let reg = Object.assign({}, rcp_registration_form_state(), data);
+		console.log(reg);
+		rcp_validate_registration_state(reg);
+	});
+
+});
+
+
+function rcp_validate_registration_state(reg) {
+
+	if(! reg) {
+		reg = rcp_registration_form_state();
+	}
+
+	let $ = jQuery;
+
+	$.ajax({
+		type: 'post',
+		dataType: 'json',
+		url: rcp_script_options.ajaxurl,
+		data: {
+			action: 'rcp_validate_registration_state',
+			rcp_level: reg.subscription_level,
+			lifetime: reg.lifetime,
+			level_has_trial: reg.level_has_trial,
+			is_free: reg.is_free,
+			discount_code: reg.discount_code,
+			rcp_gateway: reg.gateway,
+			rcp_auto_renew: reg.auto_renew
+		},
+		success: function(response) {
+			console.log('moo');
+			console.log(response);
+
+			$('#rcp_gateway_extra_fields').remove();
+
+			if(response.success) {
+
+				if(response.data.gateway_fields) {
+					if ($('.rcp_gateway_fields').length) {
+
+						$('<div class="rcp_gateway_' + response.data.gateway + '_fields" id="rcp_gateway_extra_fields">' + response.data.gateway_fields + '</div>').insertAfter('.rcp_gateway_fields');
+
+					} else {
+
+						// Pre 2.1 template files
+						$('<div class="rcp_gateway_' + response.data.gateway + '_fields" id="rcp_gateway_extra_fields">' + response.data.gateway_fields + '</div>').insertAfter('.rcp_gateways_fieldset');
+					}
+				}
+
+				rcp_prepare_registration_fields(response.data);
+
+			} else {
+				console.log(response);
+			}
+		}
+	});
+
 }
