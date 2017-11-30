@@ -128,7 +128,7 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 						</th>
 						<td>
 							<span class="rcp-sub-expiration"><?php echo date_i18n( get_option( 'date_format' ), strtotime( $expiration_date, current_time( 'timestamp' ) ) ); ?></span>
-							<input type="text" id="rcp-sub-expiration" name="expiration" class="rcp-datepicker hidden" value="<?php echo esc_attr( $expiration_date ); ?>"/>
+							<input type="text" id="rcp-sub-expiration" name="expiration" class="rcp-datepicker rcp-sub-expiration hidden" value="<?php echo esc_attr( $expiration_date ); ?>"/>
 							<span>&nbsp;&ndash;&nbsp;</span>
 							<a href="#" class="rcp-edit-sub-expiration"><?php _e( 'Edit', 'rcp' ); ?></a>
 						</td>

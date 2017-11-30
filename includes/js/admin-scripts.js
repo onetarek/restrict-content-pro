@@ -367,6 +367,7 @@ jQuery(document).ready(function($) {
 			this.edit_member();
 			this.cancel_edit();
 			this.recurring_select();
+			this.edit_expiration();
 		},
 
 		edit_member: function () {
@@ -413,13 +414,32 @@ jQuery(document).ready(function($) {
 		},
 
 		/**
-		 * Editing the "recurring" flag for a subscription
+		 * Editing the "recurring" flag for a subscription.
 		 *
 		 * @since 3.0
 		 */
 		recurring_select: function () {
 			$( document.body ).on( 'change', '#rcp-recurring', function ( e ) {
 				$( '#rcp-sub-recurring-update-notice' ).slideToggle();
+			} );
+		},
+
+		/**
+		 * Editing the expiration date for a subscription.
+		 *
+		 * @since 3.0
+		 */
+		edit_expiration: function () {
+			$( '.rcp-edit-sub-expiration' ).on( 'click', function ( e ) {
+				e.preventDefault();
+
+				var link = $( this );
+				var expiration_input = $( '#rcp-sub-expiration' );
+
+				RCP_Member.edit_subscription_input( link, expiration_input );
+
+				$( '.rcp-sub-expiration' ).toggle();
+				$( '#rcp-sub-expiration-update-notice' ).slideToggle();
 			} );
 		}
 
