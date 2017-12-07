@@ -548,8 +548,15 @@ function rcp_prepare_registration_fields(args) {
 	console.log(args);
 
 	let $ = jQuery;
+	let $gateway = rcp_get_gateway();
+	let auto_renew_checked = $gateway.data('supports-recurring') && (args.recurring || rcp_script_options.auto_renew_default);
 
-	// TODO: one-time discounts
+	if(auto_renew_checked) {
+		$('#rcp_auto_renew_wrap').show();
+		$('#rcp_auto_renew_wrap input').prop('checked', true);
+	}
+
+	// TODO: one-time discounts. uncheck and hide auto renew if gateway doesn't support
 
 	if( args.amount <= 0 && (args.recurring_amount <= 0 || ! args.recurring) ) {
 		console.log('hiding fields');
@@ -582,6 +589,13 @@ function rcp_prepare_registration_fields(args) {
 		$('.rcp_discount_valid').show();
 		$('#rcp_discount_code_wrap label').append('<span class="rcp_discount_amount"> - ' + args.discount_amount + '</span>');
 	}
+
+	if ( args.level_has_trial && 'yes' == $gateway.data( 'supports-trial' ) && ! rcp_script_options.user_has_trialed ) {
+		$('#rcp_auto_renew').prop('checked', true);
+		$('#rcp_auto_renew_wrap').hide();
+	}
+	// @todo unhide auto renew
+
 }
 
 function rcp_registration_form_state() {
@@ -594,6 +608,7 @@ function rcp_registration_form_state() {
 		level_has_trial: rcp_script_options.trial_levels.indexOf($level.val()) !== -1,
 		discount_code: $('#rcp_discount_code').val(),
 		gateway: rcp_get_gateway().val(),
+		gateway_data: rcp_get_gateway(),
 		auto_renew: $('#rcp_auto_renew').prop('checked')
 	}
 }
@@ -617,7 +632,7 @@ jQuery(document).ready(function($) {
 	});
 
 	$('#rcp_auto_renew').on('change', function() {
-		$('body').trigger('rcp_auto_renew_change', { auto_renew: $(this).prop('checked') }); // @todo test this
+		$('body').trigger('rcp_auto_renew_change', { auto_renew: $(this).prop('checked') });
 	});
 
 	$('body').on('rcp_discount_change rcp_level_change rcp_gateway_change rcp_auto_renew_change', function(event, data) {
@@ -625,23 +640,34 @@ jQuery(document).ready(function($) {
 		console.log(event);
 		console.log(data);
 
-		// @todo block form
-
 		let reg = Object.assign({}, rcp_registration_form_state(), data);
-		console.log(reg);
-		rcp_validate_registration_state(reg);
+
+		rcp_validate_registration_state(reg, event.type);
 	});
 
 });
 
 
-function rcp_validate_registration_state(reg) {
+function rcp_validate_registration_state(reg, eventType) {
 
 	if(! reg) {
 		reg = rcp_registration_form_state();
 	}
 
 	let $ = jQuery;
+
+	$('#rcp_registration_form').block({
+		message: rcp_script_options.pleasewait,
+		css: {
+			border: 'none',
+			padding: '15px',
+			backgroundColor: '#000',
+			'-webkit-border-radius': '10px',
+			'-moz-border-radius': '10px',
+			opacity: .5,
+			color: '#fff'
+		}
+	});
 
 	$.ajax({
 		type: 'post',
@@ -655,17 +681,20 @@ function rcp_validate_registration_state(reg) {
 			is_free: reg.is_free,
 			discount_code: reg.discount_code,
 			rcp_gateway: reg.gateway,
-			rcp_auto_renew: reg.auto_renew
+			rcp_auto_renew: reg.auto_renew,
+			event_type: eventType
 		},
 		success: function(response) {
 			console.log('moo');
 			console.log(response);
 
-			$('#rcp_gateway_extra_fields').remove();
-
 			if(response.success) {
 
-				if(response.data.gateway_fields) {
+				// @todo make sure we append the cc fields if they're not there when toggling it on
+				if(response.data.event_type !== 'rcp_auto_renew_change' && response.data.gateway_fields) {
+
+					$('#rcp_gateway_extra_fields').remove();
+
 					if ($('.rcp_gateway_fields').length) {
 
 						$('<div class="rcp_gateway_' + response.data.gateway + '_fields" id="rcp_gateway_extra_fields">' + response.data.gateway_fields + '</div>').insertAfter('.rcp_gateway_fields');
@@ -682,6 +711,8 @@ function rcp_validate_registration_state(reg) {
 			} else {
 				console.log(response);
 			}
+
+			$('#rcp_registration_form').unblock();
 		}
 	});
 

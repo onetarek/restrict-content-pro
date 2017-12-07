@@ -117,6 +117,7 @@ error_log(print_r($args,true));
 	$return['lifetime'] = ! empty( $args['lifetime'] ) && 'true' == $args['lifetime'];
 	$return['level_has_trial'] = ! empty( $args['level_has_trial'] ) && 'true' == $args['level_has_trial'];
 	$return['total'] = __( 'No available subscription levels for your account.', 'rcp' );
+	$return['event_type'] = ! empty( $args['event_type'] ) ? sanitize_text_field( $args['event_type'] ) : false;
 
 	rcp_setup_registration( $return['level_id'], $return['discount_code'] );
 
