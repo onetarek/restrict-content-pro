@@ -106,6 +106,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 		}
 
+		$subs_to_cancel = array();
+
 		if( empty( $customer_exists ) ) {
 
 			try {
@@ -143,6 +145,62 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 		} else {
 
+			// Close all invoices for existing subs.
+			foreach ( $customer->subscriptions->all()->data as $subscription ) {
+
+				// Close invoices for subscriptions with the RCP metadata present and matching member ID.
+				// @todo When we add multiple subscriptions we need to update this to only close subscription invoices where $this->subscription_id matches the rcp_subscription_level_id in the metadata.
+				if ( ! empty( $subscription->metadata ) && ! empty( $subscription->metadata['rcp_subscription_level_id'] ) && $this->user_id == $subscription->metadata['rcp_member_id'] ) {
+					$invoices = \Stripe\Invoice::all( array( 'subscription' => $subscription->profile_id ) );
+					if ( $invoices ) {
+						foreach ( $invoices->data as $invoice ) {
+							if ( $invoice->paid | $invoice->closed ) {
+								continue;
+							}
+
+							$invoice->closed = true;
+							$invoice->save();
+						}
+					}
+					$subs_to_cancel[] = $subscription;
+					continue;
+				}
+
+				/*
+				 * This handles subscriptions from before metadata was added. We check the plan name against the
+				 * RCP subscription level database. If the Stripe plan name matches a sub level name then we close all invoices.
+				 * @todo When we add multiple subscriptions we need to update this to only close invoices if the plan name != $member->get_pending_subscription_name()
+				 */
+				if ( ! empty( $subscription->plan->name ) ) {
+
+					/**
+					 * @var RCP_Levels $rcp_levels_db
+					 */
+					global $rcp_levels_db;
+
+					$level = $rcp_levels_db->get_level_by( 'name', $subscription->plan->name );
+
+					// Cancel if this plan name matches an RCP subscription level.
+					if ( ! empty( $level ) ) {
+						$invoices = \Stripe\Invoice::all( array( 'subscription' => $subscription->profile_id ) );
+						if ( $invoices ) {
+							foreach ( $invoices->data as $invoice ) {
+								if ( $invoice->paid | $invoice->closed ) {
+									continue;
+								}
+
+								$invoice->closed = true;
+								$invoice->save();
+							}
+						}
+						$subs_to_cancel[] = $subscription;
+					}
+
+				}
+
+			}
+
+			// Add new card to customer and save.
 			$customer->source = $_POST['stripeToken'];
 
 			try {
@@ -195,37 +253,11 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				// Set up array of subscriptions we cancel below so we don't try to cancel the same one twice.
 				$cancelled_subscriptions = array();
 
-				// clean up any past due or unpaid subscriptions before upgrading/downgrading
-				foreach( $customer->subscriptions->all()->data as $subscription ) {
-
-					// Cancel subscriptions with the RCP metadata present and matching member ID.
-					// @todo When we add multiple subscriptions we need to update this to only cancel subscriptions where $this->subscription_id matches the rcp_subscription_level_id in the metadata.
-					if ( ! empty( $subscription->metadata ) && ! empty( $subscription->metadata['rcp_subscription_level_id'] ) && $this->user_id == $subscription->metadata['rcp_member_id'] ) {
+				// Cancel all the subscriptions that we closed the invoices for earlier.
+				if ( ! empty( $subs_to_cancel ) ) {
+					foreach ( $subs_to_cancel as $subscription ) {
 						$subscription->cancel();
 						$cancelled_subscriptions[] = $subscription->id;
-						continue;
-					}
-
-					/*
-					 * This handles subscriptions from before metadata was added. We check the plan name against the
-					 * RCP subscription level database. If the Stripe plan name matches a sub level name then we cancel it.
-					 * @todo When we add multiple subscriptions we need to update this to only cancel if the plan name != $member->get_pending_subscription_name()
-					 */
-					if ( ! empty( $subscription->plan->name ) ) {
-
-						/**
-						 * @var RCP_Levels $rcp_levels_db
-						 */
-						global $rcp_levels_db;
-
-						$level = $rcp_levels_db->get_level_by( 'name', $subscription->plan->name );
-
-						// Cancel if this plan name matches an RCP subscription level.
-						if ( ! empty( $level ) ) {
-							$subscription->cancel();
-							$cancelled_subscriptions[] = $subscription->id;
-						}
-
 					}
 				}
 
