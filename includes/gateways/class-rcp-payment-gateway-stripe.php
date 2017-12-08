@@ -151,7 +151,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				// Close invoices for subscriptions with the RCP metadata present and matching member ID.
 				// @todo When we add multiple subscriptions we need to update this to only close subscription invoices where $this->subscription_id matches the rcp_subscription_level_id in the metadata.
 				if ( ! empty( $subscription->metadata ) && ! empty( $subscription->metadata['rcp_subscription_level_id'] ) && $this->user_id == $subscription->metadata['rcp_member_id'] ) {
-					$invoices = \Stripe\Invoice::all( array( 'subscription' => $subscription->profile_id ) );
+					$invoices = \Stripe\Invoice::all( array( 'subscription' => $subscription->id ) );
 					if ( $invoices ) {
 						foreach ( $invoices->data as $invoice ) {
 							if ( $invoice->paid | $invoice->closed ) {
@@ -182,7 +182,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 					// Cancel if this plan name matches an RCP subscription level.
 					if ( ! empty( $level ) ) {
-						$invoices = \Stripe\Invoice::all( array( 'subscription' => $subscription->profile_id ) );
+						$invoices = \Stripe\Invoice::all( array( 'subscription' => $subscription->id ) );
 						if ( $invoices ) {
 							foreach ( $invoices->data as $invoice ) {
 								if ( $invoice->paid | $invoice->closed ) {
