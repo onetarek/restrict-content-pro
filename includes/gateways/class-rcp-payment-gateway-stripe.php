@@ -111,7 +111,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 			try {
 
 				$customer_args = array(
-					'card'  => $_POST['stripeToken'],
 					'email' => $this->email
 				);
 
@@ -141,16 +140,58 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 			}
 
-		} else {
+		}
 
-			$customer->source = $_POST['stripeToken'];
+		// Set up array of subscriptions we cancel below so we don't try to cancel the same one twice.
+		$cancelled_subscriptions = array();
 
-			try {
-				$customer->save();
-			} catch( Exception $e ) {
-				$this->handle_processing_error( $e );
+		// clean up any past due or unpaid subscriptions before upgrading/downgrading
+		foreach( $customer->subscriptions->all()->data as $subscription ) {
+
+			// Cancel subscriptions with the RCP metadata present and matching member ID.
+			// @todo When we add multiple subscriptions we need to update this to only cancel subscriptions where $this->subscription_id matches the rcp_subscription_level_id in the metadata.
+			if ( ! empty( $subscription->metadata ) && ! empty( $subscription->metadata['rcp_subscription_level_id'] ) && $this->user_id == $subscription->metadata['rcp_member_id'] ) {
+				$subscription->cancel();
+				$cancelled_subscriptions[] = $subscription->id;
+				rcp_log( sprintf( 'Cancelled Stripe subscription %s.', $subscription->id ) );
+				continue;
 			}
 
+			/*
+			 * This handles subscriptions from before metadata was added. We check the plan name against the
+			 * RCP subscription level database. If the Stripe plan name matches a sub level name then we cancel it.
+			 * @todo When we add multiple subscriptions we need to update this to only cancel if the plan name != $member->get_pending_subscription_name()
+			 */
+			if ( ! empty( $subscription->plan->name ) ) {
+
+				/**
+				 * @var RCP_Levels $rcp_levels_db
+				 */
+				global $rcp_levels_db;
+
+				$level = $rcp_levels_db->get_level_by( 'name', $subscription->plan->name );
+
+				// Cancel if this plan name matches an RCP subscription level.
+				if ( ! empty( $level ) ) {
+					$subscription->cancel();
+					$cancelled_subscriptions[] = $subscription->id;
+					rcp_log( sprintf( 'Cancelled Stripe subscription %s.', $subscription->id ) );
+				}
+
+			}
+		}
+
+		// If the customer has an existing subscription, we need to cancel it (if we haven't already above).
+		if( $member->just_upgraded() && $member->can_cancel() && ! in_array( $member->get_merchant_subscription_id(), $cancelled_subscriptions ) ) {
+			$cancelled = $member->cancel_payment_profile( false );
+		}
+
+		// Now save card details. This has to be done after the above cancellations. See https://github.com/restrictcontentpro/restrict-content-pro/issues/1570
+		$customer->source = $_POST['stripeToken'];
+		try {
+			$customer->save();
+		} catch( Exception $e ) {
+			$this->handle_processing_error( $e );
 		}
 
 		if ( $this->auto_renew ) {
@@ -190,48 +231,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 					$invoice->closed = true;
 					$invoice->save();
 					unset( $temp_invoice, $invoice );
-				}
-
-				// Set up array of subscriptions we cancel below so we don't try to cancel the same one twice.
-				$cancelled_subscriptions = array();
-
-				// clean up any past due or unpaid subscriptions before upgrading/downgrading
-				foreach( $customer->subscriptions->all()->data as $subscription ) {
-
-					// Cancel subscriptions with the RCP metadata present and matching member ID.
-					// @todo When we add multiple subscriptions we need to update this to only cancel subscriptions where $this->subscription_id matches the rcp_subscription_level_id in the metadata.
-					if ( ! empty( $subscription->metadata ) && ! empty( $subscription->metadata['rcp_subscription_level_id'] ) && $this->user_id == $subscription->metadata['rcp_member_id'] ) {
-						$subscription->cancel();
-						$cancelled_subscriptions[] = $subscription->id;
-						continue;
-					}
-
-					/*
-					 * This handles subscriptions from before metadata was added. We check the plan name against the
-					 * RCP subscription level database. If the Stripe plan name matches a sub level name then we cancel it.
-					 * @todo When we add multiple subscriptions we need to update this to only cancel if the plan name != $member->get_pending_subscription_name()
-					 */
-					if ( ! empty( $subscription->plan->name ) ) {
-
-						/**
-						 * @var RCP_Levels $rcp_levels_db
-						 */
-						global $rcp_levels_db;
-
-						$level = $rcp_levels_db->get_level_by( 'name', $subscription->plan->name );
-
-						// Cancel if this plan name matches an RCP subscription level.
-						if ( ! empty( $level ) ) {
-							$subscription->cancel();
-							$cancelled_subscriptions[] = $subscription->id;
-						}
-
-					}
-				}
-
-				// If the customer has an existing subscription, we need to cancel it (if we haven't already above).
-				if( $member->just_upgraded() && $member->can_cancel() && ! in_array( $member->get_merchant_subscription_id(), $cancelled_subscriptions ) ) {
-					$cancelled = $member->cancel_payment_profile( false );
 				}
 
 				$sub_args = array(
@@ -428,11 +427,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				$customer->save();
 			} catch( Exception $e ) {
 				$this->handle_processing_error( $e );
-			}
-
-			// If this is a one-time signup and the customer has an existing subscription, we need to cancel it
-			if( ! $this->auto_renew && $member->just_upgraded() && $member->can_cancel() ) {
-				$cancelled = $member->cancel_payment_profile( false );
 			}
 
 			$member->set_recurring( $this->auto_renew );
