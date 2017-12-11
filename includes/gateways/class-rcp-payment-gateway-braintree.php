@@ -808,7 +808,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 	 * Loads the Braintree javascript library.
 	 */
 	public function scripts() {
-		wp_enqueue_script( 'rcp-braintree', 'https://js.braintreegateway.com/js/braintree-2.30.0.min.js' );
+		wp_enqueue_script( 'rcp-braintree', 'https://js.braintreegateway.com/js/braintree-2.32.1.min.js' );
 	}
 
 }
