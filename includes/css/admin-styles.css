@@ -145,7 +145,7 @@
 
 /* Input Fields
 -------------------------------------------------------------- */
-#rcp-name, #rcp-description, #rcp-code, #rcp-user, #rcp-userlogin, #rcp-email, #rcp-key, #rcp-payment-profile-id {
+#rcp-name, #rcp-description, #rcp-code, #rcp-user, #rcp-userlogin, #rcp-email, #rcp-key, #rcp-payment-profile-id, #rcp-expiration {
 	width: 300px;
 }
 
@@ -155,10 +155,6 @@
 
 #rcp-duration, #trial_duration, #rcp-max-uses {
 	width: 40px;
-}
-
-#rcp-expiration {
-	width: 120px;
 }
 
 /* Restrict This Content Metabox
