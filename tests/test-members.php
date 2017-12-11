@@ -320,10 +320,6 @@ class RCP_Member_Tests extends WP_UnitTestCase {
 
 		$this->assertTrue( $this->member->can_access( $this->post_id ) );
 
-//		$this->member->set_status( 'free' );
-//
-//		$this->assertFalse( $this->member->can_access( $this->post_id ) );
-
 		$this->member->set_status( 'active' );
 
 		update_post_meta( $this->post_id, 'rcp_subscription_level', array( $this->level_id ) );
