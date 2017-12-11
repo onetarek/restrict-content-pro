@@ -36,9 +36,9 @@ function rcp_restrict_shortcode( $atts, $content = null ) {
 	if ( strlen( $atts['message'] ) > 0 ) {
 		$teaser = $atts['message'];
 	} elseif ( $atts['paid'] ) {
-		$teaser = $rcp_options['paid_message'];
+		$teaser = ! empty( $rcp_options['paid_message'] ) ? $rcp_options['paid_message'] : __( 'This content is restricted to subscribers', 'rcp' );
 	} else {
-		$teaser = $rcp_options['free_message'];
+		$teaser = ! empty( $rcp_options['free_message'] ) ? $rcp_options['free_message'] : __( 'This content is restricted to subscribers', 'rcp' );
 	}
 
 	$subscription = array_map( 'trim', explode( ',', $atts['subscription'] ) );
