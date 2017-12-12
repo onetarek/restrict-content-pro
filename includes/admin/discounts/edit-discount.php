@@ -93,7 +93,7 @@ $code = rcp_get_discount_details( urldecode( $_GET['edit_discount'] ) );
 				</th>
 				<td>
 					<input name="expiration" id="rcp-expiration" type="text" class="rcp-datetimepicker" value="<?php echo $code->expiration == '' ? '' : esc_attr( date( 'Y-m-d H:i:s', strtotime( $code->expiration, current_time( 'timestamp' ) ) ) ); ?>"/>
-					<p class="description"><?php _e(' Enter the expiration date for this discount code in the format of yyyy-mm-dd. Leave blank for no expiration', 'rcp' ); ?></p>
+					<p class="description"><?php _e(' Enter the expiration date for this discount code in the format of yyyy-mm-dd hh:mm:ss. Leave blank for no expiration', 'rcp' ); ?></p>
 				</td>
 			</tr>
 			<tr class="form-field">
