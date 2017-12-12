@@ -126,9 +126,9 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 				$result = Braintree_Customer::create(
 					array(
 						'id'                 => 'bt_' . $this->user_id,
-						'firstName'          => ! empty( $this->subscription_data['post_data']['rcp_user_first'] ) ? sanitize_text_field( $this->subscription_data['post_data']['rcp_user_first'] ) : '',
-						'lastName'           => ! empty( $this->subscription_data['post_data']['rcp_user_last'] ) ? sanitize_text_field( $this->subscription_data['post_data']['rcp_user_last'] ) : '',
-						'email'              => $this->subscription_data['user_email'],
+						'firstName'          => ! empty( $member->first_name ) ? sanitize_text_field( $member->first_name ) : '',
+						'lastName'           => ! empty( $member->last_name ) ? sanitize_text_field( $member->last_name ) : '',
+						'email'              => $member->user_email,
 						'riskData'           => array(
 							'customerBrowser' => $_SERVER['HTTP_USER_AGENT'],
 							'customerIp'      => rcp_get_ip()
