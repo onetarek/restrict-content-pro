@@ -120,6 +120,12 @@ jQuery(document).ready(function($) {
 		var dateFormat = 'yy-mm-dd';
 		$('.rcp-datepicker').datepicker({dateFormat: dateFormat});
 	}
+	if($('.rcp-datetimepicker').length > 0 ) {
+		$('.rcp-datetimepicker').datetimepicker({
+			dateFormat: 'yy-mm-dd',
+			timeFormat: 'HH:mm:ss'
+		});
+	}
 	$('.rcp_cancel').click(function() {
 		if(confirm(rcp_vars.cancel_user)) {
 			return true;

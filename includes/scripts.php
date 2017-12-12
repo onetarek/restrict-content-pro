@@ -17,6 +17,8 @@
  */
 function rcp_admin_scripts( $hook ) {
 
+	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 	global $rcp_options, $rcp_members_page, $rcp_subscriptions_page, $rcp_discounts_page, $rcp_payments_page, $rcp_reports_page, $rcp_settings_page, $rcp_export_page, $rcp_help_page, $rcp_tools_page;
 	$pages = array( $rcp_members_page, $rcp_subscriptions_page, $rcp_discounts_page, $rcp_payments_page, $rcp_reports_page, $rcp_settings_page, $rcp_export_page, $rcp_tools_page, $rcp_help_page );
 
@@ -26,6 +28,10 @@ function rcp_admin_scripts( $hook ) {
 
 	if( false !== strpos( $hook, 'rcp-restrict-post-type' ) ) {
 		$pages[] = $hook;
+	}
+
+	if ( $rcp_discounts_page == $hook ) {
+		wp_enqueue_script( 'jquery-ui-timepicker', RCP_PLUGIN_URL . 'includes/js/jquery-ui-timepicker-addon' . $suffix . '.js', array( 'jquery-ui-datepicker', 'jquery-ui-slider' ), '1.6.3' );
 	}
 
 	if( in_array( $hook, $pages ) ) {
@@ -87,6 +93,8 @@ add_action( 'admin_head', 'rcp_admin_help_url' );
  * @return void
  */
 function rcp_admin_styles( $hook ) {
+	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 	global $rcp_members_page, $rcp_subscriptions_page, $rcp_discounts_page, $rcp_payments_page, $rcp_reports_page, $rcp_settings_page, $rcp_export_page, $rcp_help_page, $rcp_tools_page, $rcp_add_ons_page;
 	$pages = array(
 		$rcp_members_page,
@@ -109,9 +117,12 @@ function rcp_admin_styles( $hook ) {
 	}
 
 	if( in_array( $hook, $pages ) ) {
-		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 		wp_enqueue_style( 'datepicker',  RCP_PLUGIN_URL . 'includes/css/datepicker' . $suffix . '.css' );
 		wp_enqueue_style( 'rcp-admin',  RCP_PLUGIN_URL . 'includes/css/admin-styles' . $suffix . '.css', array(), RCP_PLUGIN_VERSION );
+	}
+
+	if ( $rcp_discounts_page == $hook ) {
+		wp_enqueue_style( 'jquery-ui-timepicker',  RCP_PLUGIN_URL . 'includes/css/jquery-ui-timepicker-addon' . $suffix . '.css', array(), '1.6.3' );
 	}
 }
 add_action( 'admin_enqueue_scripts', 'rcp_admin_styles' );
