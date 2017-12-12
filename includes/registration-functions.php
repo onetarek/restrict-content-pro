@@ -50,6 +50,11 @@ function rcp_process_registration() {
 		$gateway = sanitize_text_field( $_POST['rcp_gateway'] );
 	}
 
+	// Change gateway to "free" if this subscription doesn't require payment.
+	if ( $full_discount || empty( $price ) ) {
+		$gateway = 'free';
+	}
+
 	rcp_log( sprintf( 'Started new registration for subscription #%d via %s.', $subscription_id, $gateway ) );
 
 	/***********************
