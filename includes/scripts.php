@@ -120,10 +120,6 @@ function rcp_admin_styles( $hook ) {
 		wp_enqueue_style( 'datepicker',  RCP_PLUGIN_URL . 'includes/css/datepicker' . $suffix . '.css' );
 		wp_enqueue_style( 'rcp-admin',  RCP_PLUGIN_URL . 'includes/css/admin-styles' . $suffix . '.css', array(), RCP_PLUGIN_VERSION );
 	}
-
-	if ( $rcp_discounts_page == $hook ) {
-		wp_enqueue_style( 'jquery-ui-timepicker',  RCP_PLUGIN_URL . 'includes/css/jquery-ui-timepicker-addon' . $suffix . '.css', array(), '1.6.3' );
-	}
 }
 add_action( 'admin_enqueue_scripts', 'rcp_admin_styles' );
 
