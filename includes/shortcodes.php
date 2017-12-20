@@ -232,7 +232,6 @@ function rcp_user_name( $atts, $content = null ) {
 }
 add_shortcode( 'user_name', 'rcp_user_name' );
 
-
 /**
  * Displays user registration form
  *
@@ -254,7 +253,7 @@ function rcp_registration_form( $atts, $content = null ) {
 	global $user_ID;
 
 	// only show the registration form to non-logged-in members
-	if( ! rcp_is_active( $user_ID ) || rcp_is_trialing( $user_ID ) || rcp_subscription_upgrade_possible( $user_ID ) ) {
+	if( ! rcp_is_active( $user_ID ) || rcp_is_trialing( $user_ID ) || rcp_subscription_upgrade_possible( $user_ID ) || rcp_can_member_renew( $user_ID ) ) {
 
 		global $rcp_options, $rcp_load_css, $rcp_load_scripts;
 

@@ -862,7 +862,7 @@ add_action( 'init', 'rcp_setup_registration_init' );
 
 
 /**
- * Filter levels to only show valid upgrade levels
+ * Filter levels to only show valid upgrade and/or renew levels
  *
  * @since 2.5
  * @return array Array of subscriptions.
@@ -872,6 +872,22 @@ function rcp_filter_registration_upgrade_levels() {
 	remove_filter( 'rcp_get_levels', 'rcp_filter_registration_upgrade_levels' );
 
 	$levels = rcp_get_upgrade_paths();
+
+	if ( ! rcp_subscription_upgrade_possible() && rcp_is_active() ) {
+		$available_levels = array(); // Default to no levels available if the user can't upgrade or renew.
+
+		// If the user can't upgrade but is able to renew, they should only see their current subscription level.
+		if ( rcp_can_member_renew() ) {
+			foreach ( $levels as $level ) {
+				if ( $level->id == rcp_get_subscription_id() ) {
+					$available_levels[] = $level;
+					break;
+				}
+			}
+		}
+
+		$levels = $available_levels;
+	}
 
 	add_filter( 'rcp_get_levels', 'rcp_filter_registration_upgrade_levels' );
 
