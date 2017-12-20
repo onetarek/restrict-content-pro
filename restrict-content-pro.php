@@ -329,6 +329,7 @@ if( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 		// batch processing
 		require_once  RCP_PLUGIN_DIR . 'includes/batch/interface-job.php';
 		require_once  RCP_PLUGIN_DIR . 'includes/batch/class-job.php';
+		require_once  RCP_PLUGIN_DIR . 'includes/batch/batch-functions.php';
 		require_once  RCP_PLUGIN_DIR . 'includes/admin/batch/ajax-actions.php';
 
 		// retrieve our license key from the DB
