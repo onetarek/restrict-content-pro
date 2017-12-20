@@ -248,6 +248,15 @@ global $rcp_options, $rcp_payment, $rcp_member; ?>
 				<article>
 					<p><strong><?php echo $rcp_member->first_name . ' ' . $rcp_member->last_name; ?></strong></p>
 					<p><strong><?php echo $rcp_member->user_email; ?></strong></p>
+					<?php
+					/**
+					 * Insert content after the member's name and email.
+					 *
+					 * @param object     $rcp_payment Payment object from the database.
+					 * @param RCP_Member $rcp_member  Member object.
+					 */
+					do_action( 'rcp_invoice_bill_to', $rcp_payment, $rcp_member );
+					?>
 				</article>
 
 			</div>

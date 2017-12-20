@@ -371,7 +371,7 @@ function rcp_set_user_logged_in_status( $logged_in_cookie, $expire, $expiration,
 
 		$data[] = $logged_in_cookie;
 
-		set_transient( 'rcp_user_logged_in_' . $user_id, $data );
+		set_transient( 'rcp_user_logged_in_' . $user_id, $data, MONTH_IN_SECONDS );
 
 	endif;
 }
@@ -415,7 +415,7 @@ function rcp_clear_auth_cookie() {
 		if( false !== $key ) {
 			unset( $data[$key] );
 			$data = array_values( $data );
-			set_transient( 'rcp_user_logged_in_' . $user_id, $data );
+			set_transient( 'rcp_user_logged_in_' . $user_id, $data, MONTH_IN_SECONDS );
 		}
 
 	endif;
@@ -475,7 +475,7 @@ function rcp_can_user_be_logged_in() {
 
 			// save modified data
 			if ( count( $data ) != $prev_data_count ) {
-				set_transient( 'rcp_user_logged_in_' . $user_id, $data );
+				set_transient( 'rcp_user_logged_in_' . $user_id, $data, MONTH_IN_SECONDS );
 			}
 
 			if( ! in_array( $_COOKIE[LOGGED_IN_COOKIE], $data ) ) {

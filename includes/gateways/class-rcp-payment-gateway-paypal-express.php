@@ -74,6 +74,11 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 			$amount = $this->initial_amount;
 		}
 
+		$cancel_url = wp_get_referer();
+		if ( empty( $cancel_url ) ) {
+			$cancel_url = get_permalink( $rcp_options['registration_page'] );
+		}
+
 		$args = array(
 			'USER'                           => $this->username,
 			'PWD'                            => $this->password,
@@ -91,7 +96,7 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 			'PAYMENTREQUEST_0_NOTIFYURL'     => add_query_arg( 'listener', 'EIPN', home_url( 'index.php' ) ),
 			'EMAIL'                          => $this->email,
 			'RETURNURL'                      => add_query_arg( array( 'rcp-confirm' => 'paypal_express', 'user_id' => $this->user_id ), get_permalink( $rcp_options['registration_page'] ) ),
-			'CANCELURL'                      => get_permalink( $rcp_options['registration_page'] ),
+			'CANCELURL'                      => $cancel_url,
 			'REQCONFIRMSHIPPING'             => 0,
 			'NOSHIPPING'                     => 1,
 			'ALLOWNOTE'                      => 0,

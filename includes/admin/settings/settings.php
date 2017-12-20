@@ -41,7 +41,7 @@ function rcp_settings_page() {
 	$rcp_options = wp_parse_args( $rcp_options, $defaults );
 
 	?>
-	<div class="wrap">
+	<div id="rcp-settings-wrap" class="wrap">
 		<?php
 		if ( ! isset( $_REQUEST['updated'] ) )
 			$_REQUEST['updated'] = false;
@@ -1248,6 +1248,36 @@ function rcp_settings_page() {
 									wp_editor( $renewal_payment_failed_email, 'rcp_settings_renewal_payment_failed_email', array( 'textarea_name' => 'rcp_settings[renewal_payment_failed_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users when a renewal payment fails.', 'rcp' ); ?></p>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<label for="rcp_settings[disable_renewal_payment_failed_email_admin]"><?php _e( 'Disable for Admin', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<input type="checkbox" value="1" name="rcp_settings[disable_renewal_payment_failed_email_admin]" id="rcp_settings[disable_renewal_payment_failed_email_admin]" class="rcp-disable-email" <?php checked( true, isset( $rcp_options['disable_renewal_payment_failed_email'] ) ); ?>/>
+									<span><?php _e( 'Check this to disable the email sent to the administrator when a renewal payment fails.', 'rcp' ); ?></span>
+								</td>
+							</tr>
+							<tr valign="top"<?php echo ( isset( $rcp_options['disable_renewal_payment_failed_email_admin'] ) ) ? ' style="display: none;"' : ''; ?>>
+								<th>
+									<label for="rcp_settings[renewal_payment_failed_subject_admin]"><?php _e( 'Admin Subject', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<input class="regular-text" id="rcp_settings[renewal_payment_failed_subject_admin]" style="width: 300px;" name="rcp_settings[renewal_payment_failed_subject_admin]" value="<?php if( isset( $rcp_options['renewal_payment_failed_subject_admin'] ) ) { echo esc_attr( $rcp_options['renewal_payment_failed_subject_admin'] ); } ?>"/>
+									<p class="description"><?php _e( 'The subject line for the email sent to the admin when a renewal payment fails.', 'rcp' ); ?></p>
+								</td>
+							</tr>
+							<tr valign="top"<?php echo ( isset( $rcp_options['disable_renewal_payment_failed_email_admin'] ) ) ? ' style="display: none;"' : ''; ?>>
+								<th>
+									<label for="rcp_settings[renewal_payment_failed_email_admin]"><?php _e( 'Admin Email Body', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<?php
+									$renewal_payment_failed_email = isset( $rcp_options['renewal_payment_failed_email_admin'] ) ? wptexturize( $rcp_options['renewal_payment_failed_email_admin'] ) : '';
+									wp_editor( $renewal_payment_failed_email, 'rcp_settings_renewal_payment_failed_email_admin', array( 'textarea_name' => 'rcp_settings[renewal_payment_failed_email_admin]', 'teeny' => true ) );
+									?>
+									<p class="description"><?php _e( 'This is the email message that is sent to the admin when a renewal payment fails.', 'rcp' ); ?></p>
 								</td>
 							</tr>
 							<tr valign="top">
