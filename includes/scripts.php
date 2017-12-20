@@ -58,6 +58,20 @@ function rcp_admin_scripts( $hook ) {
 			)
 		);
 	}
+
+	if ( 'restrict_page_rcp-tools' === $hook ) {
+		wp_enqueue_script( 'rcp-batch', RCP_PLUGIN_URL . 'includes/batch/batch.js', array( 'jquery' ) );
+		wp_enqueue_script( 'jquery-ui-progressbar' );
+		wp_enqueue_style( 'jquery-ui-fresh-css', RCP_PLUGIN_URL . 'includes/css/jquery-ui-fresh.min.css' );
+		wp_localize_script( 'rcp-batch', 'rcp_batch_vars', array(
+			'batch_nonce' => wp_create_nonce( 'rcp_batch_nonce' ),
+			'i18n' => array(
+				'job_success' => __( 'Job completed successfully.', 'rcp' ),
+				'job_fail' => __( 'Job failed to complete successfully.', 'rcp' ),
+				'job_retry' => __( 'Try again.', 'rcp' )
+			)
+		) );
+	}
 }
 add_action( 'admin_enqueue_scripts', 'rcp_admin_scripts' );
 

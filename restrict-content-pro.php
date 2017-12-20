@@ -325,6 +325,12 @@ if( version_compare( PHP_VERSION, '5.3', '<' ) ) {
 		include( RCP_PLUGIN_DIR . 'includes/deactivation.php' );
 		include( RCP_PLUGIN_DIR . 'RCP_Plugin_Updater.php' );
 
+		// TODO: only load these when needed to process batches. remember wp-cli
+		// batch processing
+		require_once  RCP_PLUGIN_DIR . 'includes/batch/interface-job.php';
+		require_once  RCP_PLUGIN_DIR . 'includes/batch/class-job.php';
+		require_once  RCP_PLUGIN_DIR . 'includes/admin/batch/ajax-actions.php';
+
 		// retrieve our license key from the DB
 		$license_key = ! empty( $rcp_options['license_key'] ) ? trim( $rcp_options['license_key'] ) : false;
 

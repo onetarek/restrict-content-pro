@@ -66,6 +66,10 @@ function rcp_get_tools_tabs() {
 		$tabs['debug'] = __( 'Debugging', 'rcp' );
 	}
 
+	if ( ! empty( $_GET['tab'] ) && 'batch' === $_GET['tab'] ) {
+		$tabs['batch'] = __( 'Batch Processing', 'rcp' );
+	}
+
 	return apply_filters( 'rcp_tools_tabs', $tabs );
 
 }
@@ -198,3 +202,46 @@ function rcp_submit_debug_log() {
 
 }
 add_action( 'admin_init', 'rcp_submit_debug_log' );
+
+/**
+ * Displays the batch processing tab on the Tools page.
+ *
+ * @since 3.0
+ */
+function rcp_batch_processing_page() {
+
+	$job_id = ! empty( $_GET['rcp-job-id'] ) ? 'rcp_' . sanitize_key( $_GET['rcp-job-id'] ) : false;
+	$callback = false;
+
+	if( ! empty( $job_id ) ) {
+		$job = new \RCP\Utils\Job( $job_id );
+		$callback = $job->callback();
+//		var_dump($job);
+	} ?>
+
+	<div class="wrap">
+
+		<?php if( empty( $job_id ) || empty( $job ) || empty( $callback ) || ! is_callable( $callback ) ) {
+			echo '<p>' . __( 'A valid job ID was not provided.', 'rcp' ) . '</p></div>';
+			return;
+		} ?>
+
+		<div id="rcp-batch-processing-job-name"><h3><?php echo ! empty( $job ) ? $job->name() : ''; ?></h3></div>
+		<div id="rcp-batch-processing-job-description"><p><?php echo esc_html( $job->description() ); ?></p></div>
+		<div id="rcp-batch-processing-job-progress-bar" style="max-width:50%"></div>
+		<div id="rcp-batch-processing-job-progress-text" style="text-align:center; max-width:50%"></div>
+		<div id="rcp-batch-processing-job-items-processed" style="display:none"><p><?php _e( 'Items processed: ', 'rcp' ); ?><span></span></p></div>
+		<div id="rcp-batch-processing-message"></div>
+
+		<form id="rcp-batch-processing-form" class="rcp-batch-form">
+			<p class="submit">
+				<input type="hidden" name="rcp-action" value="process-queue"/>
+				<input type="hidden" id="rcp-job-id" name="rcp-job-id" value="<?php echo esc_attr( $job_id ); ?>"/>
+				<input type="submit" value="<?php esc_attr_e( 'Start Processing', 'rcp' ); ?>" class="button-primary"/>
+			</p>
+		</form>
+
+	</div>
+	<?php
+}
+add_action( 'rcp_tools_tab_batch', 'rcp_batch_processing_page' );
