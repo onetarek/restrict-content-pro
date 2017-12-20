@@ -235,7 +235,6 @@ function rcp_batch_processing_page() {
 
 		<form id="rcp-batch-processing-form" class="rcp-batch-form">
 			<p class="submit">
-				<input type="hidden" name="rcp-action" value="process-queue"/>
 				<input type="hidden" id="rcp-job-id" name="rcp-job-id" value="<?php echo esc_attr( $job_id ); ?>"/>
 				<input type="submit" value="<?php esc_attr_e( 'Start Processing', 'rcp' ); ?>" class="button-primary"/>
 			</p>
