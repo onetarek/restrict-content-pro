@@ -10,24 +10,9 @@ namespace RCP\Utils;
  *
  * @since 3.0
  *
- * @param array $data {
- *     @type int        $step Step to process
- *     @type string|int $job_id Job ID/name (required)
- * }
+ * @param JobInterface $job
  */
-function process_batch( array $data ) {
-
-	$step = ! empty( $data['step'] ) ? absint( $data['step'] ) : 0;
-
-	$job_id = ! empty( $data['job_id'] ) ? sanitize_text_field( $data['job_id'] ) : false;
-
-	$job = new Job( $job_id );
-
-	if( ! $job_id || empty( $job ) || ! is_callable( $job->callback() ) ) {
-		wp_send_json_error( array(
-			'message' => __( 'Invalid job ID provided.', 'rcp' )
-		) );
-	}
+function process_batch( JobInterface $job, $step = 0 ) {
 
 	$result = call_user_func( $job->callback(), $job, $step );
 
@@ -74,7 +59,19 @@ function ajax_process_batch() {
 
 	check_ajax_referer( 'rcp_batch_nonce', 'rcp_batch_nonce' );
 
-	process_batch( $_POST );
+	$step = ! empty( $_POST['step'] ) ? absint( $_POST['step'] ) : 0;
+
+	$job_id = ! empty( $_POST['job_id'] ) ? sanitize_text_field( $_POST['job_id'] ) : false;
+
+	$job = new Job( $job_id );
+
+	if( ! $job_id || empty( $job ) || ! is_callable( $job->callback() ) ) {
+		wp_send_json_error( array(
+			'message' => __( 'Invalid job ID provided.', 'rcp' )
+		) );
+	}
+
+	process_batch( $job, $step );
 
 }
 add_action( 'wp_ajax_rcp_process_batch', __NAMESPACE__ . '\ajax_process_batch' );
