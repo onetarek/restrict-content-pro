@@ -50,7 +50,13 @@ class BatchFunctions extends \WP_UnitTestCase {
 
 	/** @covers \RCP\Utils\Job() */
 	public function test_job_throws_InvalidArgumentException_with_invalid_job_name() {
-		$this->expectException( '\InvalidArgumentException' );
+
+		if( PHP_VERSION_ID < 70000 ) {
+			$this->setExceptedException( '\InvalidArgumentException' );
+		} else {
+			$this->expectException( '\InvalidArgumentException' );
+		}
+
 		new Job( false );
 	}
 
