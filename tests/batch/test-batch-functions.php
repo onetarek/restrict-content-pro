@@ -48,6 +48,12 @@ class BatchFunctions extends \WP_UnitTestCase {
 		$this->assertFalse( rcp_delete_batch_job( 'RCP this job name is fake' ) );
 	}
 
+	/** @covers \RCP\Utils\Job() */
+	public function test_job_throws_InvalidArgumentException_with_invalid_job_name() {
+		$this->expectException( '\InvalidArgumentException' );
+		new Job( false );
+	}
+
 	/** @covers \RCP\Utils\Job::name() */
 	public function test_job_name() {
 		rcp_add_batch_job( $this->config );
@@ -73,13 +79,6 @@ class BatchFunctions extends \WP_UnitTestCase {
 		$this->job = new Job( 'rcp_' . $this->config['name'] );
 
 		$this->assertSame( '\RCP\Utils\batch_callback_test', $this->job->callback() );
-
-	}
-
-	/** @covers \RCP\Utils\Job() */
-	public function test_job_throws_InvalidArgumentException_with_invalid_job_name() {
-		$this->setExpectedException( '\InvalidArgumentException' );
-		new Job( false );
 	}
 }
 
