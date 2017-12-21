@@ -1545,7 +1545,7 @@ class RCP_Member extends WP_User {
 		 * Use the subtotal from their last payment as the base price. This is the amount without discounts/credits/fees applied.
 		 * This was only added in version 2.9, so we use the full amount as a fallback in case the subtotal doesn't exist for the last payment.
 		 */
-		$payment_amount       = ! empty( $payment->subtotal ) ? abs( $payment->subtotal ) : abs( $payment->amount );
+		$payment_amount       = ! empty( $payment->subtotal ) ? abs( $payment->subtotal ) : abs( $payment->amount -= $subscription->fee );
 		$percentage_remaining = $time_remaining / $total_time;
 
 		// make sure we don't credit more than 100%
