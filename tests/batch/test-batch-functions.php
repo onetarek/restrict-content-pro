@@ -27,39 +27,59 @@ class BatchFunctions extends \WP_UnitTestCase {
 		$this->invalidConfig = array();
 	}
 
-	public function test_add_batch_job() {
-		$added = rcp_add_batch_job( $this->config );
-		$this->assertTrue( $added );
-
-		$this->job = new Job( $this->config['name'] );
-
-		$invalidJob = rcp_add_batch_job( $this->invalidConfig );
-		$this->assertInstanceOf( 'WP_Error', $invalidJob );
+	/** @covers \RCP\Utils\rcp_add_batch_job() */
+	public function test_add_batch_job_returns_true() {
+		$this->assertTrue( rcp_add_batch_job( $this->config ) );
 	}
 
-	public function test_delete_batch_job() {
+	/** @covers \RCP\Utils\rcp_add_batch_job() */
+	public function test_add_batch_job_invalid_config_returns_WP_Error() {
+		$this->assertInstanceOf( 'WP_Error', rcp_add_batch_job( $this->invalidConfig ) );
+	}
 
+	/** @covers \RCP\Utils\rcp_delete_batch_job() */
+	public function test_delete_batch_job_returns_true() {
 		rcp_add_batch_job( $this->config );
-
-		$this->job = new Job( 'rcp_' . $this->config['name'] );
-
-		$deleted = rcp_delete_batch_job( $this->job->name() );
-
-		$this->assertTrue( $deleted );
+		$this->assertTrue( rcp_delete_batch_job( $this->config['name'] ) );
 	}
 
-	public function test_job_properties() {
+	/** @covers \RCP\Utils\rcp_delete_batch_job() */
+	public function test_delete_batch_job_returns_false_with_invalid_job_name() {
+		$this->assertFalse( rcp_delete_batch_job( 'RCP this job name is fake' ) );
+	}
 
+	/** @covers \RCP\Utils\Job::name() */
+	public function test_job_name() {
 		rcp_add_batch_job( $this->config );
 
 		$this->job = new Job( 'rcp_' . $this->config['name'] );
 
 		$this->assertSame( 'Test Job', $this->job->name() );
+	}
+
+	/** @covers \RCP\Utils\Job::description() */
+	public function test_job_description() {
+		rcp_add_batch_job( $this->config );
+
+		$this->job = new Job( 'rcp_' . $this->config['name'] );
 
 		$this->assertSame( 'Test Job Description', $this->job->description() );
+	}
+
+	/** @covers \RCP\Utils\Job::callback() */
+	public function test_job_callback() {
+		rcp_add_batch_job( $this->config );
+
+		$this->job = new Job( 'rcp_' . $this->config['name'] );
 
 		$this->assertSame( '\RCP\Utils\batch_callback_test', $this->job->callback() );
 
+	}
+
+	/** @covers \RCP\Utils\Job() */
+	public function test_job_throws_InvalidArgumentException_with_invalid_job_name() {
+		$this->setExpectedException( '\InvalidArgumentException' );
+		new Job( false );
 	}
 }
 
