@@ -35,7 +35,7 @@ if( isset( $rcp_options['remove_data_on_uninstall'] ) ) {
 	$wpdb->query( "DELETE FROM $wpdb->termmeta WHERE meta_key = 'rcp_restricted_meta'" );
 
 	// Delete all user meta.
-	$wpdb->query( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE 'rcp\_%'" );
+	$wpdb->query( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE 'rcp\_%' OR meta_key LIKE '\_rcp\_%'" );
 
 	// Remove custom capabilities.
 	$caps = new RCP_Capabilities;
