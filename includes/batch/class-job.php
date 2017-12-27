@@ -34,7 +34,7 @@ final class Job implements JobInterface {
 			throw new InvalidArgumentException( __( 'You must supply a valid job name to use Job.', 'rcp' ) );
 		}
 
-		$this->key = sanitize_key( $name );
+		$this->key = 'rcp_job_' . sanitize_key( $name );
 
 		$this->config = get_option(
 			$this->key,

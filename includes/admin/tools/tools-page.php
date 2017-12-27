@@ -210,7 +210,7 @@ add_action( 'admin_init', 'rcp_submit_debug_log' );
  */
 function rcp_batch_processing_page() {
 
-	$job_id = ! empty( $_GET['rcp-job-id'] ) ? 'rcp_' . sanitize_key( $_GET['rcp-job-id'] ) : false;
+	$job_id = ! empty( $_GET['rcp-job-id'] ) ? sanitize_key( $_GET['rcp-job-id'] ) : false;
 	$callback = false;
 
 	if( ! empty( $job_id ) ) {
