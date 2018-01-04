@@ -53,8 +53,10 @@ function rcp_process_edit_member() {
 
 	if( ! empty( $_POST['expiration'] ) && ( 'cancelled' != $status || ! $revoke_access ) ) {
 		$member->set_expiration_date( $expiration );
-	} elseif( 'cancelled' == $status && $revoke_access && ! $member->is_expired() ) {
+	} elseif( $revoke_access && ! $member->is_expired() ) {
 		$member->set_expiration_date( date( 'Y-m-d H:i:s', strtotime( '-1 day', current_time( 'timestamp' ) ) ) );
+		// Set status to 'expired' later.
+		$status = 'expired';
 	}
 
 	if ( isset( $_POST['level'] ) ) {
