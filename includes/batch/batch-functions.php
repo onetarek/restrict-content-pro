@@ -48,3 +48,15 @@ function rcp_delete_batch_job( $name ) {
 	/** This could easily be swapped out later for a custom table */
 	return delete_option( 'rcp_job_' . sanitize_key( $name ) );
 }
+
+/**
+ * Processes the specified batch job.
+ *
+ * @since 3.0
+ *
+ * @param JobInterface $job
+ * @return bool|\WP_Error True if the batch was successful, WP_Error if not.
+ */
+function process_batch( JobInterface $job, $step = 0 ) {
+	return call_user_func( $job->callback(), $job, $step );
+}

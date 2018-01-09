@@ -221,10 +221,18 @@ function rcp_batch_processing_page() {
 
 	<div class="wrap">
 
-		<?php if( empty( $job_id ) || empty( $job ) || empty( $callback ) || ! is_callable( $callback ) ) {
+		<?php
+
+		if( empty( $job_id ) || empty( $job ) || empty( $callback ) || ! is_callable( $callback ) ) {
 			echo '<p>' . __( 'A valid job ID was not provided.', 'rcp' ) . '</p></div>';
 			return;
-		} ?>
+		}
+
+		if( $job->completed() ) {
+			echo '<p>' . sprintf( __( '%s has already been completed.', 'rcp' ), $job->name() ) . '</p></div>';
+			return;
+		}
+		?>
 
 		<div id="rcp-batch-processing-job-name"><h3><?php echo ! empty( $job ) ? $job->name() : ''; ?></h3></div>
 		<div id="rcp-batch-processing-job-description"><p><?php echo esc_html( $job->description() ); ?></p></div>

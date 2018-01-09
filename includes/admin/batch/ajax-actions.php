@@ -4,17 +4,32 @@
  * @copyright 2017 John Parris
  */
 namespace RCP\Utils;
-// @todo return a response object and deal with ajax in another function?
 /**
- * Processes the specified batch job.
+ * Processes ajax batch jobs.
  *
  * @since 3.0
- *
- * @param JobInterface $job
  */
-function process_batch( JobInterface $job, $step = 0 ) {
+function ajax_process_batch() {
 
-	$result = call_user_func( $job->callback(), $job, $step );
+	if( ! current_user_can( 'rcp_manage_settings' ) ) {
+		wp_die();
+	}
+
+	check_ajax_referer( 'rcp_batch_nonce', 'rcp_batch_nonce' );
+
+	$step = ! empty( $_POST['step'] ) ? absint( $_POST['step'] ) : 0;
+
+	$job_id = ! empty( $_POST['job_id'] ) ? sanitize_text_field( $_POST['job_id'] ) : false;
+
+	$job = new Job( $job_id );
+
+	if( ! $job_id || empty( $job ) || ! is_callable( $job->callback() ) ) {
+		wp_send_json_error( array(
+			'message' => __( 'Invalid job ID provided.', 'rcp' )
+		) );
+	}
+
+	$result = process_batch( $job, $step );
 
 	if( true === $result ) {
 		wp_send_json_success( array(
@@ -44,34 +59,6 @@ function process_batch( JobInterface $job, $step = 0 ) {
 		'job_name'        => $job->name(),
 		'job_description' => $job->description()
 	) );
-}
-
-/**
- * Processes ajax batch jobs.
- *
- * @since 3.0
- */
-function ajax_process_batch() {
-
-	if( ! current_user_can( 'rcp_manage_settings' ) ) {
-		wp_die();
-	}
-
-	check_ajax_referer( 'rcp_batch_nonce', 'rcp_batch_nonce' );
-
-	$step = ! empty( $_POST['step'] ) ? absint( $_POST['step'] ) : 0;
-
-	$job_id = ! empty( $_POST['job_id'] ) ? sanitize_text_field( $_POST['job_id'] ) : false;
-
-	$job = new Job( $job_id );
-
-	if( ! $job_id || empty( $job ) || ! is_callable( $job->callback() ) ) {
-		wp_send_json_error( array(
-			'message' => __( 'Invalid job ID provided.', 'rcp' )
-		) );
-	}
-
-	process_batch( $job, $step );
 
 }
 add_action( 'wp_ajax_rcp_process_batch', __NAMESPACE__ . '\ajax_process_batch' );
