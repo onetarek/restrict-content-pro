@@ -287,7 +287,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 			}
 
 			$subscription_key   = $posted['item_number'];
-			$has_trial          = ! empty( $posted['period1'] );
+			$has_trial          = isset( $posted['mc_amount1'] ) && '0.00' == $posted['mc_amount1'];
 			$amount             = ! $has_trial ? number_format( (float) $posted['mc_gross'], 2, '.', '' ) : number_format( (float) $posted['mc_amount1'], 2, '.', '' );
 
 			$payment_status     = ! empty( $posted['payment_status'] ) ? $posted['payment_status'] : false;
