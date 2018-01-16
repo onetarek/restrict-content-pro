@@ -98,26 +98,6 @@ function rcp_format_teaser( $message ) {
 }
 
 /**
- * Set the excerpt length to a percentage of the post length.
- *
- * @param int $excerpt_length Excerpt length in words (50 by default).
- */
-function ag_rcp_excerpt_length( $excerpt_length ) {
-
-	global $post;
-
-	$percentage     = 10; // Change this to the percentage of the post you want in the excerpt.
-	$words_in_post  = str_word_count( wp_strip_all_tags( $post->post_content ) );
-	$excerpt_length = round( $words_in_post * ( $percentage / 100 ) );
-
-	error_log( sprintf( 'Post: %s; Words: %s; Excerpt: %s', $post->post_title, $words_in_post, $excerpt_length ) );
-
-	return $excerpt_length;
-
-}
-add_filter( 'rcp_filter_excerpt_length', 'ag_rcp_excerpt_length' );
-
-/**
  * Wrap the restricted message in paragraph tags and allow for shortcodes to be used.
  *
  * @param string $message Restricted content message.
