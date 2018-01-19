@@ -144,6 +144,40 @@ function rcp_process_edit_member() {
 add_action( 'rcp_action_edit-member', 'rcp_process_edit_member' );
 
 /**
+ * Edit a member
+ *
+ * @since 2.9
+ * @return void
+ */
+function rcp_process_edit_member_notes() {
+
+	if ( ! wp_verify_nonce( $_POST['rcp_edit_member_notes_nonce'], 'rcp_edit_member_notes_nonce' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
+	}
+
+	if ( ! current_user_can( 'rcp_manage_members' ) ) {
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
+	}
+
+	$user_id       = absint( $_POST['user'] );
+	$member        = new RCP_Member( $user_id );
+	$current_user = wp_get_current_user();
+
+	rcp_log( sprintf( '%s has started editing member #%d notes.', $current_user->user_login, $user_id ) );
+
+	if ( isset( $_POST['notes'] ) ) {
+		update_user_meta( $user_id, 'rcp_notes', wp_kses( $_POST['notes'], array() ) );
+	}
+
+	rcp_log( sprintf( '%s finished editing member #%d notes.', $current_user->user_login, $user_id ) );
+
+	wp_safe_redirect( admin_url( 'admin.php?page=rcp-members&edit_member=' . $user_id . '&view=notes&rcp_message=user_updated' ) );
+	exit;
+
+}
+add_action( 'rcp_action_edit-member-notes', 'rcp_process_edit_member_notes' );
+
+/**
  * Add a subscription to an existing member
  *
  * @since 2.9

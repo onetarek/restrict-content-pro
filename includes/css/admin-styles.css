@@ -639,6 +639,21 @@ table.rcp_payment_details td {
 	text-align: center;
 }
 
+#rcp-item-notes-wrapper {
+	margin-bottom: 20px;
+}
+.rcp-item-notes-header span,
+.rcp-item-notes-header img {
+	font-weight: 600;
+	line-height: 30px;
+	vertical-align: middle;
+}
+.rcp-member-note-input {
+	display: block;
+	margin-bottom: 5px;
+	width: 100%;
+}
+
 /* Optimized for 1280px wide (macbooks) and under
 -------------------------------------------------------------- */
 

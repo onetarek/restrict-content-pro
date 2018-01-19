@@ -86,7 +86,25 @@ $subscription = rcp_get_subscription_details( $subscription_level_id );
 				/**
 				 * Render member notes.
 				 */
-				// @todo
+				?>
+				<div id="rcp-item-notes-wrapper">
+
+					<div class="rcp-item-notes-header">
+						<?php echo get_avatar( $member->user_email, 30 ); ?> <span><?php echo $member->first_name . ' ' . $member->last_name; ?></span>
+					</div>
+					<h3><?php _e( 'Notes', 'rcp' ); ?></h3>
+
+					<form id="rcp-edit-member-notes" method="POST">
+						<label for="rcp-member-notes" class="screen-reader-text"><?php _e( 'Member notes', 'rcp' ); ?></label>
+						<textarea id="rcp-member-notes" class="rcp-member-note-input" name="notes" rows="10"><?php echo esc_textarea( $member->get_notes() ); ?></textarea>
+						<input type="hidden" name="rcp-action" value="edit-member-notes"/>
+						<input type="hidden" name="user" value="<?php echo esc_attr( $member->ID ); ?>"/>
+						<?php wp_nonce_field( 'rcp_edit_member_notes_nonce', 'rcp_edit_member_notes_nonce' ); ?>
+						<input type="submit" id="rcp-edit-member-notes-save" class="button-primary right" value="<?php esc_attr_e( 'Update Notes', 'rcp' ); ?>" />
+					</form>
+
+				</div>
+				<?php
 				break;
 
 			default :
