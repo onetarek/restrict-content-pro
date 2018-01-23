@@ -717,7 +717,14 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 						rcp_log( 'Processing Stripe customer.subscription.deleted webhook.' );
 
-						if( $payment_event->id == $member->get_merchant_subscription_id() ) {
+						/**
+						 * Only cancel the subscription if this isn't a new signup or manual renewal.
+						 * If the member went through the registration form they'll have the meta flag `_rcp_new_subscription`
+						 * and the cancellation will have been done as part of the signup process to cancel old
+						 * subscriptions. We don't need to trigger a status change for that.
+						 * @see https://github.com/restrictcontentpro/restrict-content-pro/issues/1626
+						 */
+						if( $payment_event->id == $member->get_merchant_subscription_id() && ! get_user_meta( $member->ID, '_rcp_new_subscription', true ) ) {
 
 							$member->cancel();
 
