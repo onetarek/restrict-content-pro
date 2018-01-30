@@ -195,6 +195,14 @@ class RCP_Payment_Gateway {
 	public $error_message;
 
 	/**
+	 * Start date of the subscription. It starts today by default (empty string).
+	 *
+	 * @var string
+	 * @access public
+	 */
+	public $subscription_start_date;
+
+	/**
 	 * RCP_Payment_Gateway constructor.
 	 *
 	 * @param array $subscription_data Subscription data passed from rcp_process_registration()
@@ -232,8 +240,9 @@ class RCP_Payment_Gateway {
 			$this->return_url          = $subscription_data['return_url'];
 			$this->subscription_data   = $subscription_data;
 			$this->payment             = $rcp_payments_db->get_payment( $subscription_data['payment_id'] );
+			$this->subscription_start_date = $subscription_data['subscription_start_date'];
 
-			rcp_log( sprintf( 'Registration for user #%d sent to gateway. Level ID: %d; Initial Amount: %.2f; Recurring Amount: %.2f; Auto Renew: %s', $this->user_id, $this->subscription_id, $this->initial_amount, $this->amount, var_export( $this->auto_renew, true ) ) );
+			rcp_log( sprintf( 'Registration for user #%d sent to gateway. Level ID: %d; Initial Amount: %.2f; Recurring Amount: %.2f; Auto Renew: %s; Subscription Start: %s', $this->user_id, $this->subscription_id, $this->initial_amount, $this->amount, var_export( $this->auto_renew, true ), $this->subscription_start_date ) );
 
 		}
 

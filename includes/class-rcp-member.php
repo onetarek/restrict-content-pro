@@ -225,7 +225,7 @@ class RCP_Member extends WP_User {
 		$expiration = $this->get_expiration_time();
 
 		// Determine what date to use as the start for the new expiration calculation
-		if( ! $force_now && $expiration > current_time( 'timestamp' ) && ! $this->is_expired() && $this->get_status() == 'active' ) {
+		if( ! $force_now && $expiration > current_time( 'timestamp' ) && ! $this->is_expired() ) {
 
 			$base_timestamp = $expiration;
 

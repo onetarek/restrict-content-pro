@@ -255,6 +255,8 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				// Is this a free trial?
 				if ( $this->is_trial() ) {
 					$sub_args['trial_end'] = strtotime( $this->subscription_data['trial_duration'] . ' ' . $this->subscription_data['trial_duration_unit'], current_time( 'timestamp' ) );
+				} elseif ( ! empty( $this->subscription_start_date ) ) {
+					$sub_args['trial_end'] = strtotime( $this->subscription_start_date, current_time( 'timestamp' ) );
 				}
 
 				// Set the customer's subscription in Stripe
@@ -270,9 +272,9 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 					'status'         => 'complete'
 				);
 
-				if ( $this->is_trial() ) {
+				if ( $this->is_trial() || ! empty( $this->subscription_start_date ) ) {
 
-					// Free trials use the subscription ID as the payment transaction ID.
+					// Free trials and delayed subscriptions use the subscription ID as the payment transaction ID.
 					$payment_data['transaction_id'] = $subscription->id;
 
 				} else {

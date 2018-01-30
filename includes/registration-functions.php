@@ -272,33 +272,47 @@ function rcp_process_registration() {
 		$redirect = rcp_get_return_url( $user_data['id'] );
 
 		$subscription_data = array(
-			'price'               => rcp_get_registration()->get_total( true, false ), // get total without the fee
-			'recurring_price'     => rcp_get_registration()->get_recurring_total( true, false ), // get recurring total without the fee
-			'discount'            => rcp_get_registration()->get_total_discounts(),
-			'discount_code'       => $discount,
-			'fee'                 => rcp_get_registration()->get_total_fees(),
-			'length'              => $subscription->duration,
-			'length_unit'         => strtolower( $subscription->duration_unit ),
-			'subscription_id'     => $subscription->id,
-			'subscription_name'   => $subscription->name,
-			'key'                 => $subscription_key,
-			'user_id'             => $user_data['id'],
-			'user_name'           => $user_data['login'],
-			'user_email'          => $user_data['email'],
-			'currency'            => rcp_get_currency(),
-			'auto_renew'          => $auto_renew,
-			'return_url'          => $redirect,
-			'new_user'            => $user_data['need_new'],
-			'trial_duration'      => $trial_duration,
-			'trial_duration_unit' => $trial_duration_unit,
-			'trial_eligible'      => ! $member_has_trialed,
-			'post_data'           => $_POST,
-			'payment_id'          => $payment_id
+			'price'                    => rcp_get_registration()->get_total( true, false ), // get total without the fee
+			'recurring_price'          => rcp_get_registration()->get_recurring_total( true, false ), // get recurring total without the fee
+			'discount'                 => rcp_get_registration()->get_total_discounts(),
+			'discount_code'            => $discount,
+			'fee'                      => rcp_get_registration()->get_total_fees(),
+			'length'                   => $subscription->duration,
+			'length_unit'              => strtolower( $subscription->duration_unit ),
+			'subscription_id'          => $subscription->id,
+			'subscription_name'        => $subscription->name,
+			'key'                      => $subscription_key,
+			'user_id'                  => $user_data['id'],
+			'user_name'                => $user_data['login'],
+			'user_email'               => $user_data['email'],
+			'currency'                 => rcp_get_currency(),
+			'auto_renew'               => $auto_renew,
+			'return_url'               => $redirect,
+			'new_user'                 => $user_data['need_new'],
+			'trial_duration'           => $trial_duration,
+			'trial_duration_unit'      => $trial_duration_unit,
+			'trial_eligible'           => ! $member_has_trialed,
+			'post_data'                => $_POST,
+			'payment_id'               => $payment_id,
+			'subscription_start_date'  => '', // Empty means it starts today.
 		);
 
 		// if giving the user a credit, make sure the credit does not exceed the first payment
 		if ( $subscription_data['fee'] < 0 && abs( $subscription_data['fee'] ) > $subscription_data['price'] ) {
 			$subscription_data['fee'] = -1 * $subscription_data['price'];
+		}
+
+		/*
+		 * If the user is renewing their current subscription before it expires, add the recurring amount to the signup fee to charge
+		 * that now. We do this because we'll actually be delaying the start of the recurring subscription, so we get the first payment
+		 * in via the signup fee.
+		 * @see https://github.com/restrictcontentpro/restrict-content-pro/issues/1259
+		 */
+		if ( $auto_renew && ! $member->is_expired() && $old_subscription_id == $subscription->id ) {
+			$subscription_data['fee'] += $subscription_data['recurring_price'];
+
+			// Subscription start date is the *next* time payment will be due after today.
+			$subscription_data['subscription_start_date'] = $member->calculate_expiration();
 		}
 
 		update_user_meta( $user_data['id'], 'rcp_pending_subscription_amount', round( $subscription_data['price'] + $subscription_data['fee'], 2 ) );
@@ -1176,6 +1190,13 @@ function rcp_add_user_to_subscription( $user_id, $args = array() ) {
 
 		if ( ! $force_now && $old_subscription_id != $subscription_level->id ) {
 			$force_now = true;
+		}
+
+		/* If user is renewing an existing subscription and isn't expired, extend existing expiration date.
+		 * @see https://github.com/restrictcontentpro/restrict-content-pro/issues/1259
+		 */
+		if ( ! $member->is_expired() && $old_subscription_id == $subscription_level->id ) {
+			$force_now = false;
 		}
 
 		$expiration = $member->calculate_expiration( $force_now, $args['trial_duration'] );
