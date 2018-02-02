@@ -719,12 +719,18 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 						if( $payment_event->id == $member->get_merchant_subscription_id() ) {
 
-							$member->cancel();
+							if ( $member->is_active() ) {
+								$member->cancel();
+							} else {
+								rcp_log( sprintf( 'Member #%d is not active - not cancelling account.', $member->ID ) );
+							}
 
 							do_action( 'rcp_webhook_cancel', $member, $this );
 
 							die( 'member cancelled successfully' );
 
+						} else {
+							rcp_log( sprintf( 'Payment event ID (%s) doesn\'t match member\'s merchant subscription ID (%s).', $payment_event->id, $member->get_merchant_subscription_id() ) );
 						}
 
 					}
