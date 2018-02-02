@@ -435,7 +435,11 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 					if( ! $member->just_upgraded() ) {
 
 						// user is marked as cancelled but retains access until end of term
-						$member->cancel();
+						if ( $member->is_active() ) {
+							$member->cancel();
+						} else {
+							rcp_log( sprintf( 'Member #%d is not active - not cancelling account.', $member->ID ) );
+						}
 
 						// set the use to no longer be recurring
 						delete_user_meta( $user_id, 'rcp_paypal_subscriber' );

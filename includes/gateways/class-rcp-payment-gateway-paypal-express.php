@@ -646,7 +646,11 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 					case 'expired' :
 					case 'failed' :
 					case 'voided' :
-						$member->cancel();
+						if ( $member->is_active() ) {
+							$member->cancel();
+						} else {
+							rcp_log( sprintf( 'Member #%d is not active - not cancelling account.', $member->ID ) );
+						}
 						break;
 
 				endswitch;
