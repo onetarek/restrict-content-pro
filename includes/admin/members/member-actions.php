@@ -51,6 +51,11 @@ function rcp_process_edit_member() {
 		update_user_meta( $user_id, 'rcp_notes', wp_kses( $_POST['notes'], array() ) );
 	}
 
+	if ( isset( $_POST['cancel_subscription'] ) && $member->can_cancel() ) {
+		rcp_log( sprintf( 'Cancelling payment profile for member #%d.', $user_id ) );
+		$member->cancel_payment_profile( false );
+	}
+
 	if( ! empty( $_POST['expiration'] ) && ( 'cancelled' != $status || ! $revoke_access ) ) {
 		$member->set_expiration_date( $expiration );
 	} elseif( $revoke_access && ! $member->is_expired() ) {
@@ -99,11 +104,6 @@ function rcp_process_edit_member() {
 
 	if ( isset( $_POST['signup_method'] ) ) {
 		update_user_meta( $user_id, 'rcp_signup_method', $_POST['signup_method'] );
-	}
-
-	if ( isset( $_POST['cancel_subscription'] ) && $member->can_cancel() ) {
-		rcp_log( sprintf( 'Cancelling payment profile for member #%d.', $user_id ) );
-		$member->cancel_payment_profile();
 	}
 
 	if ( $status !== $member->get_status() ) {
