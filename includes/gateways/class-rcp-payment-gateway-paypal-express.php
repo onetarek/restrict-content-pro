@@ -467,11 +467,12 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 		$amount = number_format( (float) $posted['mc_gross'], 2, '.', '' );
 
 		// setup the payment info in an array for storage
+		$pending_key = $member->get_pending_subscription_key();
 		$payment_data = array(
 			'date'             => date( 'Y-m-d H:i:s', strtotime( $posted['payment_date'] ) ),
 			'subscription'     => $subscription_level->name,
 			'payment_type'     => $posted['txn_type'],
-			'subscription_key' => $member->get_subscription_key(),
+			'subscription_key' => ! empty( $pending_key ) ? $pending_key : $member->get_subscription_key(),
 			'amount'           => $amount,
 			'user_id'          => $user_id,
 			'transaction_id'   => $posted['txn_id'],
