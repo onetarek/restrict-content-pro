@@ -207,6 +207,37 @@ function rcp_member_levels_page() {
 							</tr>
 							<tr class="form-field">
 								<th scope="row" valign="top">
+									<label for="rcp-bill-times"><?php _e( 'Times to Bill', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<select name="bill_times_setting" id="rcp-bill-times-setting">
+										<option value="forever"><?php _e( 'Until Cancelled', 'rcp' ); ?></option>
+										<option value="specific"><?php _e( 'Specific Number', 'rcp' ); ?></option>
+									</select>
+									<input type="number" id="rcp-bill-times" name="bill_times" value="0" style="display:none;"/>
+									<p class="description">
+										<?php _e( 'Number of times to bill the member after the first payment.', 'rcp' ); ?>
+										<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Until Cancelled</strong>: will continue billing the member indefinitely, or until they cancel their subscription. <br/><br/><strong>Specific Number</strong> will allow you to enter the number of additional times you wish to bill the customer after their first payment. If you enter "3", the member will be billed once immediately when they sign up, then 3 more times after that. Then billing will stop automatically.', 'rcp' ); ?>"></span>
+									</p>
+								</td>
+							</tr>
+							<tr class="form-field" style="display: none;">
+								<th scope="row" valign="top">
+									<label for="rcp-on-completion"><?php _e( 'After Final Payment', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<select name="bill_times_setting" id="rcp-bill-times-setting">
+										<option value="expire"><?php _e( 'Expire Membership', 'rcp' ); ?></option>
+										<option value="lifetime"><?php _e( 'Grant Lifetime Access', 'rcp' ); ?></option>
+									</select>
+									<p class="description">
+										<?php _e( 'Action to take after the final payment has been received.', 'rcp'); ?>
+										<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( '<strong>Expire Membership</strong>: will make the user\'s membership expire and they will lose access to restricted content. <br/><br/><strong>Grant Lifetime Access</strong> will update the member\'s expiration date to "none" to give them lifetime access to restricted content.', 'rcp' ); ?>"></span>
+									</p>
+								</td>
+							</tr>
+							<tr class="form-field">
+								<th scope="row" valign="top">
 									<label for="trial_duration"><?php _e('Free Trial Duration', 'rcp'); ?></label>
 								</th>
 								<td>

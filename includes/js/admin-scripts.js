@@ -352,4 +352,17 @@ jQuery(document).ready(function($) {
 		}
 	});
 
+	// Show/hide "times billed" box when option changes.
+	$( '#rcp-bill-times-setting' ).change( function() {
+		var after_payment_field = $(this).parents('tr').next();
+
+		if ( 'forever' == $(this).val() ) {
+			$('#rcp-bill-times').hide();
+			after_payment_field.hide();
+		} else {
+			$('#rcp-bill-times').show();
+			after_payment_field.show();
+		}
+	});
+
 });
