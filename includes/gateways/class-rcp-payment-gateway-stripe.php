@@ -923,16 +923,18 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 		try {
 
+			$product = \Stripe\Product::create( array(
+				'name' => $name,
+				'type' => 'service'
+			) );
+
 			$plan = \Stripe\Plan::create( array(
 				"amount"         => $price,
 				"interval"       => $interval,
 				"interval_count" => $interval_count,
 				"currency"       => $currency,
 				"id"             => $plan_id,
-				'product'        => array(
-					'name' => $name,
-					//'type' => 'service'
-				)
+				"product"        => $product->id
 			) );
 
 			// plann successfully created
