@@ -927,9 +927,12 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				"amount"         => $price,
 				"interval"       => $interval,
 				"interval_count" => $interval_count,
-				"name"           => $name,
 				"currency"       => $currency,
-				"id"             => $plan_id
+				"id"             => $plan_id,
+				'product'        => array(
+					'name' => $name,
+					//'type' => 'service'
+				)
 			) );
 
 			// plann successfully created
