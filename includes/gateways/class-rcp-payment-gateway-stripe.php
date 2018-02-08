@@ -47,6 +47,13 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 			require_once RCP_PLUGIN_DIR . 'includes/libraries/stripe/init.php';
 		}
 
+		\Stripe\Stripe::setApiKey( $this->secret_key );
+
+		\Stripe\Stripe::setApiVersion( '2018-02-05' );
+
+		if ( method_exists( '\Stripe\Stripe', 'setAppInfo' ) ) {
+			\Stripe\Stripe::setAppInfo( 'Restrict Content Pro', RCP_PLUGIN_VERSION, esc_url( site_url() ) );
+		}
 	}
 
 	/**
@@ -64,12 +71,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 		 * @var RCP_Payments $rcp_payments_db
 		 */
 		global $rcp_payments_db;
-
-		\Stripe\Stripe::setApiKey( $this->secret_key );
-
-		if ( method_exists( '\Stripe\Stripe', 'setAppInfo' ) ) {
-			\Stripe\Stripe::setAppInfo( 'Restrict Content Pro', RCP_PLUGIN_VERSION, esc_url( site_url() ) );
-		}
 
 		$paid   = false;
 		$member = new RCP_Member( $this->user_id );
@@ -525,8 +526,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 			define( 'DONOTCACHEPAGE', true );
 		}
 
-		\Stripe\Stripe::setApiKey( $this->secret_key );
-
 		// retrieve the request's body and parse it as JSON
 		$body          = @file_get_contents( 'php://input' );
 		$event_json_id = json_decode( $body );
@@ -919,8 +918,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 		$plan_id        = sprintf( '%s-%s-%s', strtolower( str_replace( ' ', '', $plan->name ) ), $plan->price, $plan->duration . $plan->duration_unit );
 		$currency       = strtolower( rcp_get_currency() );
 
-		\Stripe\Stripe::setApiKey( $this->secret_key );
-
 		try {
 
 			$product = \Stripe\Product::create( array(
@@ -956,8 +953,6 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 	 * @return bool|string false if the plan doesn't exist, plan id if it does
 	 */
 	private function plan_exists( $plan ) {
-
-		\Stripe\Stripe::setApiKey( $this->secret_key );
 
 		if ( ! $plan = rcp_get_subscription_details( $plan ) ) {
 			return false;
