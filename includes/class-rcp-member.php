@@ -452,6 +452,28 @@ class RCP_Member extends WP_User {
 
 		delete_user_meta( $this->ID, '_rcp_expired_email_sent' );
 
+		/**
+		 * If this is a payment plan and we've reached the billing limit, complete the subscription.
+		 */
+		$times_billed = 0; // @todo
+		$bill_times   = $subscription_level->bill_times;
+
+		if ( $bill_times > 0 && $times_billed >= $bill_times ) {
+			// @todo we need a way to disable webhook cancellations
+			if ( $this->can_cancel() ) {
+				$this->cancel_payment_profile( false );
+			}
+
+			$new_status = ''; // @todo This is the action to be taken after final payment.
+
+			if ( 'expire' == $new_status ) {
+				/*
+				 * @todo Is this the best way to do it? This would give them access for one more period after their final payment, and then they'd be auto changed to "expired" later.
+				 */
+				$this->set_status( 'cancelled' );
+			}
+		}
+
 		do_action( 'rcp_member_post_renew', $this->ID, $expiration, $this );
 
 		rcp_log( sprintf( 'Completed membership renewal for user #%d. Subscription ID: %d; New Expiration Date: %s; New Status: %s', $this->ID, $subscription_id, $expiration, $this->get_status() ) );
