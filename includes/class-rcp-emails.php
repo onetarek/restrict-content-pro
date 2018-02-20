@@ -329,6 +329,23 @@ class RCP_Emails {
 	}
 
 	/**
+	 * Generate preview by setting up email tags and inserting message inside email template.
+	 *
+	 * @param string $message
+	 *
+	 * @return string
+	 */
+	public function generate_preview( $message = '' ) {
+
+		$this->setup_email_tags();
+
+		$message = $this->build_email( $message );
+
+		return $message;
+
+	}
+
+	/**
 	 * Add filters/actions before the email is sent
 	 *
 	 * @since 2.7
