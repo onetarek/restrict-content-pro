@@ -116,7 +116,11 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 			$args['PAYMENTREQUEST_0_CUSTOM'] .= '|trial';
 		}
 
-		$request = wp_remote_post( $this->api_endpoint, array( 'timeout' => 45, 'sslverify' => false, 'httpversion' => '1.1', 'body' => $args ) );
+		$request = wp_remote_post( $this->api_endpoint, array(
+			'timeout' => 45,
+			'httpversion' => '1.1',
+			'body' => $args
+		) );
 		$body    = wp_remote_retrieve_body( $request );
 		$code    = wp_remote_retrieve_response_code( $request );
 		$message = wp_remote_retrieve_response_message( $request );
@@ -228,7 +232,11 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 					unset( $args['INITAMT'] );
 				}
 
-				$request = wp_remote_post( $this->api_endpoint, array( 'timeout' => 45, 'sslverify' => false, 'httpversion' => '1.1', 'body' => $args ) );
+				$request = wp_remote_post( $this->api_endpoint, array(
+					'timeout' => 45,
+					'httpversion' => '1.1',
+					'body' => $args
+				) );
 				$body    = wp_remote_retrieve_body( $request );
 				$code    = wp_remote_retrieve_response_code( $request );
 				$message = wp_remote_retrieve_response_message( $request );
@@ -296,7 +304,11 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 					'BUTTONSOURCE'                   => 'EasyDigitalDownloads_SP'
 				);
 
-				$request = wp_remote_post( $this->api_endpoint, array( 'timeout' => 45, 'sslverify' => false, 'httpversion' => '1.1', 'body' => $args ) );
+				$request = wp_remote_post( $this->api_endpoint, array(
+					'timeout' => 45,
+					'httpversion' => '1.1',
+					'body' => $args
+				) );
 				$body    = wp_remote_retrieve_body( $request );
 				$code    = wp_remote_retrieve_response_code( $request );
 				$message = wp_remote_retrieve_response_message( $request );
@@ -685,7 +697,6 @@ class RCP_Payment_Gateway_PayPal_Express extends RCP_Payment_Gateway {
 
 		$request = wp_remote_post( $this->api_endpoint, array(
 			'timeout'     => 45,
-			'sslverify'   => false,
 			'httpversion' => '1.1',
 			'body'        => $args
 		) );
