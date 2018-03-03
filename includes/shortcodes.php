@@ -332,6 +332,12 @@ function rcp_register_form_stripe_checkout( $atts ) {
 
 	$data = apply_filters( 'rcp_stripe_checkout_data', $data );
 
+	global $rcp_load_css;
+
+	// set this to true so the CSS is loaded. Used for styling error messages.
+	$rcp_load_css = true;
+	rcp_show_error_messages( 'register' );
+
 	ob_start();
 
 	if( $member->ID > 0 && $member->get_subscription_id() == $subscription->id && $member->is_active() ) : ?>
