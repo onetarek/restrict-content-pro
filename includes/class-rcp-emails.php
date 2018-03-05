@@ -379,6 +379,7 @@ class RCP_Emails {
 	public function text_to_html( $message ) {
 		if ( 'text/html' === $this->content_type || true === $this->html ) {
 			$message = wpautop( make_clickable( $message ) );
+			$message = str_replace( '&#038;', '&amp;', $message );
 		}
 
 		return $message;
