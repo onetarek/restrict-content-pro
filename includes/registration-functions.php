@@ -433,10 +433,9 @@ function rcp_validate_user_data() {
 		}
 		if( email_exists( $user['email'] ) ) {
 			//Email address already registered
-			rcp_errors()->add( 'email_used', sprintf( '%s <a href="' . esc_url( rcp_get_login_url() ) . '">%s</a> %s.',
-				__( 'This email has already been registered. If this is your account you can', 'rcp' ),
-				__( 'log in', 'rcp' ),
-				__( 'and try again', 'rcp' )
+			rcp_errors()->add( 'email_used', sprintf(
+				__( 'This email has already been registered. If this is your account you can <a href="%s">log in</a> and try again.', 'rcp' ),
+				esc_url( rcp_get_login_url() )
 			), 'register' );
 		}
 		if( empty( $user['password'] ) ) {
