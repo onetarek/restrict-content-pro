@@ -18,7 +18,7 @@ namespace RCP\Utils;
  * }
  * @return \WP_Error|bool True if the job was registered, false if not, WP_Error if an invalid configuration was given.
  */
-function rcp_add_batch_job( array $config ) {
+function add_batch_job( array $config ) {
 
 	if( empty( $config ) || empty( $config['name'] ) || empty( $config['description'] ) || empty( $config['callback'] ) || ! is_callable( $config['callback'] ) ) {
 		return new \WP_Error( __( 'Invalid job configuration', 'rcp' ), __( 'You must supply a valid name, description, and callback when registering a batch job.', 'rcp' ) );
@@ -44,7 +44,7 @@ function rcp_add_batch_job( array $config ) {
  * @param string $name Name of job to delete.
  * @return bool True if the job is deleted, false if not.
  */
-function rcp_delete_batch_job( $name ) {
+function delete_batch_job( $name ) {
 	/** This could easily be swapped out later for a custom table */
 	return delete_option( 'rcp_job_' . sanitize_key( $name ) );
 }

@@ -27,25 +27,25 @@ class BatchFunctions extends \WP_UnitTestCase {
 		$this->invalidConfig = array();
 	}
 
-	/** @covers \RCP\Utils\rcp_add_batch_job() */
+	/** @covers \RCP\Utils\add_batch_job() */
 	public function test_add_batch_job_returns_true() {
-		$this->assertTrue( rcp_add_batch_job( $this->config ) );
+		$this->assertTrue( add_batch_job( $this->config ) );
 	}
 
-	/** @covers \RCP\Utils\rcp_add_batch_job() */
+	/** @covers \RCP\Utils\add_batch_job() */
 	public function test_add_batch_job_invalid_config_returns_WP_Error() {
-		$this->assertInstanceOf( 'WP_Error', rcp_add_batch_job( $this->invalidConfig ) );
+		$this->assertInstanceOf( 'WP_Error', add_batch_job( $this->invalidConfig ) );
 	}
 
-	/** @covers \RCP\Utils\rcp_delete_batch_job() */
+	/** @covers \RCP\Utils\delete_batch_job() */
 	public function test_delete_batch_job_returns_true() {
-		rcp_add_batch_job( $this->config );
-		$this->assertTrue( rcp_delete_batch_job( $this->config['name'] ) );
+		add_batch_job( $this->config );
+		$this->assertTrue( delete_batch_job( $this->config['name'] ) );
 	}
 
-	/** @covers \RCP\Utils\rcp_delete_batch_job() */
+	/** @covers \RCP\Utils\delete_batch_job() */
 	public function test_delete_batch_job_returns_false_with_invalid_job_name() {
-		$this->assertFalse( rcp_delete_batch_job( 'RCP this job name is fake' ) );
+		$this->assertFalse( delete_batch_job( 'RCP this job name is fake' ) );
 	}
 
 	/** @covers \RCP\Utils\Job() */
@@ -62,7 +62,7 @@ class BatchFunctions extends \WP_UnitTestCase {
 
 	/** @covers \RCP\Utils\Job::name() */
 	public function test_job_name() {
-		rcp_add_batch_job( $this->config );
+		add_batch_job( $this->config );
 
 		$this->job = new Job( $this->config['name'] );
 
@@ -71,7 +71,7 @@ class BatchFunctions extends \WP_UnitTestCase {
 
 	/** @covers \RCP\Utils\Job::description() */
 	public function test_job_description() {
-		rcp_add_batch_job( $this->config );
+		add_batch_job( $this->config );
 
 		$this->job = new Job( $this->config['name'] );
 
@@ -80,7 +80,7 @@ class BatchFunctions extends \WP_UnitTestCase {
 
 	/** @covers \RCP\Utils\Job::callback() */
 	public function test_job_callback() {
-		rcp_add_batch_job( $this->config );
+		add_batch_job( $this->config );
 
 		$this->job = new Job( $this->config['name'] );
 
