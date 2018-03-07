@@ -1587,6 +1587,14 @@ function rcp_delete_member( $user_id ) {
 
 	// @todo Remove associated data from future subscription tables.
 
-	return wp_delete_user( $user_id );
+	$deleted = wp_delete_user( $user_id );
+
+	if ( $deleted ) {
+		rcp_log( sprintf( 'User #%d successfully deleted.', $user_id ) );
+	} else {
+		rcp_log( sprintf( 'Error deleting user #%d.', $user_id ) );
+	}
+
+	return $deleted;
 
 }
