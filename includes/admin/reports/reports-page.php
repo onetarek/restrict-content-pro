@@ -989,9 +989,10 @@ function rcp_get_report_dates() {
 		break;
 
 		case 'this_year' :
-			$dates['m_start'] = 1;
-			$dates['m_end']   = 12;
-			$dates['year']    = date( 'Y', $current_time );
+			$dates['m_start']  = 1;
+			$dates['m_end']    = 12;
+			$dates['year']     = date( 'Y', $current_time );
+			$dates['year_end'] = date( 'Y', $current_time );
 		break;
 
 		case 'last_year' :
