@@ -1559,3 +1559,34 @@ function rcp_add_subscription_change_note( $subscription_id, $member_id, $member
 
 }
 add_action( 'rcp_member_pre_set_subscription_id', 'rcp_add_subscription_change_note', 10, 3 );
+
+/**
+ * Deletes a user account and also performs a few cleanup actions, like cancelling the payment profile at the gateway (if applicable).
+ *
+ * @param int $user_id ID of the user account to delete.
+ *
+ * @since 3.0
+ * @return bool True on success, false on failure.
+ */
+function rcp_delete_member( $user_id ) {
+
+	$member = new RCP_Member( $user_id );
+
+	// Bail if user can't be found.
+	if ( empty( $member->ID ) ) {
+		rcp_log( sprintf( 'Unable to find user with ID #%d. User not deleted.', $user_id ) );
+
+		return false;
+	}
+
+	// Cancel payment profile at the gateway.
+	if ( $member->can_cancel() ) {
+		rcp_log( sprintf( 'Cancelling payment profile for user ID #%d.', $user_id ) );
+		$member->cancel_payment_profile( false );
+	}
+
+	// @todo Remove associated data from future subscription tables.
+
+	return wp_delete_user( $user_id );
+
+}

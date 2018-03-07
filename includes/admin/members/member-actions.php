@@ -266,12 +266,8 @@ function rcp_process_bulk_edit_members() {
 
 					break;
 
-				case 'remove-membership' :
-					// @todo
-					break;
-
 				case 'delete' :
-					// @todo
+					rcp_delete_member( $member->ID );
 					break;
 
 			}
@@ -385,54 +381,6 @@ function rcp_process_manually_verify_email() {
 add_action( 'rcp_action_verify_email', 'rcp_process_manually_verify_email' );
 
 /**
- * Remove membership data from a user
- *
- * @since 3.0
- * @return void
- */
-function rcp_process_remove_membership() {
-
-	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-remove-membership-nonce' ) ) {
-		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
-	}
-
-	if ( ! current_user_can( 'rcp_manage_members' ) ) {
-		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
-	}
-
-	if ( ! isset( $_GET['member_id'] ) ) {
-		wp_die( __( 'Please select a member.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
-	}
-
-	$member       = new RCP_Member( absint( $_GET['member_id'] ) );
-	$current_user = wp_get_current_user();
-
-	rcp_log( sprintf( '%s deleting membership data from user #%d.', $current_user->user_login, $member->ID ) );
-
-	// Cancel recurring membership.
-	if ( $member->can_cancel() ) {
-		$member->cancel_payment_profile( false );
-	}
-
-	// Delete membership data.
-	global $wpdb;
-
-	$query = $wpdb->prepare( "DELETE FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key LIKE 'rcp\_%'", $member->ID );
-	$wpdb->query( $query );
-
-	$redirect_url = wp_get_referer();
-
-	if ( empty( $redirect_url ) ) {
-		$redirect_url = admin_url( 'admin.php?page=rcp-members' );
-	}
-
-	wp_safe_redirect( add_query_arg( 'rcp_message', 'membership_removed', $redirect_url ) );
-	exit;
-
-}
-add_action( 'rcp_action_remove_membership', 'rcp_process_remove_membership' );
-
-/**
  * Delete a member
  *
  * @since 3.0
@@ -457,9 +405,11 @@ function rcp_process_delete_member() {
 
 	rcp_log( sprintf( '%s deleting user #%d and all associated data.', $current_user->user_login, $user_id ) );
 
-	wp_delete_user( $user_id );
+	$deleted = rcp_delete_member( $user_id );
 
-	// @todo should we delete payments?
+	if ( ! $deleted ) {
+		wp_die( __( 'An unexpected error occurred. The user was not deleted.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
+	}
 
 	$redirect_url = wp_get_referer();
 

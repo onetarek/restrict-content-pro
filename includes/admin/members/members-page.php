@@ -137,6 +137,7 @@ function rcp_members_page() {
 						<option value="mark-active"><?php _e( 'Mark as Active', 'rcp' ); ?></option>
 						<option value="mark-expired"><?php _e( 'Mark as Expired', 'rcp' ); ?></option>
 						<option value="mark-cancelled"><?php _e( 'Mark as Cancelled', 'rcp' ); ?></option>
+						<option value="delete"><?php _e( 'Permanently Delete', 'rcp' ); ?></option>
 					</select>
 					<span id="rcp-revoke-access-wrap">
 						<input type="checkbox" id="rcp-revoke-access" name="rcp-revoke-access" value="1">
@@ -221,10 +222,6 @@ function rcp_members_page() {
 												<span> | <a href="<?php echo wp_nonce_url( add_query_arg( array( 'rcp-action' => 'send_verification', 'member_id' => $member->ID ), $current_page ), 'rcp-verification-nonce' ); ?>" class="rcp_send_verification"><?php _e( 'Re-send Verification', 'rcp' ); ?></a></span>
 												<span> | <a href="<?php echo wp_nonce_url( add_query_arg( array( 'rcp-action' => 'verify_email', 'member_id' => $member->ID ), $current_page ), 'rcp-manually-verify-email-nonce' ); ?>" class="rcp_verify_email"><?php _e( 'Verify Email', 'rcp' ); ?></a></span>
 											<?php endif; ?>
-											<span class="rcp-separator"> | </span>
-											<span>
-												<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'rcp-action' => 'remove_membership', 'member_id' => $member->ID ), $current_page ), 'rcp-remove-membership-nonce' ) ); ?>" class="rcp_remove_membership"><?php _e( 'Remove Membership', 'rcp' ); ?></a>
-											</span>
 											<span class="rcp-separator"> | </span>
 											<span class="trash">
 												<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'rcp-action' => 'delete_member', 'member_id' => $member->ID ), $current_page ), 'rcp-delete-member-nonce' ) ); ?>" class="rcp_delete_member"><?php _e( 'Delete', 'rcp' ); ?></a>
