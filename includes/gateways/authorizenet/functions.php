@@ -32,7 +32,7 @@ function rcp_authnet_cancel_member( $member_id = 0 ) {
 	}
 	$md5_hash_value  = isset( $rcp_options['authorize_hash_value'] ) ? sanitize_text_field( $rcp_options['authorize_hash_value'] ) : '';
 
-	require_once RCP_PLUGIN_DIR . 'includes/libraries/anet_php_sdk/autoload.php';
+	require_once RCP_PLUGIN_DIR . 'anet/autoload.php';
 
 	$member     = new RCP_Member( $member_id );
 	$profile_id = str_replace( 'anet_', '', $member->get_payment_profile_id() );
@@ -161,7 +161,7 @@ function rcp_authorizenet_update_billing_card( $member_id = 0, $member_obj ) {
 		return;
 	}
 
-	require_once RCP_PLUGIN_DIR . 'includes/libraries/anet_php_sdk/autoload.php';
+	require_once RCP_PLUGIN_DIR . 'anet/autoload.php';
 
 	if ( rcp_is_sandbox() ) {
 		$api_login_id    = isset( $rcp_options['authorize_test_api_login'] ) ? sanitize_text_field( $rcp_options['authorize_test_api_login'] ) : '';

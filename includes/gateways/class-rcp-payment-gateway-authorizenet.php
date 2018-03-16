@@ -41,7 +41,7 @@ class RCP_Payment_Gateway_Authorizenet extends RCP_Payment_Gateway {
 
 		$this->md5_hash_value  = isset( $rcp_options['authorize_hash_value'] ) ? sanitize_text_field( $rcp_options['authorize_hash_value'] ) : '';
 
-		require_once RCP_PLUGIN_DIR . 'includes/libraries/anet_php_sdk/autoload.php';
+		require_once RCP_PLUGIN_DIR . 'anet/autoload.php';
 
 	} // end init
 
