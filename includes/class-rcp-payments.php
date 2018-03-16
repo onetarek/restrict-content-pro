@@ -679,9 +679,11 @@ class RCP_Payments {
 		global $wpdb;
 
 		$defaults = array(
-			'user_id' => 0,
-			'status'  => '',
-		    's'       => ''
+			'user_id'     => 0,
+			'status'      => '',
+		    's'           => '',
+			'object_id'   => '',
+			'object_type' => ''
 		);
 
 		$args  = wp_parse_args( $args, $defaults );
@@ -753,6 +755,18 @@ class RCP_Payments {
 				}
 			}
 
+		}
+
+		// Object type
+		if ( ! empty( $args['object_type'] ) ) {
+			$where   .= " AND `object_type` = %s";
+			$values[] = $args['object_type'];
+		}
+
+		// Object ID
+		if ( ! empty( $args['object_id'] ) ) {
+			$where   .= " AND `object_id` = %d AND `object_id` != 0";
+			$values[] = $args['object_id'];
 		}
 
 		$key   = md5( 'rcp_payments_count_' . serialize( $args ) );
