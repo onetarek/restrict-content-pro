@@ -681,7 +681,7 @@ class RCP_Payments {
 		$defaults = array(
 			'user_id'     => 0,
 			'status'      => '',
-		    's'           => '',
+			's'           => '',
 			'object_id'   => '',
 			'object_type' => ''
 		);
