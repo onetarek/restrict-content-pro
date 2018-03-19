@@ -467,14 +467,24 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 
 		/**
 		 * As a backup, get the user ID from the subscription ID.
-		 * This will be used for free trial cancellations and
-		 * backwards compatibility with the old Braintree add-on
-		 * where the subscription ID was stored instead of the
-		 * customer ID.
+		 * This will be used for free trial cancellations.
 		 */
 		if ( empty( $user_id ) && ! empty( $data->subscription->id ) ) {
 
 			$user_id = rcp_get_member_id_from_subscription_id( $data->subscription->id );
+
+		}
+
+		/**
+		 * For backwards compatibility with the old Braintree add-on,
+		 * find a user with this subscription ID stored in the meta
+		 * `rcp_recurring_payment_id`.
+		 */
+		if ( empty( $user_id ) && ! empty( $data->subscription->id ) ) {
+
+			global $wpdb;
+
+			$user_id = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'rcp_recurring_payment_id' AND meta_value = %s LIMIT 1", $data->subscription->id ) );
 
 		}
 
