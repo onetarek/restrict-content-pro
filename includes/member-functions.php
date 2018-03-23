@@ -1318,7 +1318,11 @@ function rcp_maybe_disable_toolbar() {
 
 	global $rcp_options;
 
-	if ( isset( $rcp_options['disable_toolbar'] ) && ! current_user_can( 'manage_options' ) ) {
+	$user = wp_get_current_user();
+	$roles = ( array ) $user->roles;
+	$role = $roles[0];
+
+	if ( isset( $rcp_options['disable_toolbar'] ) && $role == 'subscriber' ) {
 		add_filter( 'show_admin_bar', '__return_false' );
 	}
 }
