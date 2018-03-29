@@ -356,4 +356,60 @@ jQuery(document).ready(function($) {
 		}
 	});
 
+    var currencies = {
+        'USD': '&#36;',
+        'EUR': '&#8364;',
+        'GBP': '&#163;',
+        'AUD': '&#36;',
+        'BRL': '&#82;&#36;',
+        'CAD': '&#36;',
+        'CZK': '&#75;&#269;',
+        'DKK': '&#107;&#114;',
+        'HKD': '&#36;',
+        'HUF': '&#70;&#116;',
+        'IRR': '&#65020;',
+        'ILS': '&#8362;',
+        'JPY': '&#165;',
+        'MYR': '&#82;&#77;',
+        'MXN': '&#36;',
+        'NZD': '&#36;',
+        'NOK': '&#107;&#114;',
+        'PHP': '&#8369;',
+        'PLN': '&#122;&#322;',
+        'RUB': '&#1088;&#1091;&#1073;',
+        'SGD': '&#36;',
+        'SEK': '&#107;&#114;',
+        'CHF': '&#67;&#72;&#70;',
+        'TWD': '&#78;&#84;&#36;',
+        'THB': '&#3647;',
+        'TRY': '&#8356;'
+    };
+
+	var currencySelect  = $('#rcp_settings\\[currency\\]');
+	var currentsymbol = $.parseHTML(currencies[currencySelect.val()])[0];
+
+    var before = $('#rcp_settings\\[currency_position\\] option[value="before"]');
+    var after = $('#rcp_settings\\[currency_position\\] option[value="after"]');
+
+    before.text(function() {
+        return $(this).text().replace("$", currentsymbol.nodeValue);
+	});
+
+    after.text(function() {
+        return $(this).text().replace("$", currentsymbol.nodeValue);
+    });
+
+    $(currencySelect).on('change', function() {
+    	var newCurrency = $.parseHTML(currencies[$(this).val()])[0];
+
+        before.text(function() {
+            return $(this).text().replace(currentsymbol.nodeValue, newCurrency.nodeValue);
+        });
+        after.text(function() {
+            return $(this).text().replace(currentsymbol.nodeValue, newCurrency.nodeValue);
+		});
+
+        currentsymbol = newCurrency;
+    });
+
 });

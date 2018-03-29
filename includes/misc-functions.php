@@ -163,6 +163,8 @@ function rcp_get_currency_symbol( $currency = false ) {
 /**
  * Get the currency list.
  *
+ * Also stored in admin-scripts.js; update that list as well if updating this
+ *
  * @access private
  * @return array List of currencies.
  */
