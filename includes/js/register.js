@@ -101,6 +101,9 @@ jQuery(document).ready(function($) {
 
 		}).success(function( response ) {
 		}).done(function( response ) {
+            window.setTimeout(function() {
+                $('.rcp_message.error').attr("tabindex",-1).focus();
+            }, 10);
 		}).fail(function( response ) {
 			console.log( response );
 		}).always(function( response ) {
