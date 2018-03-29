@@ -356,31 +356,33 @@ jQuery(document).ready(function($) {
 		}
 	});
 
-    var currencies = JSON.parse(rcp_vars.currencies);
     var currencySelect = $('#rcp_settings\\[currency\\]');
-    var currentsymbol = currencies[currencySelect.val()].match(/\(([^)]+)\)/)[1];
-    var before = $('#rcp_settings\\[currency_position\\] option[value="before"]');
-    var after = $('#rcp_settings\\[currency_position\\] option[value="after"]');
-
-    before.text(function () {
-        return $(this).text().replace("$", currentsymbol);
-    });
-
-    after.text(function () {
-        return $(this).text().replace("$", currentsymbol);
-    });
-
-    $(currencySelect).on('change', function () {
-        var newCurrency = currencies[$(this).val()].match(/\(([^)]+)\)/)[1];
+    if (currencySelect.length) {
+        var currencies = JSON.parse(rcp_vars.currencies);
+        var currentsymbol = currencies[currencySelect.val()].match(/\(([^)]+)\)/)[1];
+        var before = $('#rcp_settings\\[currency_position\\] option[value="before"]');
+        var after = $('#rcp_settings\\[currency_position\\] option[value="after"]');
 
         before.text(function () {
-            return $(this).text().replace(currentsymbol, newCurrency);
-        });
-        after.text(function () {
-            return $(this).text().replace(currentsymbol, newCurrency);
+            return $(this).text().replace("$", currentsymbol);
         });
 
-        currentsymbol = newCurrency;
-    });
+        after.text(function () {
+            return $(this).text().replace("$", currentsymbol);
+        });
+
+        $(currencySelect).on('change', function () {
+            var newCurrency = currencies[$(this).val()].match(/\(([^)]+)\)/)[1];
+
+            before.text(function () {
+                return $(this).text().replace(currentsymbol, newCurrency);
+            });
+            after.text(function () {
+                return $(this).text().replace(currentsymbol, newCurrency);
+            });
+
+            currentsymbol = newCurrency;
+        });
+    }
 
 });
