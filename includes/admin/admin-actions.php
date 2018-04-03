@@ -38,11 +38,11 @@ add_action( 'admin_init', 'rcp_process_actions' );
 function rcp_display_post_states( $post_states, $post ) {
 	$rcp_options = get_option( 'rcp_settings' );
 	$pages       = array(
-		'registration_page' => 'Registration Page',
-		'redirect'          => 'Registration Success Page',
-		'account_page'      => 'Account Page',
-		'edit_profile'      => 'Edit Profile Page',
-		'update_card'       => 'Update Card Page'
+		'registration_page' => __( 'Registration Page', 'rcp' ),
+		'redirect'          => __( 'Registration Success Page', 'rcp' ),
+		'account_page'      => __( 'Account Page', 'rcp' ),
+		'edit_profile'      => __( 'Edit Profile Page', 'rcp' ),
+		'update_card'       => __( 'Update Card Page', 'rcp' )
 	);
 	$pages_array = array();
 	foreach ( $pages as $key => $value ) {
