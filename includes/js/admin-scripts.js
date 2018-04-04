@@ -359,29 +359,29 @@ jQuery(document).ready(function($) {
     var currencySelect = $('#rcp_settings\\[currency\\]');
     if (currencySelect.length) {
         var currencies = JSON.parse(rcp_vars.currencies);
-        var currentsymbol = currencies[currencySelect.val()].match(/\(([^)]+)\)/)[1];
-        var before = $('#rcp_settings\\[currency_position\\] option[value="before"]');
-        var after = $('#rcp_settings\\[currency_position\\] option[value="after"]');
+        var currentSymbol = currencies[currencySelect.val()].match(/\(([^)]+)\)/)[1];
+        var currencyPositionBefore = $('#rcp_settings\\[currency_position\\] option[value="before"]');
+        var currencyPositionAfter = $('#rcp_settings\\[currency_position\\] option[value="after"]');
 
-        before.text(function () {
-            return $(this).text().replace("$", currentsymbol);
+        currencyPositionBefore.text(function () {
+            return $(this).text().replace("$", currentSymbol);
         });
 
-        after.text(function () {
-            return $(this).text().replace("$", currentsymbol);
+        currencyPositionAfter.text(function () {
+            return $(this).text().replace("$", currentSymbol);
         });
 
         $(currencySelect).on('change', function () {
             var newCurrency = currencies[$(this).val()].match(/\(([^)]+)\)/)[1];
 
-            before.text(function () {
-                return $(this).text().replace(currentsymbol, newCurrency);
+            currencyPositionBefore.text(function () {
+                return $(this).text().replace(currentSymbol, newCurrency);
             });
-            after.text(function () {
-                return $(this).text().replace(currentsymbol, newCurrency);
+            currencyPositionAfter.text(function () {
+                return $(this).text().replace(currentSymbol, newCurrency);
             });
 
-            currentsymbol = newCurrency;
+            currentSymbol = newCurrency;
         });
     }
 
