@@ -56,7 +56,7 @@ global $rcp_checkout_details; ?>
 	</tbody>
 </table>
 
-<form action="<?php echo esc_url( add_query_arg( 'rcp-confirm', 'paypal_express' ) ); ?>" method="post">
+<form id="rcp-paypal-express-confirm-form" action="<?php echo esc_url( add_query_arg( 'rcp-confirm', 'paypal_express' ) ); ?>" method="post">
 	<input type="hidden" name="confirmation" value="yes" />
 	<input type="hidden" name="token" value="<?php echo esc_attr( $_GET['token'] ); ?>" />
 	<input type="hidden" name="payer_id" value="<?php echo esc_attr( $_GET['PayerID'] ); ?>" />
