@@ -345,48 +345,9 @@ function rcp_register_form_stripe_checkout( $atts ) {
 		<div class="rcp-stripe-checkout-notice"><?php _e( 'You are already subscribed.', 'rcp' ); ?></div>
 
 	<?php else :
-		add_action( 'wp_footer', function() {
-			wp_print_scripts( 'jquery-blockui' );
-			?>
-			<script>
-				let $ = jQuery;
-
-				let stripeCheckoutHelper = {
-					init: function() {
-						let stripeCheckoutButton = document.querySelector( '.stripe-button-el' );
-
-						if( ! stripeCheckoutButton ) {
-							return;
-						}
-
-						stripeCheckoutButton.addEventListener( 'click', function( event ) {
-							event.preventDefault();
-							$( 'body' ).block( {
-								message: '<?php _e( 'Please Wait . . . ', 'rcp' ); ?>',
-								css: {
-									padding: '15px',
-									backgroundColor: '#333',
-									opacity: .5,
-									color: '#fff'
-								}
-							} );
-						} );
-					}
-				}
-
-				$( document ).ready( function() {
-					stripeCheckoutHelper.init();
-					$( document ).on( 'DOMNodeRemoved', '.stripe_checkout_app', function() {
-						let stripeTokenElement = document.getElementsByName( 'stripeToken' );
-						if( ! stripeTokenElement || stripeTokenElement.length === 0 ) {
-							$( 'body' ).unblock();
-						}
-					} );
-				} );
-
-			</script>
-			<?php
-		} );
+		if( ! has_action( 'wp_footer', 'rcp_stripe_checkout_shortcode_scripts' ) ) {
+			add_action( 'wp_footer', 'rcp_stripe_checkout_shortcode_scripts' );
+		}
 		?>
 		<form action="" method="post">
 			<?php do_action( 'register_form_stripe_fields', $data ); ?>
@@ -662,3 +623,56 @@ function rcp_user_expiration_shortcode() {
 	return rcp_get_expiration_date();
 }
 add_shortcode( 'user_expiration', 'rcp_user_expiration_shortcode' );
+
+/**
+ * Loads the scripts for the Stripe Checkout shortcode.
+ * Hooked into wp_footer via rcp_register_form_stripe_checkout().
+ *
+ * @since 2.9.11
+ */
+function rcp_stripe_checkout_shortcode_scripts() {
+
+	wp_print_scripts( 'jquery-blockui' );
+	?>
+
+	<script>
+		let $ = jQuery;
+
+		let stripeCheckoutHelper = {
+			init: function() {
+				let stripeCheckoutButton = document.querySelectorAll( '.stripe-button-el' );
+
+				if( ! stripeCheckoutButton ) {
+					return;
+				}
+
+				stripeCheckoutButton.forEach( function( element ) {
+					element.addEventListener( 'click', function( event ) {
+						event.preventDefault();
+						$( 'body' ).block( {
+							message: '<?php _e( 'Please Wait . . . ', 'rcp' ); ?>',
+							css: {
+								padding: '15px',
+								backgroundColor: '#333',
+								opacity: .5,
+								color: '#fff'
+							}
+						} );
+					} );
+				} );
+			}
+		}
+
+		$( document ).ready( function() {
+			stripeCheckoutHelper.init();
+			$( document ).on( 'DOMNodeRemoved', '.stripe_checkout_app', function() {
+				let stripeTokenElement = document.getElementsByName( 'stripeToken' );
+				if( ! stripeTokenElement || stripeTokenElement.length === 0 ) {
+					$( 'body' ).unblock();
+				}
+			} );
+		} );
+
+	</script>
+	<?php
+}
