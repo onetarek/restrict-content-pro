@@ -344,7 +344,50 @@ function rcp_register_form_stripe_checkout( $atts ) {
 
 		<div class="rcp-stripe-checkout-notice"><?php _e( 'You are already subscribed.', 'rcp' ); ?></div>
 
-	<?php else : ?>
+	<?php else :
+		add_action( 'wp_footer', function() {
+			wp_print_scripts( 'jquery-blockui' );
+			?>
+			<script>
+				console.log('stripe checkout shortcode loading');
+				let $ = jQuery;
+
+				let stripeCheckoutHelper = {
+					init: function() {
+						let stripeCheckoutButton = document.querySelector( '.stripe-button-el' );
+
+						if( ! stripeCheckoutButton ) {
+							return;
+						}
+
+						stripeCheckoutButton.addEventListener( 'click', function( event ) {
+							event.preventDefault();
+							$( 'body' ).block( {
+								message: '<?php _e( 'Please Wait . . . ', 'rcp' ); ?>',
+								css: {
+									backgroundColor: '#333',
+									opacity: .5,
+									color: '#fff'
+								}
+							} );
+						} );
+					}
+				}
+
+				$( document ).ready( function() {
+					stripeCheckoutHelper.init();
+					$( document ).on( 'DOMNodeRemoved', '.stripe_checkout_app', function() {
+						let stripeTokenElement = document.getElementsByName( 'stripeToken' );
+						if( ! stripeTokenElement || stripeTokenElement.length === 0 ) {
+							$( 'body' ).unblock();
+						}
+					} );
+				} );
+
+			</script>
+			<?php
+		} );
+		?>
 		<form action="" method="post">
 			<?php do_action( 'register_form_stripe_fields', $data ); ?>
 			<script src="https://checkout.stripe.com/checkout.js" class="stripe-button" <?php foreach( $data as $label => $value ) { printf( ' %s="%s" ', esc_attr( $label ), esc_attr( $value ) ); } ?> ></script>
