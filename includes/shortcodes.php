@@ -654,7 +654,7 @@ function rcp_stripe_checkout_shortcode_scripts() {
 							css: {
 								padding: '15px',
 								backgroundColor: '#333',
-								opacity: .5,
+								opacity: 0.25,
 								color: '#fff'
 							}
 						} );
@@ -668,7 +668,7 @@ function rcp_stripe_checkout_shortcode_scripts() {
 			$( document ).on( 'DOMNodeRemoved', '.stripe_checkout_app', function() {
 				let stripeTokenElement = document.getElementsByName( 'stripeToken' );
 				if( ! stripeTokenElement || stripeTokenElement.length === 0 ) {
-					$( 'body' ).unblock();
+					$( 'body' ).unblock( { fadeOut: 0 } );
 				}
 			} );
 		} );
