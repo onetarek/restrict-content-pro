@@ -34,6 +34,7 @@ add_action( 'admin_init', 'rcp_process_actions' );
  *
  * @param array $post_states An array of post display states.
  * @param WP_Post $post The current post object.
+ * @return array An array of post display states.
  */
 function rcp_display_post_states( $post_states, $post ) {
 	$rcp_options = get_option( 'rcp_settings' );
@@ -44,12 +45,11 @@ function rcp_display_post_states( $post_states, $post ) {
 		'edit_profile'      => __( 'Edit Profile Page', 'rcp' ),
 		'update_card'       => __( 'Update Card Page', 'rcp' )
 	);
-	$pages_array = array();
-	foreach ( $pages as $key => $value ) {
-		$pages_array[ $rcp_options[ $key ] ] = isset( $rcp_options[ $key ] ) ? $pages[ $key ] : false;
-	}
-	if ( array_key_exists( $post->ID, $pages_array ) ) {
-		$post_states[ 'rcp_' . array_search( $pages_array[ $post->ID ], $pages ) ] = $pages_array[ $post->ID ];
+
+	foreach( $pages as $key => $value ) {
+		if( isset( $rcp_options[$key] ) && ( $post->ID === (int) $rcp_options[$key] ) ) {
+			$post_states['rcp_'.$key] = $pages[$key];
+		}
 	}
 
 	return $post_states;
