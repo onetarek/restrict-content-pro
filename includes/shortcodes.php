@@ -349,7 +349,6 @@ function rcp_register_form_stripe_checkout( $atts ) {
 			wp_print_scripts( 'jquery-blockui' );
 			?>
 			<script>
-				console.log('stripe checkout shortcode loading');
 				let $ = jQuery;
 
 				let stripeCheckoutHelper = {
@@ -365,6 +364,7 @@ function rcp_register_form_stripe_checkout( $atts ) {
 							$( 'body' ).block( {
 								message: '<?php _e( 'Please Wait . . . ', 'rcp' ); ?>',
 								css: {
+									padding: '15px',
 									backgroundColor: '#333',
 									opacity: .5,
 									color: '#fff'
