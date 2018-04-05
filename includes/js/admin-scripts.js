@@ -356,4 +356,34 @@ jQuery(document).ready(function($) {
 		}
 	});
 
+	// Changes the currency symbol in the Currency Position dropdown to match the Currency setting.
+	var currencySelect = $('#rcp_settings\\[currency\\]');
+	if (currencySelect.length) {
+		var currencies = JSON.parse(rcp_vars.currencies);
+		var currentSymbol = currencies[currencySelect.val()].match(/\(([^)]+)\)/)[1];
+		var currencyPositionBefore = $('#rcp_settings\\[currency_position\\] option[value="before"]');
+		var currencyPositionAfter = $('#rcp_settings\\[currency_position\\] option[value="after"]');
+
+		currencyPositionBefore.text(function () {
+			return $(this).text().replace("$", currentSymbol);
+		});
+
+		currencyPositionAfter.text(function () {
+			return $(this).text().replace("$", currentSymbol);
+		});
+
+		$(currencySelect).on('change', function () {
+			var newCurrency = currencies[$(this).val()].match(/\(([^)]+)\)/)[1];
+
+			currencyPositionBefore.text(function () {
+				return $(this).text().replace(currentSymbol, newCurrency);
+			});
+			currencyPositionAfter.text(function () {
+				return $(this).text().replace(currentSymbol, newCurrency);
+			});
+
+			currentSymbol = newCurrency;
+		});
+	}
+
 });
