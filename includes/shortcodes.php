@@ -649,8 +649,8 @@ function rcp_stripe_checkout_shortcode_scripts() {
 				stripeCheckoutButton.forEach( function( element ) {
 					element.addEventListener( 'click', function( event ) {
 						event.preventDefault();
-						$( 'body' ).block( {
-							message: '<?php _e( 'Please Wait . . . ', 'rcp' ); ?>',
+						$.blockUI({
+							message: '<?php _e( 'Processing payment, please wait . . .', 'rcp' ); ?>',
 							css: {
 								padding: '15px',
 								backgroundColor: '#333',
@@ -661,7 +661,7 @@ function rcp_stripe_checkout_shortcode_scripts() {
 					} );
 				} );
 			}
-		}
+		};
 
 		$( document ).ready( function() {
 			stripeCheckoutHelper.init();
