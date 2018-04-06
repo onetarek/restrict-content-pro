@@ -650,7 +650,7 @@ function rcp_stripe_checkout_shortcode_scripts() {
 					element.addEventListener( 'click', function( event ) {
 						event.preventDefault();
 						$.blockUI({
-							message: '<?php _e( 'Processing payment, please wait . . .', 'rcp' ); ?>',
+							message: '<?php _e( 'Please wait . . .', 'rcp' ); ?>',
 							css: {
 								padding: '15px',
 								backgroundColor: '#333',
