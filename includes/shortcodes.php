@@ -650,11 +650,12 @@ function rcp_stripe_checkout_shortcode_scripts() {
 					element.addEventListener( 'click', function( event ) {
 						event.preventDefault();
 						$.blockUI({
-							message: '<?php _e( 'Please wait . . .', 'rcp' ); ?>',
+							message: '<?php _e( 'Please wait . . . ', 'rcp' ); ?>',
 							css: {
+								border: 'none',
 								padding: '15px',
-								backgroundColor: '#333',
-								opacity: 0.25,
+								backgroundColor: '#000',
+								opacity: 0.75,
 								color: '#fff'
 							}
 						} );
