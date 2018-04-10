@@ -151,7 +151,10 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 		$cancelled_subscriptions = array();
 
 		// clean up any past due or unpaid subscriptions before upgrading/downgrading
-		foreach( $customer->subscriptions->all()->data as $subscription ) {
+		$subscriptions = $customer->subscriptions->all( array(
+			'expand' => array( 'data.plan.product' )
+		) );
+		foreach( $subscriptions->data as $subscription ) {
 
 			// Cancel subscriptions with the RCP metadata present and matching member ID.
 			// @todo When we add multiple subscriptions we need to update this to only cancel subscriptions where $this->subscription_id matches the rcp_subscription_level_id in the metadata.
@@ -167,14 +170,14 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 			 * RCP subscription level database. If the Stripe plan name matches a sub level name then we cancel it.
 			 * @todo When we add multiple subscriptions we need to update this to only cancel if the plan name != $member->get_pending_subscription_name()
 			 */
-			if ( ! empty( $subscription->plan->name ) ) {
+			if ( ! empty( $subscription->plan->product->name ) ) {
 
 				/**
 				 * @var RCP_Levels $rcp_levels_db
 				 */
 				global $rcp_levels_db;
 
-				$level = $rcp_levels_db->get_level_by( 'name', $subscription->plan->name );
+				$level = $rcp_levels_db->get_level_by( 'name', $subscription->plan->product->name );
 
 				// Cancel if this plan name matches an RCP subscription level.
 				if ( ! empty( $level ) ) {
