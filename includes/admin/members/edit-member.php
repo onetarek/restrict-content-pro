@@ -180,6 +180,7 @@ if ( 'pending' == $current_status ) {
 					<select name="signup_method" id="rcp-signup-method">
 						<option value="live" <?php selected( $method, 'live' ); ?>><?php _e( 'User Signup', 'rcp' ); ?>
 						<option value="manual" <?php selected( $method, 'manual' ); ?>><?php _e( 'Added by admin manually', 'rcp' ); ?>
+						<option value="imported" <?php selected( $method, 'imported' ); ?>><?php _e( 'Imported', 'rcp' ); ?>
 					</select>
 					<p class="description"><?php _e( 'Was this a real signup or a membership given to the user', 'rcp' ); ?></p>
 				</td>

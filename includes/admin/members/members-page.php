@@ -168,7 +168,17 @@ function rcp_members_page() {
 					<?php
 
 					if( isset( $_GET['signup_method'] ) ) {
-						$method = $_GET['signup_method'] == 'live' ? 'live' : 'manual';
+						switch( $_GET['signup_method'] ) {
+							case 'live':
+								$method = 'live';
+								break;
+							case 'imported':
+								$method = 'imported';
+								break;
+							default:
+								$method = 'manual';
+								break;
+						}
 						$members = get_users( array(
 								'meta_key' => 'rcp_signup_method',
 								'meta_value' => $method,
