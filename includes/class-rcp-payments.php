@@ -658,6 +658,30 @@ class RCP_Payments {
 
 		}
 
+		/** Backfill empty subtotal */
+		if ( $payment->subtotal === "" ) {
+			$payment->subtotal          = $payment->amount;
+			$data_to_update['subtotal'] = $payment->amount;
+		}
+
+		/** Backfill empty credits */
+		if ( $payment->credits === "" ) {
+			$payment->credits          = 0;
+			$data_to_update['credits'] = 0;
+		}
+
+		/** Backfill empty fees */
+		if ( $payment->fees === "" ) {
+			$payment->fees          = 0;
+			$data_to_update['fees'] = 0;
+		}
+
+		/** Backfill empty discount_amount */
+		if ( $payment->discount_amount === "" ) {
+			$payment->discount_amount          = 0;
+			$data_to_update['discount_amount'] = 0;
+		}
+
 		if ( ! empty( $data_to_update ) ) {
 			$this->update( $payment->id, $data_to_update );
 		}
