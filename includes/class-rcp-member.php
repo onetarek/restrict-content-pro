@@ -754,7 +754,7 @@ class RCP_Member extends WP_User {
 		if( $success ) {
 			rcp_log( sprintf( 'Payment profile successfully cancelled for member #%d.', $this->ID ) );
 		} else {
-			rcp_log( sprintf( 'Failed cancelling payment profile for member #%d.', $this->ID ) );
+			rcp_log( sprintf( 'Failed cancelling payment profile for member #%d.', $this->ID ), true );
 		}
 
 		return $success;

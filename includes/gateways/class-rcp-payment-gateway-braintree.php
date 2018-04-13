@@ -414,7 +414,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 				$verify = Braintree_WebhookNotification::verify( $_GET['bt_challenge'] );
 				die( $verify );
 			} catch ( Exception $e ) {
-				rcp_log( 'Exiting Braintree webhook - verification failed.' );
+				rcp_log( 'Exiting Braintree webhook - verification failed.', true );
 
 				wp_die( 'Verification failed' );
 			}
@@ -431,13 +431,13 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		try {
 			$data = Braintree_WebhookNotification::parse( $_POST['bt_signature'], $_POST['bt_payload'] );
 		} catch ( Exception $e ) {
-			rcp_log( 'Exiting Braintree webhook - invalid signature.' );
+			rcp_log( 'Exiting Braintree webhook - invalid signature.', true );
 
 			die( 'Invalid signature' );
 		}
 
 		if ( empty( $data->kind ) ) {
-			rcp_log( 'Exiting Braintree webhook - invalid webhook.' );
+			rcp_log( 'Exiting Braintree webhook - invalid webhook.', true );
 
 			die( 'Invalid webhook' );
 		}
@@ -489,7 +489,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $user_id ) ) {
-			rcp_log( 'Exiting Braintree webhook - member ID not found.' );
+			rcp_log( 'Exiting Braintree webhook - member ID not found.', true );
 
 			die( 'no user ID found' );
 		}
@@ -505,7 +505,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $subscription_id ) ) {
-			rcp_log( 'Exiting Braintree webhook - no subscription ID for member.' );
+			rcp_log( 'Exiting Braintree webhook - no subscription ID for member.', true );
 
 			die( 'no subscription ID for member' );
 		}

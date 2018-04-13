@@ -1043,7 +1043,7 @@ function rcp_remove_subscription_data_on_failure( $gateway ) {
 	}
 
 	// Log error.
-	rcp_log( sprintf( '%s registration failed for user #%d. Error message: %s', rcp_get_gateway_name_from_object( $gateway ), $gateway->user_id, $gateway->error_message ) );
+	rcp_log( sprintf( '%s registration failed for user #%d. Error message: %s', rcp_get_gateway_name_from_object( $gateway ), $gateway->user_id, $gateway->error_message ), true );
 
 }
 add_action( 'rcp_registration_failed', 'rcp_remove_subscription_data_on_failure' );
