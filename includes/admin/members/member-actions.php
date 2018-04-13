@@ -151,7 +151,7 @@ function rcp_process_add_member_subscription() {
 
 	// Don't add if chosen expiration date is in the past.
 	if ( isset( $_POST['expiration'] ) && strtotime( 'NOW', current_time( 'timestamp' ) ) > strtotime( $_POST['expiration'], current_time( 'timestamp' ) ) && 'none' !== $_POST['expiration'] ) {
-		rcp_log( sprintf( 'Failed adding subscription to an existing user: chosen expiration date ( %s ) is in the past.', $_POST['expiration'] ) );
+		rcp_log( sprintf( 'Failed adding subscription to an existing user: chosen expiration date ( %s ) is in the past.', $_POST['expiration'] ), true );
 		wp_safe_redirect( admin_url( 'admin.php?page=rcp-members&rcp_message=user_not_added' ) );
 		exit;
 	}
