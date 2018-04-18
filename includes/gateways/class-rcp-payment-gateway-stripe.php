@@ -137,7 +137,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 				}
 
-				$member->set_payment_profile_id( $customer->id );
+				$customer_id = $customer->id;
 
 			} catch ( Exception $e ) {
 
@@ -193,6 +193,12 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 		if( $member->just_upgraded() && $member->can_cancel() && ! in_array( $member->get_merchant_subscription_id(), $cancelled_subscriptions ) ) {
 			$cancelled = $member->cancel_payment_profile( false );
 		}
+
+		/*
+		 * Set Stripe customer ID as payment profile ID. We can safely do this now that we've cancelled any existing
+		 * subscriptions. See https://github.com/restrictcontentpro/restrict-content-pro/issues/1719
+		 */
+		$member->set_payment_profile_id( $customer_id );
 
 		// Now save card details. This has to be done after the above cancellations. See https://github.com/restrictcontentpro/restrict-content-pro/issues/1570
 		$customer->source = $_POST['stripeToken'];
