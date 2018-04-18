@@ -386,4 +386,47 @@ jQuery(document).ready(function($) {
 		});
 	}
 
+	if( window.adminpage === 'restrict_page_rcp-settings' ) {
+		RCP_Settings.init();
+	}
 });
+
+let RCP_Settings = {
+
+	init: function() {
+		this.listeners();
+	},
+
+	listeners: function() {
+		let sandboxCheckbox = document.getElementById( 'rcp_settings[sandbox]' );
+
+		if( ! sandboxCheckbox ) {
+			return;
+		}
+
+		sandboxCheckbox.addEventListener( 'change', function() {
+			let testpub = document.getElementById( 'rcp_settings[stripe_test_publishable]' );
+			let livepub = document.getElementById( 'rcp_settings[stripe_live_publishable]' );
+			let notice = document.getElementById( 'rcp-sandbox-toggle-notice' );
+
+			if( this.checked && testpub.value === '' ) {
+				RCP_Settings.showErrorNotice( notice );
+			}
+
+			if( ! this.checked && livepub.value === '' ) {
+				RCP_Settings.showErrorNotice( notice );
+			}
+		} );
+	},
+
+	showErrorNotice: function( element = false ) {
+		if( ! element ) {
+			return;
+		}
+
+		element.className = 'notice error';
+		element.style.visibility = 'visible';
+	}
+}
+
+

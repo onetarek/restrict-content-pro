@@ -48,6 +48,13 @@ function rcp_settings_page() {
 		?>
 
 		<h1><?php _e( 'Restrict Content Pro', 'rcp' ); ?></h1>
+
+		<?php if( ! empty( $_GET['rcp_gateway_connect_error'] ) ): ?>
+		<div class="notice error">
+			<p><?php printf( __( 'There was an error processing your gateway connection request. Code: %s. Message: %s. Please <a href="%s">try again</a>.', 'rcp' ), esc_html( urldecode( $_GET['rcp_gateway_connect_error'] ) ), esc_html( urldecode( $_GET['rcp_gateway_connect_error_description'] ) ), esc_url( admin_url( 'admin.php?page=rcp-settings#payments' ) ) ); ?></p>
+		</div>
+		<?php return; endif; ?>
+
 		<h2 class="nav-tab-wrapper">
 			<a href="#general" class="nav-tab"><?php _e( 'General', 'rcp' ); ?></a>
 			<a href="#payments" class="nav-tab"><?php _e( 'Payments', 'rcp' ); ?></a>
@@ -348,15 +355,45 @@ function rcp_settings_page() {
 							<td>
 								<input type="checkbox" value="1" name="rcp_settings[sandbox]" id="rcp_settings[sandbox]" <?php if( isset( $rcp_options['sandbox'] ) ) checked('1', $rcp_options['sandbox']); ?>/>
 								<span class="description"><?php _e( 'Use Restrict Content Pro in Sandbox mode. This allows you to test the plugin with test accounts from your payment processor.', 'rcp' ); ?></span>
+								<div id="rcp-sandbox-toggle-notice" style="visibility: hidden;"><p><?php _e( 'You just toggled the sandbox option. Save the settings using the Save Options button below, then connect your Stripe account for the selected mode.', 'rcp' ); ?></p></div>
 							</td>
 						</tr>
 						<?php if( ! function_exists( 'rcp_register_stripe_gateway' ) ) : ?>
 						<tr valign="top">
-							<th colspan=2>
+							<th>
 								<h3><?php _e('Stripe Settings', 'rcp'); ?></h3>
 							</th>
+							<td>
+							<?php
+							$stripe_connect_url = add_query_arg( array(
+								'live_mode' => (int) ! rcp_is_sandbox(),
+								'state' => str_pad( wp_rand( wp_rand(), PHP_INT_MAX ), 100, wp_rand(), STR_PAD_BOTH ),
+								'customer_site_url' => admin_url( 'admin.php?page=rcp-settings' ),
+							), 'https://restrictcontentpro.com/?rcp_gateway_connect_init=stripe_connect' );
+
+							if( ( empty( $rcp_options['stripe_test_publishable'] ) && rcp_is_sandbox() ) || ( empty( $rcp_options['stripe_live_publishable'] ) && ! rcp_is_sandbox() ) ): ?>
+								<a href="<?php echo esc_url_raw( $stripe_connect_url ); ?>" class="rcp-stripe-connect"><span><?php _e( 'Connect with Stripe', 'rcp' ); ?></span></a>
+							<?php else: ?>
+								<p>
+									<?php
+									$test_text = _x( 'test', 'current value for sandbox mode', 'rcp' );
+									$live_text = _x( 'live', 'current value for sandbox mode', 'rcp' );
+									if( rcp_is_sandbox() ) {
+										$current_mode = $test_text;
+										$opposite_mode = $live_text;
+									} else {
+										$current_mode = $live_text;
+										$opposite_mode = $test_text;
+									}
+									printf( __( 'Your Stripe account is connected in %s mode. To connect it in %s mode, toggle the Sandbox Mode setting above and save the settings to continue.', 'rcp' ), '<strong>' . $current_mode . '</strong>', '<strong>' . $opposite_mode . '</strong>' ); ?>
+								</p>
+								<p>
+									<?php printf( __( '<a href="%s">Click here</a> to reconnect Stripe in %s mode.', 'rcp' ), esc_url_raw( $stripe_connect_url ), $current_mode ); ?>
+								</p>
+							<?php endif; ?>
+							</td>
 						</tr>
-						<tr>
+						<tr class="rcp-settings-gateway-stripe-key-row">
 							<th>
 								<label for="rcp_settings[stripe_test_publishable]"><?php _e( 'Test Publishable Key', 'rcp' ); ?></label>
 							</th>
@@ -365,7 +402,7 @@ function rcp_settings_page() {
 								<p class="description"><?php _e('Enter your test publishable key.', 'rcp'); ?></p>
 							</td>
 						</tr>
-						<tr>
+						<tr class="rcp-settings-gateway-stripe-key-row">
 							<th>
 								<label for="rcp_settings[stripe_test_secret]"><?php _e( 'Test Secret Key', 'rcp' ); ?></label>
 							</th>
@@ -374,7 +411,7 @@ function rcp_settings_page() {
 								<p class="description"><?php _e('Enter your test secret key. Your API keys can be obtained from your <a href="https://dashboard.stripe.com/account/apikeys" target="_blank">Stripe account settings</a>.', 'rcp'); ?></p>
 							</td>
 						</tr>
-						<tr>
+						<tr class="rcp-settings-gateway-stripe-key-row">
 							<th>
 								<label for="rcp_settings[stripe_live_publishable]"><?php _e( 'Live Publishable Key', 'rcp' ); ?></label>
 							</th>
@@ -383,7 +420,7 @@ function rcp_settings_page() {
 								<p class="description"><?php _e('Enter your live publishable key.', 'rcp'); ?></p>
 							</td>
 						</tr>
-						<tr>
+						<tr class="rcp-settings-gateway-stripe-key-row">
 							<th>
 								<label for="rcp_settings[stripe_live_secret]"><?php _e( 'Live Secret Key', 'rcp' ); ?></label>
 							</th>
@@ -1671,7 +1708,6 @@ function rcp_settings_page() {
 				<input type="submit" class="button-primary" value="<?php _e( 'Save Options', 'rcp' ); ?>" />
 			</p>
 
-
 		</form>
 	</div><!--end wrap-->
 
@@ -2115,3 +2151,53 @@ function rcp_process_send_test_email() {
 }
 
 add_action( 'rcp_action_send_test_email', 'rcp_process_send_test_email' );
+
+/**
+ * Listens for Stripe Connect completion requests and saves the Stripe API keys.
+ *
+ * @since 2.9.11
+ */
+function rcp_process_gateway_connect_completion() {
+
+	if( ! isset( $_GET['rcp_gateway_connect_completion'] ) || 'stripe_connect' !== $_GET['rcp_gateway_connect_completion'] || ! isset( $_GET['state'] ) ) {
+		return;
+	}
+
+	if( ! current_user_can( 'rcp_manage_settings' ) ) {
+		return;
+	}
+
+	if( headers_sent() ) {
+		return;
+	}
+
+	$rcp_credentials_url = add_query_arg( array(
+		'live_mode' => (int) ! rcp_is_sandbox(),
+		'state' => sanitize_text_field( $_GET['state'] ),
+		'customer_site_url' => admin_url( 'admin.php?page=rcp-settings' ),
+	), 'https://restrictcontentpro.com/?rcp_gateway_connect_credentials=stripe_connect' );
+
+	$response = wp_remote_get( esc_url_raw( $rcp_credentials_url ) );
+	if( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+		$message = '<p>' . sprintf( __( 'There was an error getting your Stripe credentials. Please <a href="%s">try again</a>. If you continue to have this problem, please contact support.', 'rcp' ), esc_url( admin_url( 'admin.php?page=rcp-settings#payments' ) ) ) . '</p>';
+		wp_die( $message );
+	}
+
+	$data = json_decode( $response['body'], true )['data'];
+
+	global $rcp_options;
+
+	if( rcp_is_sandbox() ) {
+		$rcp_options['stripe_test_publishable'] = sanitize_text_field( $data['publishable_key'] );
+		$rcp_options['stripe_test_secret'] = sanitize_text_field( $data['secret_key'] );
+	} else {
+		$rcp_options['stripe_live_publishable'] = sanitize_text_field( $data['publishable_key'] );
+		$rcp_options['stripe_live_secret'] = sanitize_text_field( $data['secret_key'] );
+	}
+	update_option( 'rcp_settings', $rcp_options );
+	update_option( 'rcp_stripe_connect_account_id', sanitize_text_field( $data['stripe_user_id'] ), false );
+	wp_redirect( esc_url_raw( admin_url( 'admin.php?page=rcp-settings#payments' ) ) );
+	exit;
+
+}
+add_action( 'admin_init', 'rcp_process_gateway_connect_completion' );

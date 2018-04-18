@@ -268,7 +268,17 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 				}
 
 				// Set the customer's subscription in Stripe
-				$subscription = $customer->subscriptions->create( apply_filters( 'rcp_stripe_create_subscription_args', $sub_args, $this ) );
+				$sub_args = apply_filters( 'rcp_stripe_create_subscription_args', $sub_args, $this );
+
+				$sub_options = array();
+
+				$stripe_connect_user_id = get_option( 'rcp_stripe_connect_account_id', false );
+
+				if( ! empty( $stripe_connect_user_id ) ) {
+					$sub_options['stripe_account'] = $stripe_connect_user_id;
+				}
+
+				$subscription = $customer->subscriptions->create( $sub_args, $sub_options );
 
 				$member->set_merchant_subscription_id( $subscription->id );
 
@@ -360,7 +370,7 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 
 			try {
 
-				$charge = \Stripe\Charge::create( apply_filters( 'rcp_stripe_charge_create_args', array(
+				$charge_args = apply_filters( 'rcp_stripe_charge_create_args', array(
 					'amount'         => round( ( $this->initial_amount ) * rcp_stripe_get_currency_multiplier(), 0 ), // amount in cents
 					'currency'       => strtolower( $this->currency ),
 					'customer'       => $customer->id,
@@ -372,7 +382,17 @@ class RCP_Payment_Gateway_Stripe extends RCP_Payment_Gateway {
 						'level'      => $this->subscription_name,
 						'key'        => $this->subscription_key
 					)
-				), $this ) );
+				), $this );
+
+				$charge_options = array();
+
+				$stripe_connect_user_id = get_option( 'rcp_stripe_connect_account_id', false );
+
+				if( ! empty( $stripe_connect_user_id ) ) {
+					$charge_options['stripe_account'] = $stripe_connect_user_id;
+				}
+
+				$charge = \Stripe\Charge::create( $charge_args, $charge_options );
 
 				// Complete pending payment. This also updates the expiration date, status, etc.
 				$rcp_payments_db->update( $this->payment->id, array(
