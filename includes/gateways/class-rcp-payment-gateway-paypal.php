@@ -432,7 +432,7 @@ class RCP_Payment_Gateway_PayPal extends RCP_Payment_Gateway {
 
 					rcp_log( 'Processing PayPal Standard subscr_cancel IPN.' );
 
-					if( ! $member->just_upgraded() ) {
+					if( isset( $posted['subscr_id'] ) && $posted['subscr_id'] == $member->get_payment_profile_id() && 'cancelled' !== $member->get_status() && ! $member->just_upgraded() ) {
 
 						// user is marked as cancelled but retains access until end of term
 						if ( $member->is_active() ) {
