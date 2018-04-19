@@ -371,7 +371,9 @@ function rcp_settings_page() {
 								'customer_site_url' => admin_url( 'admin.php?page=rcp-settings' ),
 							), 'https://restrictcontentpro.com/?rcp_gateway_connect_init=stripe_connect' );
 
-							if( ( empty( $rcp_options['stripe_test_publishable'] ) && rcp_is_sandbox() ) || ( empty( $rcp_options['stripe_live_publishable'] ) && ! rcp_is_sandbox() ) ): ?>
+							$stripe_connect_account_id = get_option( 'rcp_stripe_connect_account_id' );
+
+							if( empty( $stripe_connect_account_id ) || ( ( empty( $rcp_options['stripe_test_publishable'] ) && rcp_is_sandbox() ) || ( empty( $rcp_options['stripe_live_publishable'] ) && ! rcp_is_sandbox() ) ) ): ?>
 								<a href="<?php echo esc_url_raw( $stripe_connect_url ); ?>" class="rcp-stripe-connect"><span><?php _e( 'Connect with Stripe', 'rcp' ); ?></span></a>
 							<?php else: ?>
 								<p>
