@@ -371,7 +371,9 @@ function rcp_settings_page() {
 								'customer_site_url' => admin_url( 'admin.php?page=rcp-settings' ),
 							), 'https://restrictcontentpro.com/?rcp_gateway_connect_init=stripe_connect' );
 
-							if( ( empty( $rcp_options['stripe_test_publishable'] ) && rcp_is_sandbox() ) || ( empty( $rcp_options['stripe_live_publishable'] ) && ! rcp_is_sandbox() ) ): ?>
+							$stripe_connect_account_id = get_option( 'rcp_stripe_connect_account_id' );
+
+							if( empty( $stripe_connect_account_id ) || ( ( empty( $rcp_options['stripe_test_publishable'] ) && rcp_is_sandbox() ) || ( empty( $rcp_options['stripe_live_publishable'] ) && ! rcp_is_sandbox() ) ) ): ?>
 								<a href="<?php echo esc_url_raw( $stripe_connect_url ); ?>" class="rcp-stripe-connect"><span><?php _e( 'Connect with Stripe', 'rcp' ); ?></span></a>
 							<?php else: ?>
 								<p>
@@ -431,6 +433,7 @@ function rcp_settings_page() {
 						</tr>
 						<tr>
 							<th colspan=2>
+								<p><?php printf( __( 'Have questions about connecting with Stripe? See the <a href="%s" target="_blank" rel="noopener noreferrer">documentation</a>.', 'rcp' ), 'https://docs.restrictcontentpro.com/article/2033-how-does-stripe-connect-affect-me' ); ?></p>
 								<p><strong><?php _e('Note', 'rcp'); ?></strong>: <?php _e('in order for subscription payments made through Stripe to be tracked, you must enter the following URL to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe Webhooks</a> under Account Settings:', 'rcp'); ?></p>
 								<p><strong><?php echo esc_url( add_query_arg( 'listener', 'stripe', home_url() ) ); ?></strong></p>
 							</th>
