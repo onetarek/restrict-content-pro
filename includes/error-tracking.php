@@ -54,7 +54,7 @@ function rcp_get_error_messages_html( $error_id = '' ) {
 
 	}
 
-	return apply_filters( 'rcp_error_messages_html', $html, $errors );
+	return apply_filters( 'rcp_error_messages_html', $html, $errors, $error_id );
 
 }
 
