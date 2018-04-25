@@ -120,9 +120,9 @@ function rcp_restricted_message_pending_verification( $message ) {
 
 	global $rcp_load_css;
 
-	$rcp_load_css = true;
-
 	if( rcp_is_pending_verification() ) {
+		$rcp_load_css = true;
+
 		$message = '<div class="rcp_message error"><p class="rcp_error rcp_pending_member"><span>' . __( 'Your account is pending email verification.', 'rcp' ) . '</span></p></div>';
 	}
 
