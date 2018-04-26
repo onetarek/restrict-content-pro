@@ -219,6 +219,7 @@ function rcp_members_page() {
 											<?php } ?>
 											<?php if( $rcp_member->is_pending_verification() ) : ?>
 												<span> | <a href="<?php echo wp_nonce_url( add_query_arg( array( 'rcp-action' => 'send_verification', 'member_id' => $member->ID ), $current_page ), 'rcp-verification-nonce' ); ?>" class="rcp_send_verification"><?php _e( 'Re-send Verification', 'rcp' ); ?></a></span>
+												<span> | <a href="<?php echo wp_nonce_url( add_query_arg( array( 'rcp-action' => 'verify_email', 'member_id' => $member->ID ), $current_page ), 'rcp-manually-verify-email-nonce' ); ?>" class="rcp_verify_email"><?php _e( 'Verify Email', 'rcp' ); ?></a></span>
 											<?php endif; ?>
 											<span class="rcp-separator"> | </span>
 											<span class="id rcp-member-id rcp-id-col"><?php echo __( 'ID:', 'rcp' ) . ' ' . $member->ID; ?></span>
@@ -231,7 +232,7 @@ function rcp_members_page() {
 								<td data-colname="<?php _e( 'Status', 'rcp' ); ?>"><?php echo rcp_print_status($member->ID, false); ?></td>
 								<td data-colname="<?php _e( 'Recurring', 'rcp' ); ?>"><?php echo rcp_is_recurring($member->ID) ? __('yes', 'rcp') : __('no', 'rcp'); ?></td>
 								<td data-colname="<?php _e( 'Expiration', 'rcp' ); ?>"><?php echo $expiration; ?></td>
-								<td data-colname="<?php _e( 'User Role', 'rcp' ); ?>"><?php echo rcp_get_user_role($member->ID); ?></td>
+								<td data-colname="<?php _e( 'User Role', 'rcp' ); ?>"><?php echo translate_user_role( rcp_get_user_role_name( $member->ID ) ); ?></td>
 								<?php do_action('rcp_members_page_table_column', $member->ID); ?>
 							</tr>
 						<?php $i++;

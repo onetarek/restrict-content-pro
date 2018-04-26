@@ -51,10 +51,17 @@ function rcp_process_edit_member() {
 		update_user_meta( $user_id, 'rcp_notes', wp_kses( $_POST['notes'], array() ) );
 	}
 
+	if ( isset( $_POST['cancel_subscription'] ) && $member->can_cancel() ) {
+		rcp_log( sprintf( 'Cancelling payment profile for member #%d.', $user_id ) );
+		$cancelled = $member->cancel_payment_profile();
+	}
+
 	if( ! empty( $_POST['expiration'] ) && ( 'cancelled' != $status || ! $revoke_access ) ) {
 		$member->set_expiration_date( $expiration );
-	} elseif( 'cancelled' == $status && $revoke_access && ! $member->is_expired() ) {
+	} elseif( $revoke_access && ! $member->is_expired() ) {
 		$member->set_expiration_date( date( 'Y-m-d H:i:s', strtotime( '-1 day', current_time( 'timestamp' ) ) ) );
+		// Set status to 'expired' later.
+		$status = 'expired';
 	}
 
 	if ( isset( $_POST['level'] ) ) {
@@ -97,11 +104,6 @@ function rcp_process_edit_member() {
 
 	if ( isset( $_POST['signup_method'] ) ) {
 		update_user_meta( $user_id, 'rcp_signup_method', $_POST['signup_method'] );
-	}
-
-	if ( isset( $_POST['cancel_subscription'] ) && $member->can_cancel() ) {
-		rcp_log( sprintf( 'Cancelling payment profile for member #%d.', $user_id ) );
-		$cancelled = $member->cancel_payment_profile();
 	}
 
 	if ( $status !== $member->get_status() ) {
@@ -341,3 +343,43 @@ function rcp_process_resend_verification() {
 
 }
 add_action( 'rcp_action_send_verification', 'rcp_process_resend_verification' );
+
+/**
+ * Manually verify a member's email
+ *
+ * @since 2.9.5
+ * @return void
+ */
+function rcp_process_manually_verify_email() {
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp-manually-verify-email-nonce' ) ) {
+		wp_die( __( 'Nonce verification failed.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
+	}
+
+	if ( ! current_user_can( 'rcp_manage_members' ) ) {
+		wp_die( __( 'You do not have permission to perform this action.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
+	}
+
+	if ( ! isset( $_GET['member_id'] ) ) {
+		wp_die( __( 'Please select a member.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
+	}
+
+	$current_user = wp_get_current_user();
+	$member       = new RCP_Member( absint( $_GET['member_id'] ) );
+
+	rcp_log( sprintf( '%s manually verifying email of member #%d.', $current_user->user_login, $member->ID ) );
+
+	$member->verify_email();
+	$member->add_note( sprintf( __( 'Email manually verified by %s.', 'rcp' ), $current_user->user_login ) );
+
+	$redirect_url = wp_get_referer();
+
+	if ( empty( $redirect_url ) ) {
+		$redirect_url = admin_url( 'admin.php?page=rcp-members' );
+	}
+
+	wp_safe_redirect( add_query_arg( 'rcp_message', 'email_verified', $redirect_url ) );
+	exit;
+
+}
+add_action( 'rcp_action_verify_email', 'rcp_process_manually_verify_email' );

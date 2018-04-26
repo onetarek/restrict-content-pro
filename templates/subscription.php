@@ -15,12 +15,18 @@
 
 global $user_ID, $rcp_options;
 
+$member = new RCP_Member( $user_ID );
+
 do_action( 'rcp_subscription_details_top' );
 
 if( isset( $_GET['profile'] ) && 'cancelled' == $_GET['profile'] ) : ?>
 	<p class="rcp_success"><span><?php printf( __( 'Your %s subscription has been successfully cancelled. Your membership will expire on %s.', 'rcp' ), rcp_get_subscription(), rcp_get_expiration_date() ); ?></span></p>
 <?php elseif ( isset( $_GET['cancellation_failure'] ) ) : ?>
 	<p class="rcp_error"><span><?php echo esc_html( urldecode( $_GET['cancellation_failure'] ) ); ?> </span></p>
+<?php endif;
+
+if ( rcp_is_recurring() && rcp_is_expired() && rcp_member_can_update_billing_card() ) : ?>
+	<p class="rcp_error"><span><?php printf( __( 'Your %s subscription has expired. <a href="%s">Update your payment method</a> to reactivate and renew your subscription.', 'rcp' ), rcp_get_subscription(), esc_url( get_permalink( $rcp_options['update_card'] ) ) ); ?></span></p>
 <?php endif; ?>
 <table class="rcp-table" id="rcp-account-overview">
 	<thead>
@@ -38,11 +44,21 @@ if( isset( $_GET['profile'] ) && 'cancelled' == $_GET['profile'] ) : ?>
 	<tbody>
 		<tr>
 			<td data-th="<?php esc_attr_e( 'Status', 'rcp' ); ?>"><?php rcp_print_status(); ?></td>
-			<td data-th="<?php esc_attr_e( 'Subscription', 'rcp' ); ?>"><?php echo rcp_get_subscription(); ?></td>
+			<td data-th="<?php esc_attr_e( 'Subscription', 'rcp' ); ?>">
+				<?php if ( 'pending' === $member->get_status() ) {
+					echo $member->get_pending_subscription_name();
+				} else {
+					echo $member->get_subscription_name();
+				} ?>
+			</td>
 			<td data-th="<?php ( rcp_is_recurring() && ! rcp_is_expired() ) ? esc_attr_e( 'Renewal Date', 'rcp' ) : esc_attr_e( 'Expiration', 'rcp' ); ?>"><?php echo rcp_get_expiration_date(); ?></td>
 			<td data-th="<?php esc_attr_e( 'Actions', 'rcp' ); ?>">
 				<?php
 				$links = array();
+				if ( rcp_member_can_update_billing_card() ) {
+					$links[] = '<a href="' . esc_url( get_permalink( $rcp_options['update_card'] ) ) . '" title="' . esc_attr__( 'Update payment method', 'rcp' ) . '" class="rcp_sub_details_update_card">' . __( 'Update payment method', 'rcp' ) . '</a>';
+				}
+
 				if ( rcp_can_member_renew() ) {
 					$links[] = apply_filters( 'rcp_subscription_details_action_renew', '<a href="' . esc_url( get_permalink( $rcp_options['registration_page'] ) ) . '" title="' . __( 'Renew your subscription', 'rcp' ) . '" class="rcp_sub_details_renew">' . __( 'Renew your subscription', 'rcp' ) . '</a>', $user_ID );
 				}

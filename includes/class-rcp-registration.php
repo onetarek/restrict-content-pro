@@ -312,6 +312,8 @@ class RCP_Registration {
 			$total = 0;
 		}
 
+		$total = round( $total, rcp_currency_decimal_filter() );
+
 		return apply_filters( 'rcp_registration_get_total_discounts', (float) ( $original_total - $total ), $original_total, $only_recurring, $this );
 
 	}
@@ -349,7 +351,9 @@ class RCP_Registration {
 			$total = 0;
 		}
 
-		return apply_filters( 'rcp_registration_get_total', floatval($total), $this );
+		$total = round( $total, rcp_currency_decimal_filter() );
+
+		return apply_filters( 'rcp_registration_get_total', floatval( $total ), $this );
 
 	}
 
@@ -377,6 +381,8 @@ class RCP_Registration {
 		if ( 0 > $total ) {
 			$total = 0;
 		}
+
+		$total = round( $total, rcp_currency_decimal_filter() );
 
 		return apply_filters( 'rcp_registration_get_recurring_total', floatval( $total ), $this );
 

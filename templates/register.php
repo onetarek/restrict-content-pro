@@ -36,7 +36,7 @@ rcp_show_error_messages( 'register' ); ?>
 	<?php if( ! is_user_logged_in() ) { ?>
 
 	<div class="rcp_login_link">
-		<p><?php printf( __( '<a href="%s">Log in</a> if you wish to renew an existing subscription.', 'rcp' ), esc_url( rcp_get_login_url( rcp_get_current_url() ) ) ); ?></p>
+		<p><?php printf( __( '<a href="%s">Log in</a> to renew or change an existing subscription.', 'rcp' ), esc_url( rcp_get_login_url( rcp_get_current_url() ) ) ); ?></p>
 	</div>
 
 	<?php do_action( 'rcp_before_register_form_fields' ); ?>
@@ -110,8 +110,10 @@ rcp_show_error_messages( 'register' ); ?>
 				<span class="rcp_discount_valid" style="display: none;"> - <?php _e( 'Valid', 'rcp' ); ?></span>
 				<span class="rcp_discount_invalid" style="display: none;"> - <?php _e( 'Invalid', 'rcp' ); ?></span>
 			</label>
-			<input type="text" id="rcp_discount_code" name="rcp_discount" class="rcp_discount_code" value="<?php echo esc_attr( $discount ); ?>"/>
-			<button class="rcp_button" id="rcp_apply_discount"><?php _e( 'Apply', 'rcp' ); ?></button>
+			<span class="rcp_discount_code_field_wrap">
+				<input type="text" id="rcp_discount_code" name="rcp_discount" class="rcp_discount_code" value="<?php echo esc_attr( $discount ); ?>"/>
+				<button class="rcp_button" id="rcp_apply_discount"><?php _e( 'Apply', 'rcp' ); ?></button>
+			</span>
 		</p>
 	</fieldset>
 	<?php endif; ?>

@@ -38,7 +38,7 @@ class RCP_Logging {
 		);
 
 		$args = wp_parse_args( $args, $defaults );
-		
+
 		$this->file = $args['file'];
 
 	}
@@ -75,7 +75,7 @@ class RCP_Logging {
 	 * @return void
 	 */
 	public function log( $message = '' ) {
-		$message = date( 'Y-n-d H:i:s' ) . ' - ' . $message . "\r\n";
+		$message = current_time( 'Y-n-d H:i:s' ) . ' - ' . $message . "\r\n";
 		$this->write_to_log( $message );
 	}
 

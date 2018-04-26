@@ -270,7 +270,7 @@ function rcp_earnings_graph() {
 			<div class="inside">
 				<?php rcp_reports_graph_controls(); ?>
 				<div id="rcp_earnings_graph" style="height: 300px;"></div>
-				<p class="rcp_graph_totals"><strong><?php _e( 'Total earnings for period shown: ', 'rcp' ); echo rcp_currency_filter( number_format_i18n( $earnings, 2 ) ); ?></strong></p>
+				<p class="rcp_graph_totals"><strong><?php _e( 'Total earnings for period shown: ', 'rcp' ); echo rcp_currency_filter( $earnings ); ?></strong></p>
 			</div>
 		</div>
 	</div>
@@ -508,7 +508,7 @@ function rcp_refunds_graph() {
 			<div class="inside">
 				<?php rcp_reports_graph_controls(); ?>
 				<div id="rcp_refunds_graph" style="height: 300px;"></div>
-				<p class="rcp_graph_totals"><strong><?php _e( 'Total refunds for period shown: ', 'rcp' ); echo rcp_currency_filter( number_format_i18n( $refunds, 2 ) ); ?></strong></p>
+				<p class="rcp_graph_totals"><strong><?php _e( 'Total refunds for period shown: ', 'rcp' ); echo rcp_currency_filter( $refunds ); ?></strong></p>
 			</div>
 		</div>
 	</div>
@@ -989,9 +989,10 @@ function rcp_get_report_dates() {
 		break;
 
 		case 'this_year' :
-			$dates['m_start'] = 1;
-			$dates['m_end']   = 12;
-			$dates['year']    = date( 'Y', $current_time );
+			$dates['m_start']  = 1;
+			$dates['m_end']    = 12;
+			$dates['year']     = date( 'Y', $current_time );
+			$dates['year_end'] = date( 'Y', $current_time );
 		break;
 
 		case 'last_year' :

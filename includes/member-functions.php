@@ -726,7 +726,7 @@ function rcp_get_user_payments( $user_id = 0, $args = array() ) {
 }
 
 /**
- * Returns the role of the specified user
+ * Returns the slug of the role for the specified user.
  *
  * @param int $user_id The ID of the user to get the role of
  *
@@ -755,6 +755,34 @@ function rcp_get_user_role( $user_id ) {
 	}
 
 	return $user_role;
+}
+
+/**
+ * Returns the name of the role for the specified user.
+ *
+ * @param int $user_id The ID of the user to get the role of
+ *
+ * @since 3.0
+ * @return string
+ */
+function rcp_get_user_role_name( $user_id ) {
+
+	if ( ! isset( $wp_roles ) ) {
+		$wp_roles = new WP_Roles();
+	}
+
+	$role_slug = rcp_get_user_role( $user_id );
+	$role_name = '';
+
+	if ( empty( $role_slug ) ) {
+		return $role_name;
+	}
+
+	if ( array_key_exists( $role_slug, $wp_roles->role_names ) ) {
+		$role_name = $wp_roles->role_names[ $role_slug ];
+	}
+
+	return $role_name;
 }
 
 /**
@@ -808,7 +836,7 @@ function rcp_subscription_upgrade_possible( $user_id = 0 ) {
  *
  * @uses  rcp_get_upgrade_paths()
  *
- * @param int $user_id the ID of the user to check, or 0 for the current user.
+ * @param int $user_id The ID of the user to check, or 0 for the current user.
  *
  * @since  2.5
  * @return bool True if an upgrade path is available, false if not.
@@ -820,7 +848,7 @@ function rcp_has_upgrade_path( $user_id = 0 ) {
 /**
  * Get subscriptions to which this user can upgrade
  *
- * @param int $user_id the ID of the user to check, or 0 for the current user.
+ * @param int $user_id The ID of the user to check, or 0 for the current user.
  *
  * @since 2.5
  * @return array Array of subscriptions.
@@ -1133,6 +1161,10 @@ function rcp_can_member_renew( $user_id = 0 ) {
 
 	}
 
+	if ( 'none' == $member->get_expiration_date( false ) ) {
+		$ret = false;
+	}
+
 	if( 'free' == $member->get_status() ) {
 
 		$ret = false;
@@ -1290,7 +1322,7 @@ function rcp_maybe_disable_toolbar() {
 
 	global $rcp_options;
 
-	if ( isset( $rcp_options['disable_toolbar'] ) && ! current_user_can( 'manage_options' ) ) {
+	if ( isset( $rcp_options['disable_toolbar'] ) && ! current_user_can( 'edit_posts' ) ) {
 		add_filter( 'show_admin_bar', '__return_false' );
 	}
 }

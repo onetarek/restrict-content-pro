@@ -175,6 +175,7 @@ function rcp_options_install( $network_wide = false ) {
 	update_option( 'rcp_is_installed', '1' );
 	update_option( 'rcp_version', RCP_PLUGIN_VERSION );
 
+	do_action( 'rcp_options_install' );
 }
 // run the install scripts upon plugin activation
 register_activation_hook( RCP_PLUGIN_FILE, 'rcp_options_install' );
@@ -295,13 +296,15 @@ function rcp_create_tables() {
 	$sub_meta_table_name = rcp_get_payment_meta_db_name();
 	$sql = "CREATE TABLE {$sub_meta_table_name} (
 		meta_id bigint(20) NOT NULL AUTO_INCREMENT,
-		payment_id bigint(20) NOT NULL DEFAULT '0',
+		rcp_payment_id bigint(20) NOT NULL DEFAULT '0',
 		meta_key varchar(255) DEFAULT NULL,
 		meta_value longtext,
 		PRIMARY KEY meta_id (meta_id),
-		KEY payment_id (payment_id),
+		KEY rcp_payment_id (rcp_payment_id),
 		KEY meta_key (meta_key)
 		) CHARACTER SET utf8 COLLATE utf8_general_ci;";
 
 	@dbDelta( $sql );
+
+	do_action( 'rcp_create_tables' );
 }

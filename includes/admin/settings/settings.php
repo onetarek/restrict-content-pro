@@ -41,7 +41,7 @@ function rcp_settings_page() {
 	$rcp_options = wp_parse_args( $rcp_options, $defaults );
 
 	?>
-	<div class="wrap">
+	<div id="rcp-settings-wrap" class="wrap">
 		<?php
 		if ( ! isset( $_REQUEST['updated'] ) )
 			$_REQUEST['updated'] = false;
@@ -358,29 +358,20 @@ function rcp_settings_page() {
 						</tr>
 						<tr>
 							<th>
-								<label for="rcp_settings[stripe_test_secret]"><?php _e( 'Test Secret Key', 'rcp' ); ?></label>
-							</th>
-							<td>
-								<input class="regular-text" id="rcp_settings[stripe_test_secret]" style="width: 300px;" name="rcp_settings[stripe_test_secret]" value="<?php if(isset($rcp_options['stripe_test_secret'])) { echo $rcp_options['stripe_test_secret']; } ?>"/>
-								<p class="description"><?php _e('Enter your test secret key. Your API keys can be obtained from your <a href="https://dashboard.stripe.com/account/apikeys" target="_blank">Stripe account settings</a>.', 'rcp'); ?></p>
-							</td>
-						</tr>
-						<tr>
-							<th>
 								<label for="rcp_settings[stripe_test_publishable]"><?php _e( 'Test Publishable Key', 'rcp' ); ?></label>
 							</th>
 							<td>
-								<input class="regular-text" id="rcp_settings[stripe_test_publishable]" style="width: 300px;" name="rcp_settings[stripe_test_publishable]" value="<?php if(isset($rcp_options['stripe_test_publishable'])) { echo $rcp_options['stripe_test_publishable']; } ?>"/>
+								<input class="regular-text" id="rcp_settings[stripe_test_publishable]" style="width: 300px;" name="rcp_settings[stripe_test_publishable]" value="<?php if(isset($rcp_options['stripe_test_publishable'])) { echo $rcp_options['stripe_test_publishable']; } ?>" placeholder="pk_test_xxxxxxxx"/>
 								<p class="description"><?php _e('Enter your test publishable key.', 'rcp'); ?></p>
 							</td>
 						</tr>
 						<tr>
 							<th>
-								<label for="rcp_settings[stripe_live_secret]"><?php _e( 'Live Secret Key', 'rcp' ); ?></label>
+								<label for="rcp_settings[stripe_test_secret]"><?php _e( 'Test Secret Key', 'rcp' ); ?></label>
 							</th>
 							<td>
-								<input class="regular-text" id="rcp_settings[stripe_live_secret]" style="width: 300px;" name="rcp_settings[stripe_live_secret]" value="<?php if(isset($rcp_options['stripe_live_secret'])) { echo $rcp_options['stripe_live_secret']; } ?>"/>
-								<p class="description"><?php _e('Enter your live secret key.', 'rcp'); ?></p>
+								<input class="regular-text" id="rcp_settings[stripe_test_secret]" style="width: 300px;" name="rcp_settings[stripe_test_secret]" value="<?php if(isset($rcp_options['stripe_test_secret'])) { echo $rcp_options['stripe_test_secret']; } ?>" placeholder="sk_test_xxxxxxxx"/>
+								<p class="description"><?php _e('Enter your test secret key. Your API keys can be obtained from your <a href="https://dashboard.stripe.com/account/apikeys" target="_blank">Stripe account settings</a>.', 'rcp'); ?></p>
 							</td>
 						</tr>
 						<tr>
@@ -388,21 +379,19 @@ function rcp_settings_page() {
 								<label for="rcp_settings[stripe_live_publishable]"><?php _e( 'Live Publishable Key', 'rcp' ); ?></label>
 							</th>
 							<td>
-								<input class="regular-text" id="rcp_settings[stripe_live_publishable]" style="width: 300px;" name="rcp_settings[stripe_live_publishable]" value="<?php if(isset($rcp_options['stripe_live_publishable'])) { echo $rcp_options['stripe_live_publishable']; } ?>"/>
+								<input class="regular-text" id="rcp_settings[stripe_live_publishable]" style="width: 300px;" name="rcp_settings[stripe_live_publishable]" value="<?php if(isset($rcp_options['stripe_live_publishable'])) { echo $rcp_options['stripe_live_publishable']; } ?>" placeholder="pk_live_xxxxxxxx"/>
 								<p class="description"><?php _e('Enter your live publishable key.', 'rcp'); ?></p>
 							</td>
 						</tr>
-						<?php if ( 'USD' === rcp_get_currency() ) : ?>
 						<tr>
 							<th>
-								<label for="rcp_settings[stripe_alipay]"><?php _e( 'Enable Alipay Support', 'rcp' ); ?></label>
+								<label for="rcp_settings[stripe_live_secret]"><?php _e( 'Live Secret Key', 'rcp' ); ?></label>
 							</th>
 							<td>
-								<input type="checkbox" value="1" name="rcp_settings[stripe_alipay]" id="rcp_settings[stripe_alipay]" <?php if( isset( $rcp_options['stripe_alipay'] ) ) checked( '1', $rcp_options['stripe_alipay'] ); ?>/>
-								<span class="description"><?php _e( 'Check to enable Alipay support in Stripe Checkout. Alipay is only available with Stripe Checkout. It does not work with the standard Stripe gateway.', 'rcp' ); ?></span>
+								<input class="regular-text" id="rcp_settings[stripe_live_secret]" style="width: 300px;" name="rcp_settings[stripe_live_secret]" value="<?php if(isset($rcp_options['stripe_live_secret'])) { echo $rcp_options['stripe_live_secret']; } ?>" placeholder="sk_live_xxxxxxxx"/>
+								<p class="description"><?php _e('Enter your live secret key.', 'rcp'); ?></p>
 							</td>
 						</tr>
-						<?php endif; ?>
 						<tr>
 							<th colspan=2>
 								<p><strong><?php _e('Note', 'rcp'); ?></strong>: <?php _e('in order for subscription payments made through Stripe to be tracked, you must enter the following URL to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe Webhooks</a> under Account Settings:', 'rcp'); ?></p>
@@ -881,6 +870,10 @@ function rcp_settings_page() {
 									wp_editor( $active_email, 'rcp_settings_active_email', array( 'textarea_name' => 'rcp_settings[active_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users when their subscription becomes active.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'active_email' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=active' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr>
@@ -911,6 +904,10 @@ function rcp_settings_page() {
 									wp_editor( $active_email, 'rcp_settings_active_email_admin', array( 'textarea_name' => 'rcp_settings[active_email_admin]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to the admin when a member\'s subscription becomes active.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'active_email_admin' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=active_admin' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr valign="top">
@@ -946,6 +943,10 @@ function rcp_settings_page() {
 									wp_editor( $cancelled_email, 'rcp_settings_cancelled_email', array( 'textarea_name' => 'rcp_settings[cancelled_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users when their subscription is cancelled.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'cancelled_email' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=cancelled' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr>
@@ -976,6 +977,10 @@ function rcp_settings_page() {
 									wp_editor( $cancelled_email, 'rcp_settings_cancelled_email_admin', array( 'textarea_name' => 'rcp_settings[cancelled_email_admin]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to the admin when a member\'s subscription is cancelled.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'cancelled_email_admin' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=cancelled_admin' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr valign="top">
@@ -1011,6 +1016,10 @@ function rcp_settings_page() {
 									wp_editor( $expired_email, 'rcp_settings_expired_email', array( 'textarea_name' => 'rcp_settings[expired_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users when their subscription is expired.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'expired_email' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=expired' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr>
@@ -1041,6 +1050,10 @@ function rcp_settings_page() {
 									wp_editor( $expired_email, 'rcp_settings_expired_email_admin', array( 'textarea_name' => 'rcp_settings[expired_email_admin]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to the admin when a member\'s subscription is expired.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'expired_email_admin' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=expired_admin' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr valign="top">
@@ -1098,6 +1111,10 @@ function rcp_settings_page() {
 									wp_editor( $free_email, 'rcp_settings_free_email', array( 'textarea_name' => 'rcp_settings[free_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users when they sign up for a free account.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'free_email' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=free' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr>
@@ -1128,6 +1145,10 @@ function rcp_settings_page() {
 									wp_editor( $free_email, 'rcp_settings_free_email_admin', array( 'textarea_name' => 'rcp_settings[free_email_admin]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to the admin when a user signs up for a free account.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'free_email_admin' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=free_admin' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr valign="top">
@@ -1163,6 +1184,10 @@ function rcp_settings_page() {
 									wp_editor( $trial_email, 'rcp_settings_trial_email', array( 'textarea_name' => 'rcp_settings[trial_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users when they sign up for a free trial.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'trial_email' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=trial' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr>
@@ -1193,6 +1218,10 @@ function rcp_settings_page() {
 									wp_editor( $trial_email, 'rcp_settings_trial_email_admin', array( 'textarea_name' => 'rcp_settings[trial_email_admin]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to the admin when a user signs up for a free trial.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'trial_email_admin' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=trial_admin' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr valign="top">
@@ -1226,6 +1255,10 @@ function rcp_settings_page() {
 									wp_editor( $payment_received_email, 'rcp_settings_payment_received_email', array( 'textarea_name' => 'rcp_settings[payment_received_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users after a payment has been received from them.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'payment_received_email' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=payment_received' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr valign="top">
@@ -1259,6 +1292,44 @@ function rcp_settings_page() {
 									wp_editor( $renewal_payment_failed_email, 'rcp_settings_renewal_payment_failed_email', array( 'textarea_name' => 'rcp_settings[renewal_payment_failed_email]', 'teeny' => true ) );
 									?>
 									<p class="description"><?php _e( 'This is the email message that is sent to users when a renewal payment fails.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'renewal_payment_failed_email' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=renewal_payment_failed' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<label for="rcp_settings[disable_renewal_payment_failed_email_admin]"><?php _e( 'Disable for Admin', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<input type="checkbox" value="1" name="rcp_settings[disable_renewal_payment_failed_email_admin]" id="rcp_settings[disable_renewal_payment_failed_email_admin]" class="rcp-disable-email" <?php checked( true, isset( $rcp_options['disable_renewal_payment_failed_email'] ) ); ?>/>
+									<span><?php _e( 'Check this to disable the email sent to the administrator when a renewal payment fails.', 'rcp' ); ?></span>
+								</td>
+							</tr>
+							<tr valign="top"<?php echo ( isset( $rcp_options['disable_renewal_payment_failed_email_admin'] ) ) ? ' style="display: none;"' : ''; ?>>
+								<th>
+									<label for="rcp_settings[renewal_payment_failed_subject_admin]"><?php _e( 'Admin Subject', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<input class="regular-text" id="rcp_settings[renewal_payment_failed_subject_admin]" style="width: 300px;" name="rcp_settings[renewal_payment_failed_subject_admin]" value="<?php if( isset( $rcp_options['renewal_payment_failed_subject_admin'] ) ) { echo esc_attr( $rcp_options['renewal_payment_failed_subject_admin'] ); } ?>"/>
+									<p class="description"><?php _e( 'The subject line for the email sent to the admin when a renewal payment fails.', 'rcp' ); ?></p>
+								</td>
+							</tr>
+							<tr valign="top"<?php echo ( isset( $rcp_options['disable_renewal_payment_failed_email_admin'] ) ) ? ' style="display: none;"' : ''; ?>>
+								<th>
+									<label for="rcp_settings[renewal_payment_failed_email_admin]"><?php _e( 'Admin Email Body', 'rcp' ); ?></label>
+								</th>
+								<td>
+									<?php
+									$renewal_payment_failed_email = isset( $rcp_options['renewal_payment_failed_email_admin'] ) ? wptexturize( $rcp_options['renewal_payment_failed_email_admin'] ) : '';
+									wp_editor( $renewal_payment_failed_email, 'rcp_settings_renewal_payment_failed_email_admin', array( 'textarea_name' => 'rcp_settings[renewal_payment_failed_email_admin]', 'teeny' => true ) );
+									?>
+									<p class="description"><?php _e( 'This is the email message that is sent to the admin when a renewal payment fails.', 'rcp' ); ?></p>
+									<p>
+										<a href="<?php echo esc_url( add_query_arg( array( 'rcp_preview_email' => 'renewal_payment_failed_email_admin' ), home_url() ) ); ?>" class="button-secondary" target="_blank"><?php _e( 'Preview Email', 'rcp' ); ?></a>
+										<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin.php?page=rcp-settings&rcp-action=send_test_email&email=renewal_payment_failed_admin' ), 'rcp_send_test_email' ) ); ?>" class="button-secondary"><?php _e( 'Send Test Email', 'rcp' ); ?></a>
+									</p>
 								</td>
 							</tr>
 							<tr valign="top">
@@ -1359,10 +1430,10 @@ function rcp_settings_page() {
 						</tr>
 						<tr valign="top">
 							<th>
-								<label for="rcp_settings[invoice_notes]"><?php _e( 'Notes', 'rcp' ); ?></label>
+								<label for="rcp_settings_invoice_notes"><?php _e( 'Notes', 'rcp' ); ?></label>
 							</th>
 							<td>
-								<textarea id="rcp_settings[invoice_notes]" style="width: 300px; height: 100px;" name="rcp_settings[invoice_notes]"><?php if( isset( $rcp_options['invoice_notes'] ) ) { echo $rcp_options['invoice_notes']; } ?></textarea>
+								<?php wp_editor( $rcp_options['invoice_notes'], 'rcp_settings_invoice_notes', array( 'textarea_name' => 'rcp_settings[invoice_notes]', 'teeny' => true ) ); ?>
 								<p class="description"><?php _e( 'Enter additional notes you would like displayed below the invoice totals.', 'rcp' ); ?></p>
 							</td>
 						</tr>
@@ -1514,16 +1585,7 @@ function rcp_settings_page() {
 							</th>
 							<td>
 								<input type="checkbox" value="1" name="rcp_settings[disable_toolbar]" id="rcp_settings[disable_toolbar]"<?php checked( true, isset( $rcp_options['disable_toolbar'] ) ); ?>/>
-								<span class="description"><?php _e( 'Check this if you\'d like to disable the WordPress toolbar for subscribers. Note: will not disable the toolbar for administrators.', 'rcp' ); ?></span>
-							</td>
-						</tr>
-						<tr valign="top">
-							<th>
-								<label for="rcp_settings[email_ipn_reports]"><?php _e( 'Email IPN reports', 'rcp' ); ?></label>
-							</th>
-							<td>
-								<input type="checkbox" value="1" name="rcp_settings[email_ipn_reports]" id="rcp_settings[email_ipn_reports]" <?php if( isset( $rcp_options['email_ipn_reports'] ) ) checked('1', $rcp_options['email_ipn_reports']); ?>/>
-								<span class="description"><?php _e( 'Check this to send an email each time an IPN request is made with PayPal. The email will contain a list of all data sent. This is useful for debugging in the case that something is not working with the PayPal integration.', 'rcp' ); ?></span>
+								<span class="description"><?php _e( 'Check this if you\'d like to disable the WordPress toolbar for members. Note: will not disable the toolbar for users with the edit_posts capability (e.g. authors, editors, & admins).', 'rcp' ); ?></span>
 							</td>
 						</tr>
 						<tr valign="top">
@@ -1710,7 +1772,10 @@ function rcp_activate_license() {
 	);
 
 	// Call the custom API.
-	$response = wp_remote_post( 'https://restrictcontentpro.com', array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+	$response = wp_remote_post( 'https://restrictcontentpro.com', array(
+		'timeout' => 15,
+		'body'    => $api_params
+	) );
 
 	// make sure the response came back okay
 	if ( is_wp_error( $response ) )
@@ -1760,7 +1825,10 @@ function rcp_deactivate_license() {
 		);
 
 		// Call the custom API.
-		$response = wp_remote_post( 'https://restrictcontentpro.com', array( 'timeout' => 15, 'sslverify' => false, 'body' => $api_params ) );
+		$response = wp_remote_post( 'https://restrictcontentpro.com', array(
+			'timeout' => 15,
+			'body'    => $api_params
+		) );
 
 		// make sure the response came back okay
 		if ( is_wp_error( $response ) )
@@ -1811,7 +1879,10 @@ function rcp_check_license() {
 		}
 
 		// Call the custom API.
-		$response = wp_remote_post( 'https://restrictcontentpro.com', array( 'timeout' => 35, 'sslverify' => false, 'body' => $api_params ) );
+		$response = wp_remote_post( 'https://restrictcontentpro.com', array(
+			'timeout' => 35,
+			'body'    => $api_params
+		) );
 
 		// make sure the response came back okay
 		if ( is_wp_error( $response ) )
@@ -1932,3 +2003,106 @@ function rcp_set_settings_cap() {
 	return 'rcp_manage_settings';
 }
 add_filter( 'option_page_capability_rcp_settings_group', 'rcp_set_settings_cap' );
+
+/**
+ * Send a test email
+ *
+ * @return void
+ */
+function rcp_process_send_test_email() {
+
+	if ( ! current_user_can( 'rcp_manage_settings' ) ) {
+		wp_die( __( 'You do not have permission to send test emails', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 403 ) );
+	}
+
+	if ( ! wp_verify_nonce( $_GET['_wpnonce'], 'rcp_send_test_email' ) ) {
+		wp_die( __( 'Nonce verification failed', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 401 ) );
+	}
+
+	if ( empty( $_GET['email'] ) ) {
+		wp_die( __( 'No email template was provided', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
+	}
+
+	$current_user = wp_get_current_user();
+
+	rcp_log( sprintf( 'Sending test email template %s to user ID #%d.', sanitize_text_field( $_GET['email'] ), $current_user->ID ) );
+
+	global $rcp_options;
+
+	$subject = '';
+	$message = '';
+
+	switch( $_GET['email'] ) {
+		case 'active' :
+			$subject = $rcp_options['active_subject'];
+			$message = $rcp_options['active_email'];
+			break;
+		case 'active_admin' :
+			$subject = $rcp_options['active_subject_admin'];
+			$message = $rcp_options['active_email_admin'];
+			break;
+		case 'cancelled' :
+			$subject = $rcp_options['cancelled_subject'];
+			$message = $rcp_options['cancelled_email'];
+			break;
+		case 'cancelled_admin' :
+			$subject = $rcp_options['cancelled_subject_admin'];
+			$message = $rcp_options['cancelled_email_admin'];
+			break;
+		case 'expired' :
+			$subject = $rcp_options['expired_subject'];
+			$message = $rcp_options['expired_email'];
+			break;
+		case 'expired_admin' :
+			$subject = $rcp_options['expired_subject_admin'];
+			$message = $rcp_options['expired_email_admin'];
+			break;
+		case 'free' :
+			$subject = $rcp_options['free_subject'];
+			$message = $rcp_options['free_email'];
+			break;
+		case 'free_admin' :
+			$subject = $rcp_options['free_subject_admin'];
+			$message = $rcp_options['free_email_admin'];
+			break;
+		case 'trial' :
+			$subject = $rcp_options['trial_subject'];
+			$message = $rcp_options['trial_email'];
+			break;
+		case 'trial_admin' :
+			$subject = $rcp_options['trial_subject_admin'];
+			$message = $rcp_options['trial_email_admin'];
+			break;
+		case 'payment_received' :
+			$subject = $rcp_options['payment_received_subject'];
+			$message = $rcp_options['payment_received_email'];
+			break;
+		case 'renewal_payment_failed' :
+			$subject = $rcp_options['renewal_payment_failed_subject'];
+			$message = $rcp_options['renewal_payment_failed_email'];
+			break;
+		case 'renewal_payment_failed_admin' :
+			$subject = $rcp_options['renewal_payment_failed_subject_admin'];
+			$message = $rcp_options['renewal_payment_failed_email_admin'];
+			break;
+	}
+
+	if ( empty( $subject ) || empty( $message ) ) {
+		wp_die( __( 'Test email not sent: email subject or message is blank.', 'rcp' ), __( 'Error', 'rcp' ), array( 'response' => 400 ) );
+	}
+
+	$emails            = new RCP_Emails();
+	$emails->member_id = $current_user->ID;
+
+	$sent = $emails->send( $current_user->user_email, $subject, $message );
+
+	if ( $sent ) {
+		wp_safe_redirect( admin_url( 'admin.php?page=rcp-settings&rcp_message=test_email_sent#emails' ) );
+	} else {
+		wp_safe_redirect( admin_url( 'admin.php?page=rcp-settings&rcp_message=test_email_not_sent#emails' ) );
+	}
+	exit;
+
+}
+
+add_action( 'rcp_action_send_test_email', 'rcp_process_send_test_email' );

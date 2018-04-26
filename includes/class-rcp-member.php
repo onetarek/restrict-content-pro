@@ -23,7 +23,7 @@ class RCP_Member extends WP_User {
 		$status = get_user_meta( $this->ID, 'rcp_status', true );
 
 		// double check that the status and expiration match. Update if needed
-		if( $status == 'active' && $this->is_expired() ) {
+		if( in_array( $status, array( 'active', 'cancelled' ) ) && $this->is_expired() ) {
 
 			rcp_log( sprintf( 'Expiring member %d via get_status() method. Expiration Date: %s; Subscription Level: %s', $this->ID, $this->get_expiration_date(), $this->get_subscription_name() ) );
 
@@ -53,7 +53,7 @@ class RCP_Member extends WP_User {
 
 		$ret        = false;
 		$old_status = get_user_meta( $this->ID, 'rcp_status', true );
-		
+
 		/**
 		 * Filters the value of the status set on the member.
 		 *
@@ -427,9 +427,10 @@ class RCP_Member extends WP_User {
 			return false;
 		}
 
+		$subscription_level = rcp_get_subscription_details( $subscription_id );
+
 		if ( ! $expiration ) {
-			$subscription = rcp_get_subscription_details( $subscription_id );
-			$expiration   = apply_filters( 'rcp_member_renewal_expiration', $this->calculate_expiration(), $subscription, $this->ID );
+			$expiration   = apply_filters( 'rcp_member_renewal_expiration', $this->calculate_expiration(), $subscription_level, $this->ID );
 		}
 
 		do_action( 'rcp_member_pre_renew', $this->ID, $expiration, $this );
@@ -442,6 +443,12 @@ class RCP_Member extends WP_User {
 
 		$this->set_recurring( $recurring );
 		$this->set_renewed_date();
+
+		// Add the role if the user doesn't already have it.
+		$role = ! empty( $subscription_level->role ) ? $subscription_level->role : get_option( 'default_role', 'subscriber' );
+		if ( ! in_array( $role, $this->roles ) ) {
+			$this->add_role( $role );
+		}
 
 		delete_user_meta( $this->ID, '_rcp_expired_email_sent' );
 
@@ -1491,7 +1498,7 @@ class RCP_Member extends WP_User {
 			return 0;
 		}
 
-		$exp_date = $this->get_expiration_date();
+		$exp_date = $this->get_expiration_date( false );
 
 		// if this is member does not have an expiration date, calculate it
 		if ( 'none' == $exp_date ) {

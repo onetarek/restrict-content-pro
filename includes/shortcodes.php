@@ -36,9 +36,9 @@ function rcp_restrict_shortcode( $atts, $content = null ) {
 	if ( strlen( $atts['message'] ) > 0 ) {
 		$teaser = $atts['message'];
 	} elseif ( $atts['paid'] ) {
-		$teaser = $rcp_options['paid_message'];
+		$teaser = ! empty( $rcp_options['paid_message'] ) ? $rcp_options['paid_message'] : __( 'This content is restricted to subscribers', 'rcp' );
 	} else {
-		$teaser = $rcp_options['free_message'];
+		$teaser = ! empty( $rcp_options['free_message'] ) ? $rcp_options['free_message'] : __( 'This content is restricted to subscribers', 'rcp' );
 	}
 
 	$subscription = array_map( 'trim', explode( ',', $atts['subscription'] ) );
@@ -312,15 +312,14 @@ function rcp_register_form_stripe_checkout( $atts ) {
 	$data = wp_parse_args( $atts, array(
 		'id'                     => 0,
 		'data-key'               => $key,
-		'data-name'              => get_option( 'blogname' ),
+		'data-name'              => $subscription->name,
 		'data-description'       => $subscription->description,
 		'data-label'             => sprintf( __( 'Join %s', 'rcp' ), $subscription->name ),
 		'data-panel-label'       => $is_trial ? __( 'Start Trial', 'rcp' ) : __( 'Register', 'rcp' ),
 		'data-amount'            => $amount * rcp_stripe_get_currency_multiplier(),
 		'data-locale'            => 'auto',
 		'data-allow-remember-me' => true,
-		'data-currency'          => rcp_get_currency(),
-		'data-alipay'            => isset( $rcp_options['stripe_alipay'] ) && '1' === $rcp_options['stripe_alipay'] && 'USD' === rcp_get_currency() ? 'true' : 'false'
+		'data-currency'          => rcp_get_currency()
 	) );
 
 	if ( empty( $data['data-email'] ) && ! empty( $member->user_email ) ) {
@@ -332,10 +331,6 @@ function rcp_register_form_stripe_checkout( $atts ) {
 	}
 
 	$data = apply_filters( 'rcp_stripe_checkout_data', $data );
-
-	if ( 'USD' !== rcp_get_currency() ) {
-		unset( $data['data-alipay'] );
-	}
 
 	ob_start();
 
@@ -517,12 +512,12 @@ add_shortcode( 'rcp_profile_editor', 'rcp_profile_editor_shortcode' );
 function rcp_update_billing_card_shortcode( $atts, $content = null ) {
 	global $rcp_load_css, $rcp_load_scripts;
 
-	$rcp_load_css = true;
-	$rcp_load_scripts = true;
-
 	ob_start();
 
 	if( rcp_member_can_update_billing_card() ) {
+
+		$rcp_load_css = true;
+		$rcp_load_scripts = true;
 
 		do_action( 'rcp_before_update_billing_card_form' );
 

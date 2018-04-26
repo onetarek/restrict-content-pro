@@ -301,7 +301,7 @@ class RCP_Payments {
 	 *
 	 * @access  public
 	 * @since   1.5
-	 * @return  object
+	 * @return  object|null Database object or null if payment not found.
 	 */
 	public function get_payment( $payment_id = 0 ) {
 
@@ -309,11 +309,13 @@ class RCP_Payments {
 
 		$payment = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$this->db_name} WHERE id = %d", absint( $payment_id ) ) );
 
-		if ( empty( $payment->status ) ) {
-			$payment->status = 'complete';
-		}
+		if ( is_object( $payment ) ) {
+			if ( empty( $payment->status ) ) {
+				$payment->status = 'complete';
+			}
 
-		$payment = $this->backfill_payment_data( $payment );
+			$payment = $this->backfill_payment_data( $payment );
+		}
 
 		return $payment;
 
@@ -405,9 +407,10 @@ class RCP_Payments {
 
 		global $wpdb;
 
-		$payment = $wpdb->get_row( "SELECT * FROM {$this->db_name} WHERE {$field} = {$value}" );
+		$query   = $wpdb->prepare( "SELECT * FROM {$this->db_name} WHERE {$field} = %s", sanitize_text_field( $value ) );
+		$payment = $wpdb->get_row( $query );
 
-		if( empty( $payment->status ) ) {
+		if( is_object( $payment ) && empty( $payment->status ) ) {
 			$payment->status = 'complete';
 		}
 
@@ -655,6 +658,30 @@ class RCP_Payments {
 
 		}
 
+		/** Backfill empty subtotal */
+		if ( $payment->subtotal === "" ) {
+			$payment->subtotal          = $payment->amount;
+			$data_to_update['subtotal'] = $payment->amount;
+		}
+
+		/** Backfill empty credits */
+		if ( $payment->credits === "" ) {
+			$payment->credits          = 0;
+			$data_to_update['credits'] = 0;
+		}
+
+		/** Backfill empty fees */
+		if ( $payment->fees === "" ) {
+			$payment->fees          = 0;
+			$data_to_update['fees'] = 0;
+		}
+
+		/** Backfill empty discount_amount */
+		if ( $payment->discount_amount === "" ) {
+			$payment->discount_amount          = 0;
+			$data_to_update['discount_amount'] = 0;
+		}
+
 		if ( ! empty( $data_to_update ) ) {
 			$this->update( $payment->id, $data_to_update );
 		}
@@ -840,7 +867,7 @@ class RCP_Payments {
 		}
 
 		// Exclude refunded payments
-		$where .= " AND ( `status` = 'complete' OR `status` IS NULL )";
+		$where .= " AND ( `status` = 'complete' OR `status` IS NULL OR `status` = '' )";
 
 		$earnings = get_transient( $cache_key );
 
@@ -980,7 +1007,7 @@ class RCP_Payments {
 	 * @return  mixed                 Will be an array if $single is false. Will be value of meta data field if $single is true.
 	 */
 	public function get_meta( $payment_id = 0, $meta_key = '', $single = false ) {
-		return get_metadata( 'payment', $payment_id, $meta_key, $single );
+		return get_metadata( 'rcp_payment', $payment_id, $meta_key, $single );
 	}
 
 	/**
@@ -996,7 +1023,7 @@ class RCP_Payments {
 	 * @return  bool                  False for failure. True for success.
 	 */
 	public function add_meta( $payment_id = 0, $meta_key = '', $meta_value, $unique = false ) {
-		return add_metadata( 'payment', $payment_id, $meta_key, $meta_value, $unique );
+		return add_metadata( 'rcp_payment', $payment_id, $meta_key, $meta_value, $unique );
 	}
 
 	/**
@@ -1017,7 +1044,7 @@ class RCP_Payments {
 	 * @return  bool                  False on failure, true if success.
 	 */
 	public function update_meta( $payment_id = 0, $meta_key = '', $meta_value, $prev_value = '' ) {
-		return update_metadata( 'payment', $payment_id, $meta_key, $meta_value, $prev_value );
+		return update_metadata( 'rcp_payment', $payment_id, $meta_key, $meta_value, $prev_value );
 	}
 
 	/**
@@ -1036,7 +1063,7 @@ class RCP_Payments {
 	 * @return  bool                  False for failure. True for success.
 	 */
 	public function delete_meta( $payment_id = 0, $meta_key = '', $meta_value = '' ) {
-		return delete_metadata( 'payment', $payment_id, $meta_key, $meta_value );
+		return delete_metadata( 'rcp_payment', $payment_id, $meta_key, $meta_value );
 	}
 
 }

@@ -84,13 +84,13 @@ if ( 'pending' == $current_status ) {
 					</select>
 					<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php _e( 'An Active status is required to access paid content. Members with a status of Cancelled may continue to access paid content until the expiration date on their account is reached.', 'rcp' ); ?>"></span>
 					<?php if ( $member->is_pending_verification() ) : ?>
-						<p class="description"><?php _e( '(Pending email verification.)', 'rcp' ); ?></p>
+						<p class="description"><?php printf( __( '(Pending email verification. <a href="%s">Click to manually verify email.</a>)', 'rcp' ), esc_url( wp_nonce_url( add_query_arg( array( 'rcp-action' => 'verify_email', 'member_id' => $member->ID ), add_query_arg( 'edit_member', $member->ID, admin_url( 'admin.php?page=rcp-members' ) ) ), 'rcp-manually-verify-email-nonce' ) ) ); ?></p>
 					<?php endif; ?>
 					<p class="description"><?php _e( 'The status of this user\'s subscription', 'rcp' ); ?></p>
 					<p id="rcp-revoke-access-wrap">
 						<input type="checkbox" id="rcp-revoke-access" name="rcp-revoke-access" value="1">
 						<label for="rcp-revoke-access"><?php _e( 'Revoke access now', 'rcp' ); ?></label>
-						<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php esc_attr_e( 'If not enabled, the member will retain access until the end of their current term. If checked, access will be revoked immediately.', 'rcp' ); ?>"></span>
+						<span alt="f223" class="rcp-help-tip dashicons dashicons-editor-help" title="<?php esc_attr_e( 'If not enabled, the member will retain access until the end of their current term. If checked, the member\'s status will be changed to "expired" and access will be revoked immediately.', 'rcp' ); ?>"></span>
 					</p>
 				</td>
 			</tr>

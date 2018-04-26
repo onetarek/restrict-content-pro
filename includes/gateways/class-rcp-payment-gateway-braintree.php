@@ -126,9 +126,9 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 				$result = Braintree_Customer::create(
 					array(
 						'id'                 => 'bt_' . $this->user_id,
-						'firstName'          => ! empty( $this->subscription_data['post_data']['rcp_user_first'] ) ? sanitize_text_field( $this->subscription_data['post_data']['rcp_user_first'] ) : '',
-						'lastName'           => ! empty( $this->subscription_data['post_data']['rcp_user_last'] ) ? sanitize_text_field( $this->subscription_data['post_data']['rcp_user_last'] ) : '',
-						'email'              => $this->subscription_data['user_email'],
+						'firstName'          => ! empty( $member->first_name ) ? sanitize_text_field( $member->first_name ) : '',
+						'lastName'           => ! empty( $member->last_name ) ? sanitize_text_field( $member->last_name ) : '',
+						'email'              => $member->user_email,
 						'riskData'           => array(
 							'customerBrowser' => $_SERVER['HTTP_USER_AGENT'],
 							'customerIp'      => rcp_get_ip()
@@ -157,7 +157,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $customer ) ) {
-			$this->handle_processing_error( new Exception( __( 'Unable to locate or create customer record. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+			$this->handle_processing_error( new Exception( __( 'Unable to locate or create customer record. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 		}
 
 		/**
@@ -179,7 +179,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 
 			} else {
 
-				$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+				$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 
 			}
 
@@ -190,7 +190,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 		}
 
 		if ( empty( $payment_token ) ) {
-			$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support is the problem persists.', 'rcp' ) ) );
+			$this->handle_processing_error( new Exception( __( 'There was an error saving your payment information. Please try again. Contact support if the problem persists.', 'rcp' ) ) );
 
 		}
 
@@ -451,19 +451,28 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 			die( 200 );
 		}
 
+		$user_id = false;
+
 		/**
-		 * If this is a free trial cancellation, there will not
-		 * be a transaction to reference in this webhook, which
-		 * is where Braintree stores the customer ID associated
-		 * with the webhook. We need to get the customer ID
-		 * another way.
+		 * First try to get the user ID from the customer ID.
+		 * This should work if at least one payment has been
+		 * processed in Braintree.
 		 */
 		if ( ! empty( $data->subscription->transactions ) ) {
 
 			$transaction = $data->subscription->transactions[0];
 			$user_id     = rcp_get_member_id_from_profile_id( $transaction->customer['id'] );
 
-		} elseif ( ! empty( $data->subscription->id ) ) {
+		}
+
+		/**
+		 * As a backup, get the user ID from the subscription ID.
+		 * This will be used for free trial cancellations and
+		 * backwards compatibility with the old Braintree add-on
+		 * where the subscription ID was stored instead of the
+		 * customer ID.
+		 */
+		if ( empty( $user_id ) && ! empty( $data->subscription->id ) ) {
 
 			$user_id = rcp_get_member_id_from_subscription_id( $data->subscription->id );
 
@@ -514,7 +523,11 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 					die( 'subscription_canceled returned early. Member just upgraded.' );
 				}
 
-				$member->cancel();
+				if ( $member->is_active() ) {
+					$member->cancel();
+				} else {
+					rcp_log( sprintf( 'Member #%d is not active - not cancelling account.', $member->ID ) );
+				}
 
 				/**
 				 * There won't be a paidThroughDate if a trial user cancels,
@@ -799,7 +812,7 @@ class RCP_Payment_Gateway_Braintree extends RCP_Payment_Gateway {
 	 * Loads the Braintree javascript library.
 	 */
 	public function scripts() {
-		wp_enqueue_script( 'rcp-braintree', 'https://js.braintreegateway.com/js/braintree-2.30.0.min.js' );
+		wp_enqueue_script( 'rcp-braintree', 'https://js.braintreegateway.com/js/braintree-2.32.1.min.js' );
 	}
 
 }
