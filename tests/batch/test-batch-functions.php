@@ -66,7 +66,7 @@ class BatchFunctions extends \WP_UnitTestCase {
 
 		$this->job = new Job( $this->config['name'] );
 
-		$this->assertSame( 'Test Job', $this->job->name() );
+		$this->assertSame( $this->config['name'], $this->job->name() );
 	}
 
 	/** @covers \RCP\Utils\Job::description() */
@@ -75,7 +75,7 @@ class BatchFunctions extends \WP_UnitTestCase {
 
 		$this->job = new Job( $this->config['name'] );
 
-		$this->assertSame( 'Test Job Description', $this->job->description() );
+		$this->assertSame( $this->config['description'], $this->job->description() );
 	}
 
 	/** @covers \RCP\Utils\Job::callback() */
@@ -84,7 +84,7 @@ class BatchFunctions extends \WP_UnitTestCase {
 
 		$this->job = new Job( $this->config['name'] );
 
-		$this->assertSame( '\RCP\Utils\batch_callback_test', $this->job->callback() );
+		$this->assertSame( $this->config['callback'], $this->job->callback() );
 	}
 }
 
