@@ -71,11 +71,18 @@ final class Job implements JobInterface {
 	 * @inheritdoc
 	 */
 	public function percent_complete() {
+		$percent_complete = 0;
 		$total_count = $this->total_count();
-		if ( empty( $total_count ) ) {
-			return 100;
+
+		if( $total_count > 0 ) {
+			$percent_complete = (int) ( ( $this->current_count() / $total_count ) * 100 );
 		}
-		return (int) ( ( $this->current_count() / $total_count ) * 100 );
+
+		if( $percent_complete > 100 ) {
+			$percent_complete = 100;
+		}
+
+		return $percent_complete;
 	}
 
 	/**
