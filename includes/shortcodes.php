@@ -405,12 +405,10 @@ add_shortcode( 'login_form', 'rcp_login_form' );
 function rcp_reset_password_form() {
 	if( is_user_logged_in() ) {
 
-		global $rcp_options, $rcp_load_css, $rcp_load_scripts;
-		// set this to true so the CSS is loaded
+		global $rcp_load_css, $rcp_load_scripts;
+		// Load CSS and scripts.
 		$rcp_load_css = true;
-		if( isset( $rcp_options['front_end_validate'] ) ) {
-			$rcp_load_scripts = true;
-		}
+		$rcp_load_scripts = true;
 
 		// get the password reset form fields
 		$output = rcp_change_password_form();
