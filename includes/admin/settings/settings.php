@@ -2186,7 +2186,8 @@ function rcp_process_gateway_connect_completion() {
 		wp_die( $message );
 	}
 
-	$data = json_decode( $response['body'], true )['data'];
+	$response = json_decode( $response['body'], true );
+	$data = $response['data'];
 
 	global $rcp_options;
 
