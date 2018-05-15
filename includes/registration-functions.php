@@ -103,6 +103,16 @@ function rcp_process_registration() {
 		$gateway_obj->validate_fields();
 	}
 
+	// If enabled, terms agreemnet must be checked.
+	if ( ! empty( $rcp_options['enable_terms'] ) && ! isset( $_POST['rcp_agree_to_terms'] ) ) {
+		rcp_errors()->add( 'terms_not_agreed', __( 'You must agree to the terms and conditions', 'rcp' ), 'register' );
+	}
+
+	// If enabled, privacy policy agreement must be checked.
+	if ( ! empty( $rcp_options['enable_privacy_policy'] ) && ! isset( $_POST['rcp_agree_to_privacy_policy'] ) ) {
+		rcp_errors()->add( 'privacy_policy_not_agreed', __( 'You must agree to the privacy policy', 'rcp' ), 'register' );
+	}
+
 	do_action( 'rcp_form_errors', $_POST );
 
 	// retrieve all error messages, if any
