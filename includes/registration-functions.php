@@ -175,6 +175,30 @@ function rcp_process_registration() {
 	// Setup the member object
 	$member = new RCP_Member( $user_data['id'] );
 
+	// Save agreement to terms and privacy policy.
+	if ( ! empty( $_POST['rcp_agree_to_terms'] ) ) {
+		$terms_agreed = get_user_meta( $member->ID, 'rcp_terms_agreed', true );
+
+		if ( ! is_array( $terms_agreed ) ) {
+			$terms_agreed = array();
+		}
+
+		$terms_agreed[] = current_time( 'timestamp' );
+
+		update_user_meta( $member->ID, 'rcp_terms_agreed', $terms_agreed );
+	}
+	if ( ! empty( $_POST['rcp_agree_to_privacy_policy'] ) ) {
+		$privacy_policy_agreed = get_user_meta( $member->ID, 'rcp_privacy_policy_agreed', true );
+
+		if ( ! is_array( $privacy_policy_agreed ) ) {
+			$privacy_policy_agreed = array();
+		}
+
+		$privacy_policy_agreed[] = current_time( 'timestamp' );
+
+		update_user_meta( $member->ID, 'rcp_privacy_policy_agreed', $privacy_policy_agreed );
+	}
+
 	update_user_meta( $user_data['id'], '_rcp_new_subscription', '1' );
 
 	$subscription_key = rcp_generate_subscription_key();
